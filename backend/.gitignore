@@ -1,0 +1,16 @@
+node_modules/
+.env
+.DS_Store
+npm-debug.log
+.vscode/
+coverage/
+dist/
+.idea/
+*.sqlite
+*.sqlite3
+*.log
+*.env
+.env.local
+.env.*.local
+node_modules
+
