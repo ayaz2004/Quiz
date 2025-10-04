@@ -1,34 +1,24 @@
 import express from 'express';
 import cors from 'cors';
-import { initDB } from './config/db.js';
-import { configDotenv } from 'dotenv';
+import dotenv from 'dotenv';
+import pool from './config/db.js';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-configDotenv();
-initDB();
-
 // Middleware
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 // Test route
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Quiz Backend Server is running!',
-    status: 'success',
-    timestamp: new Date().toISOString()
-  });
-});
+app.get("/", async(req, res) => {
+  const result = await pool.query("SELECT current_database()");
+  res.send(`The database name is : ${result.rows[0].current_database}`)
+})
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy',
-    uptime: process.uptime()
-  });
-});
+//Error handling middleware  
 
 // Start server
 app.listen(PORT, () => {
