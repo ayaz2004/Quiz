@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // Import routes
-import userRoutes from './route/user.route.js';
+import userRoutes from './routes/user.route.js';
 
 
 // Test route
