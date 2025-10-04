@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { initDB } from './config/db.config.js';
+import bodyParser from 'body-parser';
 import { configDotenv } from 'dotenv';
 import { ApiResponse } from './utils/apiResponse.js';
 
@@ -8,11 +8,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 configDotenv();
-initDB();
+
 
 // Middleware
 app.use(cors());
+
+
 app.use(express.json());
+app.use(bodyParser.json());
+
+// Import routes
+import userRoutes from './route/user.route.js';
+
 
 // Test route
 app.get('/', (req, res) => {
@@ -27,6 +34,8 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API Routes
+app.use('/api/users', userRoutes);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

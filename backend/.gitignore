@@ -14,3 +14,5 @@ dist/
 .env.*.local
 node_modules
 
+
+/generated/prisma
