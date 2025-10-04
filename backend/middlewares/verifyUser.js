@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import prisma from "../config/db.config.js";
-
+import { ApiError } from "../utils/error.js";
 
 export const verifyToken = async (req, res, next) => {
     const accessToken =
@@ -11,7 +11,7 @@ export const verifyToken = async (req, res, next) => {
         req.header("RefreshToken")?.replace("Bearer ", "");
 
     if (!accessToken || !sessionToken) {
-        return next(errorHandler(401, "Unauthorized"));
+        return next(new ApiError(401, "Unauthorized"));
     }
 
     try {
@@ -27,7 +27,7 @@ export const verifyToken = async (req, res, next) => {
             user.sessionToken !== sessionToken
         ) {
             return next(
-                errorHandler(403, "Session expired or invalid. Please login again.")
+                new ApiError(403, "Session expired or invalid. Please login again.")
             );
         }
 
@@ -35,6 +35,6 @@ export const verifyToken = async (req, res, next) => {
         req.decodedToken = decoded;
         next();
     } catch (error) {
-        next(errorHandler(400, "Invalid accessToken."));
+        next(new ApiError(400, "Invalid accessToken."));
     }
 };

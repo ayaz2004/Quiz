@@ -17,9 +17,8 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Import routes
-import userRoutes from './routes/user.route.js';
-
+// Import common routes
+import apiRoutes from './routes/index.js';
 
 // Test route
 app.get('/', (req, res) => {
@@ -35,7 +34,7 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/users', userRoutes);
+app.use('/api', apiRoutes);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
