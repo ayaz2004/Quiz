@@ -3,8 +3,10 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/error.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
@@ -16,7 +18,9 @@ export const createUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // validation
+    if (!email || !password) {
+      return next(new ApiError(400, "Email and password are required"));
+    }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -41,6 +45,8 @@ export const createUser = async (req, res, next) => {
         isEmailVerified: false
       },
     });
+
+    await sendVerificationEmail(email, emailVerificationToken);
 
     res.status(201).json(new ApiResponse(201, { user: { 
         id: newUser.id, 

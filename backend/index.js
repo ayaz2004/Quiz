@@ -4,15 +4,13 @@ import bodyParser from 'body-parser';
 import { configDotenv } from 'dotenv';
 import { ApiResponse } from './utils/apiResponse.js';
 
+configDotenv();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-configDotenv();
-
-
 // Middleware
 app.use(cors());
-
 
 app.use(express.json());
 app.use(bodyParser.json());
