@@ -18,7 +18,11 @@ model User {
   id            Int      @id @default(autoincrement())
   email         String   @unique
   password      String
-  isVerified    Boolean  @default(false)
+  isEmailVerified           Boolean   @default(false)
+  emailVerificationToken    String?
+  emailVerificationExpires  DateTime?
+  resetPasswordToken        String?
+  resetPasswordExpires      DateTime?
   isAdmin       Int      @default(0)
   profilePhoto  String?
   purchasedExams Json    @default("[]")
