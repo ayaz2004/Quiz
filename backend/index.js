@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import { initDB } from './config/db.js';
+import { initDB } from './config/db.config.js';
 import { configDotenv } from 'dotenv';
+import { ApiResponse } from './utils/apiResponse.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,11 +16,7 @@ app.use(express.json());
 
 // Test route
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Quiz Backend Server is running!',
-    status: 'success',
-    timestamp: new Date().toISOString()
-  });
+  res.send(new ApiResponse(200, { message: 'API is working!' }));
 });
 
 // Health check endpoint
