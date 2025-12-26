@@ -20,19 +20,44 @@ import apiRoutes from './routes/index.js';
 
 // Test route
 app.get('/', (req, res) => {
-  res.send(new ApiResponse(200, { message: 'API is working!' }));
+  res.status(200).json(
+    new ApiResponse(200, { message: 'API is working!' }, 'Welcome to Quiz API')
+  );
 });
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy',
-    uptime: process.uptime()
-  });
+  res.status(200).json(
+    new ApiResponse(200, {
+      status: 'healthy',
+      uptime: process.uptime()
+    }, 'Server is healthy')
+  );
 });
 
 // API Routes
 app.use('/api', apiRoutes);
+
+// Global error handler
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  
+  res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+    errors: err.errors || []
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json(
+    new ApiResponse(404, null, "Route not found")
+  );
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -59,15 +59,13 @@ export const createUser = async (req, res, next) => {
   }
 };
 
-export const signInUser = async (req, res) => {
+export const signInUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     // Validate input
     if (!email || !password) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Email and password are required")
-      );
+      return next(new ApiError(400, "Email and password are required"));
     }
 
     // Find user by email
@@ -76,25 +74,19 @@ export const signInUser = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json(
-        new ApiResponse(401, null, "Invalid credentials")
-      );
+      return next(new ApiError(401, "Invalid credentials"));
     }
 
      // Check if email is verified
     if (!user.isEmailVerified) {
-      return res.status(401).json(
-        new ApiResponse(401, null, "Please verify your email before signing in")
-      );
+      return next(new ApiError(401, "Please verify your email before signing in"));
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json(
-        new ApiResponse(401, null, "Invalid credentials")
-      );
+      return next(new ApiError(401, "Invalid credentials"));
     }
 
     // Generate JWT token
@@ -115,14 +107,11 @@ export const signInUser = async (req, res) => {
     );
 
   } catch (error) {
-    console.error('Sign in error:', error);
-    return res.status(500).json(
-      new ApiResponse(500, null, "Internal server error")
-    );
+    next(new ApiError(500, error.message || "Error signing in"));
   }
 };
 
-export const verifyEmail = async (req, res) => {
+export const verifyEmail = async (req, res, next) => {
   try {
     const { token } = req.params;
 
@@ -136,9 +125,7 @@ export const verifyEmail = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Invalid or expired verification token")
-      );
+      return next(new ApiError(400, "Invalid or expired verification token"));
     }
 
     // Update user as verified
@@ -156,21 +143,16 @@ export const verifyEmail = async (req, res) => {
     );
 
   } catch (error) {
-    console.error('Email verification error:', error);
-    return res.status(500).json(
-      new ApiResponse(500, null, "Internal server error")
-    );
+    next(new ApiError(500, error.message || "Error verifying email"));
   }
 };
 
-export const forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Email is required")
-      );
+      return next(new ApiError(400, "Email is required"));
     }
 
     const user = await prisma.user.findUnique({
@@ -178,9 +160,7 @@ export const forgotPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json(
-        new ApiResponse(404, null, "User not found")
-      );
+      return next(new ApiError(404, "User not found"));
     }
 
     // Generate reset token
@@ -204,22 +184,17 @@ export const forgotPassword = async (req, res) => {
     );
 
   } catch (error) {
-    console.error('Forgot password error:', error);
-    return res.status(500).json(
-      new ApiResponse(500, null, "Internal server error")
-    );
+    next(new ApiError(500, error.message || "Error processing forgot password"));
   }
 };
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = async (req, res, next) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
 
     if (!password) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Password is required")
-      );
+      return next(new ApiError(400, "Password is required"));
     }
 
     const user = await prisma.user.findFirst({
@@ -232,9 +207,7 @@ export const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Invalid or expired reset token")
-      );
+      return next(new ApiError(400, "Invalid or expired reset token"));
     }
 
     // Hash new password
@@ -255,21 +228,16 @@ export const resetPassword = async (req, res) => {
     );
 
   } catch (error) {
-    console.error('Reset password error:', error);
-    return res.status(500).json(
-      new ApiResponse(500, null, "Internal server error")
-    );
+    next(new ApiError(500, error.message || "Error resetting password"));
   }
 };
 
-export const resendVerificationEmail = async (req, res) => {
+export const resendVerificationEmail = async (req, res, next) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Email is required")
-      );
+      return next(new ApiError(400, "Email is required"));
     }
 
     const user = await prisma.user.findUnique({
@@ -277,15 +245,11 @@ export const resendVerificationEmail = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json(
-        new ApiResponse(404, null, "User not found")
-      );
+      return next(new ApiError(404, "User not found"));
     }
 
     if (user.isEmailVerified) {
-      return res.status(400).json(
-        new ApiResponse(400, null, "Email is already verified")
-      );
+      return next(new ApiError(400, "Email is already verified"));
     }
 
     // Generate new verification token
@@ -308,10 +272,7 @@ export const resendVerificationEmail = async (req, res) => {
     );
 
   } catch (error) {
-    console.error('Resend verification error:', error);
-    return res.status(500).json(
-      new ApiResponse(500, null, "Internal server error")
-    );
+    next(new ApiError(500, error.message || "Error resending verification email"));
   }
 };
 

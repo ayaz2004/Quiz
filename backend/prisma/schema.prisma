@@ -27,6 +27,8 @@ model User {
   profilePhoto  String?
   purchasedExams Json    @default("[]")
   createdAt     DateTime @default(now())
+  quizAttempts  QuizAttempt[]
+  purchases     Purchase[]
 }
 
 
@@ -38,8 +40,13 @@ model Quiz {
   examYear    Int       @map("exam_year")
   createdBy   Int       @map("created_by")
   isActive    Boolean   @default(true) @map("is_active")
+  isPaid      Boolean   @default(false) @map("is_paid")
+  price       Float?
+  prize       String?
   createdAt   DateTime  @default(now()) @map("created_at")
   questions   Question[]
+  quizAttempts QuizAttempt[]
+  purchases   Purchase[]
 }
 
 model Question {
@@ -54,4 +61,44 @@ model Question {
   explanation  String?
   imageUrl     String? @map("image_url")
   quiz         Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id             Int      @id @default(autoincrement()) @map("attempt_id")
+  userId         Int      @map("user_id")
+  quizId         Int      @map("quiz_id")
+  score          Int
+  totalQuestions Int      @map("total_questions")
+  correctAnswers Int      @map("correct_answers")
+  wrongAnswers   Int      @map("wrong_answers")
+  percentage     Float
+  timeTaken      Int?     @map("time_taken")
+  answers        Json
+  attemptedAt    DateTime @default(now()) @map("attempted_at")
+  
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz           Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([quizId])
+  @@index([attemptedAt])
+  @@map("quiz_attempts")
+}
+
+model Purchase {
+  id          Int      @id @default(autoincrement()) @map("purchase_id")
+  userId      Int      @map("user_id")
+  quizId      Int      @map("quiz_id")
+  amount      Float
+  status      String   @default("completed") @db.VarChar(20)
+  purchasedAt DateTime @default(now()) @map("purchased_at")
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, quizId])
+  @@index([userId])
+  @@index([quizId])
+  @@index([purchasedAt])
+  @@map("purchases")
 }
