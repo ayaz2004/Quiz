@@ -29,4 +29,7 @@ router.post("/attempt/:quizId", verifyToken, quizAttemptLimiter, submitQuizAttem
 // Optional auth - shows different data based on login status
 router.get("/:id", optionalAuth, generalLimiter, getQuizById);
 
+
+//////////////////////////////////Admin Routes////////////////////////////////////// 
+
 export default router;
