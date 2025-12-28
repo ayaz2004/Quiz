@@ -11,7 +11,7 @@ export const validateQuiz = (req, res, next) => {
     if (!quiz) {
       return next(new ApiError(400, "Quiz data is required"));
     }
-
+    console.log(quiz);
     // Validate title
     if (!quiz.title || typeof quiz.title !== "string") {
       return next(new ApiError(400, "Quiz title is required and must be a string"));
