@@ -8,7 +8,6 @@ cloudinary.config({
   secure: true,
 });
 
-console.log("Cloudinary Configured:", cloudinary.config());
 export const uploadImage = async (imagePath) => {
   // Use the uploaded file's name as the asset's public ID and
   // allow overwriting the asset with new versions

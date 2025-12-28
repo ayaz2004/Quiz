@@ -2,16 +2,25 @@ import { ApiError } from "./error.js";
 
 /**
  * Middleware to validate quiz creation data
+ * Expects req.body.quizData as a JSON string
  */
 export const validateQuiz = (req, res, next) => {
   try {
-    const { quiz } = req.body;
-
-    // Check if quiz object exists
-    if (!quiz) {
-      return next(new ApiError(400, "Quiz data is required"));
+    // Check if quizData exists
+    if (!req.body.quizData) {
+      return next(new ApiError(400, "quizData field is required"));
     }
-    console.log(quiz);
+
+    // Parse the JSON string
+    let quiz;
+    try {
+      quiz = JSON.parse(req.body.quizData);
+    } catch (parseError) {
+      return next(new ApiError(400, "quizData must be valid JSON string"));
+    }
+
+    console.log("Parsed Quiz Data:", quiz);
+
     // Validate title
     if (!quiz.title || typeof quiz.title !== "string") {
       return next(new ApiError(400, "Quiz title is required and must be a string"));
@@ -60,6 +69,19 @@ export const validateQuiz = (req, res, next) => {
     // Validate isActive (optional, defaults to true)
     if (quiz.isActive !== undefined && typeof quiz.isActive !== "boolean") {
       return next(new ApiError(400, "isActive must be a boolean"));
+    }
+
+    // Validate isPaid (optional, defaults to false)
+    if (quiz.isPaid !== undefined && typeof quiz.isPaid !== "boolean") {
+      return next(new ApiError(400, "isPaid must be a boolean"));
+    }
+
+    // Validate price if isPaid is true
+    if (quiz.isPaid && quiz.price !== undefined) {
+      const price = parseFloat(quiz.price);
+      if (isNaN(price) || price < 0) {
+        return next(new ApiError(400, "Price must be a non-negative number"));
+      }
     }
 
     // Validate questions array
@@ -118,12 +140,6 @@ export const validateQuiz = (req, res, next) => {
         if (typeof question.imageUrl !== "string") {
           return next(new ApiError(400, `Question ${questionNum}: Image URL must be a string`));
         }
-        // Basic URL validation
-        try {
-          new URL(question.imageUrl);
-        } catch (e) {
-          return next(new ApiError(400, `Question ${questionNum}: Invalid image URL format`));
-        }
       }
     }
 
@@ -136,13 +152,21 @@ export const validateQuiz = (req, res, next) => {
 
 /**
  * Middleware to validate quiz update data
+ * Expects req.body.quizData as a JSON string
  */
 export const validateQuizUpdate = (req, res, next) => {
   try {
-    const { quiz } = req.body;
+    // Check if quizData exists
+    if (!req.body.quizData) {
+      return next(new ApiError(400, "quizData field is required"));
+    }
 
-    if (!quiz) {
-      return next(new ApiError(400, "Quiz data is required"));
+    // Parse the JSON string
+    let quiz;
+    try {
+      quiz = JSON.parse(req.body.quizData);
+    } catch (parseError) {
+      return next(new ApiError(400, "quizData must be valid JSON string"));
     }
 
     // For updates, fields are optional but must be valid if provided
@@ -179,6 +203,46 @@ export const validateQuizUpdate = (req, res, next) => {
 
     if (quiz.isActive !== undefined && typeof quiz.isActive !== "boolean") {
       return next(new ApiError(400, "isActive must be a boolean"));
+    }
+
+    if (quiz.isPaid !== undefined && typeof quiz.isPaid !== "boolean") {
+      return next(new ApiError(400, "isPaid must be a boolean"));
+    }
+
+    if (quiz.price !== undefined) {
+      const price = parseFloat(quiz.price);
+      if (isNaN(price) || price < 0) {
+        return next(new ApiError(400, "Price must be a non-negative number"));
+      }
+    }
+
+    // Validate questions if provided
+    if (quiz.questions !== undefined) {
+      if (!Array.isArray(quiz.questions)) {
+        return next(new ApiError(400, "Questions must be an array"));
+      }
+      if (quiz.questions.length === 0) {
+        return next(new ApiError(400, "Quiz must contain at least one question"));
+      }
+
+      // Validate each question
+      for (let i = 0; i < quiz.questions.length; i++) {
+        const question = quiz.questions[i];
+        const questionNum = i + 1;
+
+        if (!question.questionText || typeof question.questionText !== "string") {
+          return next(new ApiError(400, `Question ${questionNum}: Question text is required`));
+        }
+
+        if (!question.option1 || !question.option2 || !question.option3 || !question.option4) {
+          return next(new ApiError(400, `Question ${questionNum}: All 4 options are required`));
+        }
+
+        const correctAnswer = parseInt(question.isCorrect);
+        if (isNaN(correctAnswer) || ![1, 2, 3, 4].includes(correctAnswer)) {
+          return next(new ApiError(400, `Question ${questionNum}: isCorrect must be 1, 2, 3, or 4`));
+        }
+      }
     }
 
     next();

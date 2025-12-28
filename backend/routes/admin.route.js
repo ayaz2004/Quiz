@@ -13,13 +13,13 @@ const router = Router();
 router.post(
   "/add-quiz",
   uploadMiddleware.any(),
-  // validateQuiz,
+  validateQuiz,
   addQuiz
 );
 router.patch(
   "/update-quiz/:id",
   uploadMiddleware.any(),
-  // validateQuizUpdate,
+  validateQuizUpdate,
   updateQuiz
 );
 
