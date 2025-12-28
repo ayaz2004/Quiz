@@ -13,9 +13,9 @@ export const addQuiz = async (req, res, next) => {
     // 1. Parse the JSON string from the form-data
     // In Postman, you will send a field named "quizData"
     const {user}= req.body;
-    // if(!user || user.isAdmin !==1){
-    //     return next(new ApiError(403, "Only admins can add quizzes"));
-    // }
+    if(!user || user.isAdmin !==1){
+        return next(new ApiError(403, "Only admins can add quizzes"));
+    }
     const data = JSON.parse(req.body.quizData);
  
     const {

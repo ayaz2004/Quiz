@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import { configDotenv } from 'dotenv';
 import { ApiResponse } from './utils/apiResponse.js';
 
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json());
 

@@ -7,11 +7,13 @@ import {
 } from "../controllers/admin.controller.js";
 import { validateQuiz, validateQuizUpdate } from "../utils/validateQuiz.js";
 import uploadMiddleware from "../middlewares/multer.js";
+import { verifyToken } from "../middlewares/verifyUser.js";
 const router = Router();
 
 /////////////////////////////// Admin post Apis //////////////////////////////
 router.post(
   "/add-quiz",
+  verifyToken,
   uploadMiddleware.any(),
   validateQuiz,
   addQuiz

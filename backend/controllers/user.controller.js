@@ -89,20 +89,48 @@ export const signInUser = async (req, res, next) => {
       return next(new ApiError(401, "Invalid credentials"));
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
+    // Generate access token (short-lived)
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    // Return success response (exclude password)
-    const { password: _, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, ...userWithoutPassword } = user;
+    // Generate session token (long-lived refresh token)
+    const sessionToken = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Store tokens in database
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        accessToken,
+        sessionToken
+      }
+    });
+
+    // Set cookies with security options
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    };
+
+    res.cookie('access_token', accessToken, cookieOptions);
+    res.cookie('session_token', sessionToken, cookieOptions);
+
+    // Return success response (exclude password and tokens)
+    const { password: _, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, accessToken: __, sessionToken: ___, ...userWithoutPassword } = user;
     
     return res.status(200).json(
       new ApiResponse(200, {
         user: userWithoutPassword,
-        token
+        accessToken,
+        sessionToken
       }, "Sign in successful")
     );
 
@@ -317,4 +345,39 @@ const sendPasswordResetEmail = async (email, token) => {
 
   await transporter.sendMail(mailOptions);
 };
+
+export const logoutUser = async (req, res, next) => {
+  try {
+    const accessToken = req.cookies?.access_token || req.header("Authorization")?.replace("Bearer ", "");
+    
+    if (accessToken) {
+      // Find user by access token and clear tokens from database
+      const user = await prisma.user.findFirst({
+        where: { accessToken }
+      });
+
+      if (user) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            accessToken: null,
+            sessionToken: null
+          }
+        });
+      }
+    }
+
+    // Clear cookies
+    res.clearCookie('access_token');
+    res.clearCookie('session_token');
+
+    return res.status(200).json(
+      new ApiResponse(200, null, "Logged out successfully")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error logging out"));
+  }
+};
+
 
