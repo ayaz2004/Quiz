@@ -12,7 +12,8 @@ export const addQuiz = async (req, res, next) => {
   try {
     // 1. Parse the JSON string from the form-data
     // In Postman, you will send a field named "quizData"
-    const {user}= req.body;
+    const user = req.user;
+   
     if(!user || user.isAdmin !==1){
         return next(new ApiError(403, "Only admins can add quizzes"));
     }
@@ -103,7 +104,11 @@ export const addQuiz = async (req, res, next) => {
 export const updateQuiz = async (req, res, next) => {
   try {
     const { id } = req.params;
-
+    const user = req.user;
+    
+    if(!user || user.isAdmin !==1){
+        return next(new ApiError(403, "Only admins can update quizzes"));
+    }
     // 1. Parse the JSON string from form-data (consistent with addQuiz)
     const data = JSON.parse(req.body.quizData);
     const {
@@ -188,13 +193,16 @@ export const updateQuiz = async (req, res, next) => {
  */
 export const getAllUsers = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    const { user } = req.body;
+
+    const user = req.user;
+
     if (!user || user.isAdmin !== 1) {
       return next(new ApiError(403, "Only admins can view all users"));
     }
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+   
     const [users, totalUsers] = await Promise.all([
       prisma.user.findMany({
         select: {
@@ -240,7 +248,8 @@ export const getAllUsers = async (req, res, next) => {
 export const deleteUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const { user } = req.body;
+    const user = req.user;
+    console.log("Admin User:", user);
     if (!user || user.isAdmin !== 1) {
       return next(new ApiError(403, "Only admins can delete users"));
     }

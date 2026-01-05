@@ -18,8 +18,11 @@ router.post(
   validateQuiz,
   addQuiz
 );
-router.patch(
+
+/////////////////////////////// Admin put Apis //////////////////////////////
+router.put(
   "/update-quiz/:id",
+  verifyToken,
   uploadMiddleware.any(),
   validateQuizUpdate,
   updateQuiz
@@ -29,13 +32,15 @@ router.patch(
 
 router.get(
     "/get-all-users",
+    verifyToken,
      getAllUsers
 );
 
 ///////////////////////////////Admin Delete Apis //////////////////////////////
 
-router.post(
+router.delete(
     "/delete-user/:userId",
+    verifyToken,
      deleteUser
 );
 
