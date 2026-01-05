@@ -30,6 +30,5 @@ router.post("/attempt/:quizId", verifyToken, quizAttemptLimiter, submitQuizAttem
 router.get("/:id", optionalAuth, generalLimiter, getQuizById);
 
 
-//////////////////////////////////Admin Routes////////////////////////////////////// 
 
 export default router;
