@@ -5,6 +5,7 @@ import Quizzes from './pages/Quizzes';
 import Attempts from './pages/Attempts';
 import Leaderboard from './pages/Leaderboard';
 import About from './pages/About';
+import AdminDashboard from './pages/AdminDashboard';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="attempts" element={<Attempts />} />
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="about" element={<About />} />
+          <Route path="admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </Router>
