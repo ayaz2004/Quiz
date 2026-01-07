@@ -1,0 +1,36 @@
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    isAdmin INT DEFAULT 0,
+    profile_photo TEXT,
+    purchased_exams JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE questions (
+    question_id SERIAL PRIMARY KEY,
+    quiz_id INT NOT NULL REFERENCES quizzes(quiz_id) ON DELETE CASCADE,
+    question_text TEXT NOT NULL,
+    option1 TEXT NOT NULL,
+    option2 TEXT NOT NULL,
+    option3 TEXT NOT NULL,
+    option4 TEXT NOT NULL,
+    is_correct INT NOT NULL CHECK (is_correct BETWEEN 1 AND 4),
+    explanation TEXT DEFAULT NULL,
+    image_url TEXT DEFAULT NULL
+);
+
+
+CREATE TABLE quizzes (
+    quiz_id SERIAL PRIMARY KEY,
+    title VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT NOT NULL,
+    subject VARCHAR(100) NOT NULL,
+    exam_year INT NOT NULL,
+    created_by INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
