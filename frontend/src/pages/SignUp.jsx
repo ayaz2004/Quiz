@@ -1,17 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { signup } = useAuth();
   const { isDark } = useTheme();
   
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -21,15 +19,11 @@ const SignUp = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [isExistingUnverified, setIsExistingUnverified] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.username) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    }
     
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -77,17 +71,37 @@ const SignUp = () => {
     
     setLoading(true);
     setServerError('');
+    setSuccess(false);
+    setIsExistingUnverified(false);
     
-    const { confirmPassword, agreeToTerms, ...signupData } = formData;
-    const result = await signup(signupData);
-    
-    if (result.success) {
-      navigate('/');
-    } else {
-      setServerError(result.error);
+    try {
+      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/add', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      // Check if it's an existing unverified user
+      if (response.data.data?.requiresVerification) {
+        setIsExistingUnverified(true);
+      }
+      
+      setSuccess(true);
+      
+      // Redirect to sign in after 3 seconds
+      setTimeout(() => {
+        navigate('/signin', { 
+          state: { 
+            message: 'Please verify your email to sign in.',
+            email: formData.email 
+          } 
+        });
+      }, 3000);
+      
+    } catch (error) {
+      setServerError(error.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const UserIcon = () => (
@@ -127,53 +141,46 @@ const SignUp = () => {
           : 'bg-white/70 backdrop-blur-xl border border-white'
       } rounded-2xl shadow-2xl p-8 sm:p-10`}>
         
-        {/* Header */}
-        <div className="text-center">
-          <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg mb-4`}>
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-          </div>
-          <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Create Account
-          </h2>
-          <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Join us and start your quiz journey
-          </p>
-        </div>
-
-        {/* Server error message */}
-        {serverError && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+        {!success ? (
+          <>
+            {/* Header */}
+            <div className="text-center">
+              <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg mb-4`}>
+                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{serverError}</p>
-              </div>
+              <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                Create Account
+              </h2>
+              <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Join us and start your quiz journey
+              </p>
             </div>
-          </div>
-        )}
+
+            {/* Server error message */}
+            {serverError && (
+              <div className={`rounded-xl p-4 ${
+                isDark 
+                  ? 'bg-red-900/20 border border-red-800' 
+                  : 'bg-red-50 border border-red-200'
+              }`}>
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className={`h-5 w-5 ${isDark ? 'text-red-400' : 'text-red-500'}`} viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-700'}`}>{serverError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-5">
-            <Input
-              label="Username"
-              type="text"
-              name="username"
-              autoComplete="username"
-              placeholder="johndoe"
-              value={formData.username}
-              onChange={handleChange}
-              error={errors.username}
-              icon={UserIcon}
-              required
-            />
-
             <Input
               label="Email Address"
               type="email"
@@ -292,6 +299,48 @@ const SignUp = () => {
             </Button>
           </Link>
         </form>
+        </>
+        ) : (
+          /* Success State - Email Verification Required */
+          <div className="text-center">
+            <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg mb-4`}>
+              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+              </svg>
+            </div>
+            <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {isExistingUnverified ? 'Verification Email Resent!' : 'Check Your Email!'}
+            </h2>
+            <p className={`mt-4 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {isExistingUnverified 
+                ? `A new verification email has been sent to ${formData.email}`
+                : `We've sent a verification link to ${formData.email}`
+              }
+            </p>
+            <p className={`mt-2 text-sm ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+              Please check your inbox and click the verification link to activate your account.
+            </p>
+            <div className={`mt-6 rounded-xl p-4 ${
+              isDark ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'
+            }`}>
+              <p className={`text-xs ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
+                💡 Didn't receive the email? Check your spam folder or try signing up again to resend.
+              </p>
+            </div>
+            <div className="mt-8">
+              <Link
+                to="/signin"
+                className={`inline-flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white transition-all duration-200 shadow-lg ${
+                  isDark
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+                    : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'
+                } transform hover:scale-105`}
+              >
+                Go to Sign In
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

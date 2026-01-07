@@ -24,17 +24,53 @@ export const createUser = async (req, res, next) => {
 
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    const user = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email: email },
     });
 
-    if (user) {
-      return next(new ApiError(409, "User already exists."));
+    // If user exists and email is verified, they should sign in instead
+    if (existingUser && existingUser.isEmailVerified) {
+      return next(new ApiError(409, "User already exists. Please sign in."));
     }
 
+    // If user exists but email is NOT verified, regenerate token and resend email
+    if (existingUser && !existingUser.isEmailVerified) {
+      const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+      const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      // Update user with new token and password (in case they forgot)
+      await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          password: hashedPassword, // Update password in case they changed it
+          emailVerificationToken,
+          emailVerificationExpires
+        }
+      });
+
+      // Send response first
+      res.status(200).json(new ApiResponse(200, { 
+        user: { 
+          id: existingUser.id, 
+          email: existingUser.email, 
+          isEmailVerified: false 
+        },
+        requiresVerification: true
+      }, "Account exists but not verified. A new verification email has been sent."));
+
+      // Resend verification email after response (fire and forget)
+      setImmediate(() => {
+        sendVerificationEmail(email, emailVerificationToken).catch(err => {
+          console.error('Failed to send verification email:', err);
+        });
+      });
+      
+      return;
+    }
+
+    // Create new user
     const emailVerificationToken = crypto.randomBytes(32).toString('hex');
     const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
 
     const newUser = await prisma.user.create({
       data: {
@@ -46,14 +82,23 @@ export const createUser = async (req, res, next) => {
       },
     });
 
-    await sendVerificationEmail(email, emailVerificationToken);
-
-    res.status(201).json(new ApiResponse(201, { user: { 
+    // Send response first (don't wait for email)
+    res.status(201).json(new ApiResponse(201, { 
+      user: { 
         id: newUser.id, 
         email: newUser.email, 
         isEmailVerified: newUser.isEmailVerified 
-      }  
-    }, "User created successfully. Please check your email to verify your account."));
+      },
+      requiresVerification: true
+    }, "Registration successful! Please check your email to verify your account."));
+
+    // Send email asynchronously after response (fire and forget)
+    setImmediate(() => {
+      sendVerificationEmail(email, emailVerificationToken).catch(err => {
+        console.error('Failed to send verification email:', err);
+      });
+    });
+    
   } catch (error) {
     next(new ApiError(500, error.message));
   }
@@ -77,16 +122,22 @@ export const signInUser = async (req, res, next) => {
       return next(new ApiError(401, "Invalid credentials"));
     }
 
-     // Check if email is verified
-    if (!user.isEmailVerified) {
-      return next(new ApiError(401, "Please verify your email before signing in"));
-    }
-
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return next(new ApiError(401, "Invalid credentials"));
+    }
+
+    // Check if email is verified - return specific error without tokens
+    if (!user.isEmailVerified) {
+      return res.status(403).json(
+        new ApiResponse(403, {
+          email: user.email,
+          isEmailVerified: false,
+          requiresVerification: true
+        }, "Please verify your email before signing in. Check your inbox or request a new verification email.")
+      );
     }
 
     // Generate access token (short-lived)
@@ -204,12 +255,17 @@ export const forgotPassword = async (req, res, next) => {
       }
     });
 
-    // Send reset email
-    await sendPasswordResetEmail(email, resetToken);
-
+    // Send response first
     res.status(200).json(
       new ApiResponse(200, null, "Password reset email sent successfully")
     );
+
+    // Send reset email after response (fire and forget)
+    setImmediate(() => {
+      sendPasswordResetEmail(email, resetToken).catch(err => {
+        console.error('Failed to send password reset email:', err);
+      });
+    });
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error processing forgot password"));
@@ -292,12 +348,17 @@ export const resendVerificationEmail = async (req, res, next) => {
       }
     });
 
-    // Send verification email
-    await sendVerificationEmail(email, emailVerificationToken);
-
+    // Send response first
     res.status(200).json(
       new ApiResponse(200, null, "Verification email sent successfully")
     );
+
+    // Send verification email after response (fire and forget)
+    setImmediate(() => {
+      sendVerificationEmail(email, emailVerificationToken).catch(err => {
+        console.error('Failed to send verification email:', err);
+      });
+    });
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error resending verification email"));
@@ -306,7 +367,7 @@ export const resendVerificationEmail = async (req, res, next) => {
 
 // Helper functions for sending emails
 const sendVerificationEmail = async (email, token) => {
-  const verificationUrl = `${process.env.BACKEND_URL}/api/users/verify-email/${token}`;
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
   
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -326,7 +387,7 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 const sendPasswordResetEmail = async (email, token) => {
-  const resetUrl = `${process.env.BACKEND_URL}/api/users/reset-password/${token}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
   
   const mailOptions = {
     from: process.env.EMAIL_USER,

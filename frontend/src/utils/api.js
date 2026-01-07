@@ -37,4 +37,10 @@ api.interceptors.response.use(
   }
 );
 
+// Auth API functions
+export const verifyEmail = (token) => api.get(`/api/users/verify-email/${token}`);
+export const forgotPassword = (email) => api.post('/api/users/forgot-password', { email });
+export const resetPassword = (token, password) => api.post(`/api/users/reset-password/${token}`, { password });
+export const resendVerification = (email) => api.post('/api/users/resend-verification', { email });
+
 export default api;

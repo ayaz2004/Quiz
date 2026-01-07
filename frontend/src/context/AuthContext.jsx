@@ -43,17 +43,36 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axios.post('https://quiz-d4de.onrender.com/api/users/signin', { email, password });
-      const { token, user: userData } = response.data.data;
       
-      localStorage.setItem('token', token);
+      // Check if response indicates verification required (403 status but success response format)
+      if (response.data.data?.requiresVerification) {
+        return { 
+          success: false,
+          requiresVerification: true,
+          error: response.data.message || 'Please verify your email before signing in.'
+        };
+      }
+
+      const { accessToken, sessionToken, user: userData } = response.data.data;
+      
+      localStorage.setItem('token', accessToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       
       setUser(userData);
       setIsAuthenticated(true);
       
       return { success: true, data: userData };
     } catch (error) {
+      // Check if error is due to unverified email (403 status)
+      if (error.response?.status === 403 && error.response?.data?.data?.requiresVerification) {
+        return { 
+          success: false,
+          requiresVerification: true,
+          error: error.response.data.message || 'Please verify your email before signing in.'
+        };
+      }
+      
       return { 
         success: false, 
         error: error.response?.data?.message || 'Login failed. Please try again.' 
