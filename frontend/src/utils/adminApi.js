@@ -8,7 +8,7 @@ import axios from "axios";
  */
 export const addQuiz = async (formData) => {
   try {
-    const response = await fetch(`${API_URL}/api/admin/quiz`, {
+    const response = await fetch(`${API_URL}/api/admin/add-quiz`, {
       method: "POST",
       credentials: 'include', // Send cookies with request
       body: formData,
@@ -35,7 +35,7 @@ export const addQuiz = async (formData) => {
  */
 export const updateQuiz = async (quizId, formData) => {
   try {
-    const response = await fetch(`${API_URL}/api/admin/quiz/${quizId}`, {
+    const response = await fetch(`${API_URL}/api/admin/add-quiz/${quizId}`, {
       method: "PUT",
       credentials: 'include', // Send cookies with request
       body: formData,
@@ -83,7 +83,7 @@ export const getAllUsers = async (page = 1, limit = 10) => {
  */
 export const deleteUser = async (userId) => {
   try {
-    const response = await fetch(`${API_URL}/api/admin/user/${userId}`, {
+    const response = await fetch(`${API_URL}/api/admin/delete-user/${userId}`, {
       method: "DELETE",
       credentials: 'include', // Send cookies with request
       headers: {

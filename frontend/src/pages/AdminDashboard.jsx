@@ -36,8 +36,8 @@ const AdminDashboard = () => {
 
     const response = await getAllUsers(currentPage, 10);
 
-    setUsers(response.users);
-    setTotalPages(response.pagination.totalPages);
+    setUsers(response.data.users);
+    setTotalPages(response.data.pagination.totalPages);
 
   } catch (error) {
     showMessage('error', error.message);
@@ -509,10 +509,10 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                      {users.map((user) => (
+                      {users.map((user,idx) => (
                         <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {user.id}
+                            {idx}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             {user.email}
