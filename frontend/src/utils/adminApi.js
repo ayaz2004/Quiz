@@ -1,4 +1,4 @@
-const API_URL =  "http://localhost:3000";
+const API_URL =  "https://quiz-d4de.onrender.com";
 import axios from "axios";
 
 /**
