@@ -8,12 +8,6 @@ const AdminDashboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  
-  // Get tokens from localStorage (adjust based on your auth implementation)
-  const getTokens = () => ({
-    accessToken: localStorage.getItem('accessToken'),
-    refreshToken: localStorage.getItem('sessionToken')
-  });
 
   // Quiz form state
   const [quizForm, setQuizForm] = useState({
@@ -105,7 +99,6 @@ const AdminDashboard = () => {
 
     try {
       setLoading(true);
-      const { accessToken, refreshToken } = getTokens();
       
       const formData = new FormData();
       
@@ -134,10 +127,10 @@ const AdminDashboard = () => {
       });
 
       if (editingQuizId) {
-        await updateQuiz(editingQuizId, formData, accessToken, refreshToken);
+        await updateQuiz(editingQuizId, formData);
         showMessage('success', 'Quiz updated successfully!');
       } else {
-        await addQuiz(formData, accessToken, refreshToken);
+        await addQuiz(formData);
         showMessage('success', 'Quiz added successfully!');
       }
       
@@ -168,8 +161,7 @@ const AdminDashboard = () => {
 
     try {
       setLoading(true);
-      const { accessToken, refreshToken } = getTokens();
-      await deleteUser(userId, accessToken, refreshToken);
+      await deleteUser(userId);
       showMessage('success', 'User deleted successfully!');
       fetchUsers();
     } catch (error) {

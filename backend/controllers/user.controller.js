@@ -167,7 +167,7 @@ export const signInUser = async (req, res, next) => {
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'strict', 
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     };
 
@@ -438,6 +438,26 @@ export const logoutUser = async (req, res, next) => {
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error logging out"));
+  }
+};
+
+export const getCurrentUser = async (req, res, next) => {
+  try {
+    // This endpoint is called with verifyToken middleware
+    // So req.user is already set
+    if (!req.user) {
+      return next(new ApiError(401, "Not authenticated"));
+    }
+
+    // Return user data without sensitive fields
+    const { password, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, accessToken, sessionToken, ...userWithoutPassword } = req.user;
+    
+    return res.status(200).json(
+      new ApiResponse(200, userWithoutPassword, "User data retrieved")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error getting user"));
   }
 };
 
