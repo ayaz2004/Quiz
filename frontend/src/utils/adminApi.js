@@ -1,20 +1,16 @@
-const API_URL =  "http://localhost:3000";
+const API_URL =  "https://quiz-d4de.onrender.com";
 import axios from "axios";
+
 /**
  * Add a new quiz with questions
  * @param {FormData} formData - Form data containing quizData JSON and image files
- * @param {string} accessToken - Admin access token
- * @param {string} refreshToken - Admin refresh token
  * @returns {Promise} API response
  */
-export const addQuiz = async (formData, accessToken, refreshToken) => {
+export const addQuiz = async (formData) => {
   try {
     const response = await fetch(`${API_URL}/api/admin/quiz`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        RefreshToken: `Bearer ${refreshToken}`,
-      },
+      credentials: 'include', // Send cookies with request
       body: formData,
     });
 
@@ -35,18 +31,13 @@ export const addQuiz = async (formData, accessToken, refreshToken) => {
  * Update an existing quiz and its questions
  * @param {number} quizId - ID of the quiz to update
  * @param {FormData} formData - Form data containing quizData JSON and image files
- * @param {string} accessToken - Admin access token
- * @param {string} refreshToken - Admin refresh token
  * @returns {Promise} API response
  */
-export const updateQuiz = async (quizId, formData, accessToken, refreshToken) => {
+export const updateQuiz = async (quizId, formData) => {
   try {
     const response = await fetch(`${API_URL}/api/admin/quiz/${quizId}`, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        RefreshToken: `Bearer ${refreshToken}`,
-      },
+      credentials: 'include', // Send cookies with request
       body: formData,
     });
 
@@ -88,15 +79,14 @@ export const getAllUsers = async (page = 1, limit = 10) => {
 /**
  * Delete a user by ID
  * @param {number} userId - ID of the user to delete
- * @param {string} token - Admin access token
  * @returns {Promise} API response
  */
-export const deleteUser = async (userId, token) => {
+export const deleteUser = async (userId) => {
   try {
     const response = await fetch(`${API_URL}/api/admin/user/${userId}`, {
       method: "DELETE",
+      credentials: 'include', // Send cookies with request
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });

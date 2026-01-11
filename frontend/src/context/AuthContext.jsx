@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
+// Configure axios defaults for cookie-based auth
+axios.defaults.withCredentials = true;
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -23,18 +26,21 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('user');
+      // Check authentication by calling backend endpoint
+      // Backend will verify cookies and return user data
+      const response = await axios.get('https://quiz-d4de.onrender.com/api/users/me', {
+        withCredentials: true
+      });
       
-      if (token && userData) {
-        setUser(JSON.parse(userData));
+      if (response.data.success && response.data.data) {
+        setUser(response.data.data);
         setIsAuthenticated(true);
-        // Set default axios header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       }
     } catch (error) {
+      // User is not authenticated or session expired
       console.error('Auth check failed:', error);
-      logout();
+      setUser(null);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -42,7 +48,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/signin', { email, password });
+      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/signin', 
+        { email, password },
+        { withCredentials: true }
+      );
       
       // Check if response indicates verification required (403 status but success response format)
       if (response.data.data?.requiresVerification) {
@@ -53,12 +62,10 @@ export const AuthProvider = ({ children }) => {
         };
       }
 
-      const { accessToken, sessionToken, user: userData } = response.data.data;
+      const { user: userData } = response.data.data;
       
-      localStorage.setItem('token', accessToken);
-      localStorage.setItem('user', JSON.stringify(userData));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      
+      // No need to store tokens - they're in httpOnly cookies
+      // Just update state with user data
       setUser(userData);
       setIsAuthenticated(true);
       
@@ -82,15 +89,14 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/add', userData);
-      const { token, user: newUser } = response.data.data;
+      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/add', 
+        userData,
+        { withCredentials: true }
+      );
+      const { user: newUser } = response.data.data;
       
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      setUser(newUser);
-      setIsAuthenticated(true);
+      // No need to store tokens - registration requires email verification
+      // User won't be authenticated until they verify
       
       return { success: true, data: newUser };
     } catch (error) {
@@ -101,17 +107,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    delete axios.defaults.headers.common['Authorization'];
-    setUser(null);
-    setIsAuthenticated(false);
+  const logout = async () => {
+    try {
+      // Call backend logout endpoint to clear cookies
+      await axios.post('https://quiz-d4de.onrender.com/api/users/logout', {}, {
+        withCredentials: true
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear local state regardless of backend response
+      setUser(null);
+      setIsAuthenticated(false);
+    }
   };
 
   const updateUser = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    // No need to store in localStorage - user data will be fetched from backend
   };
 
   const value = {

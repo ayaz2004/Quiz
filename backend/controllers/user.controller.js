@@ -14,30 +14,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Verify environment variables
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-  console.error('❌ MISSING EMAIL CONFIGURATION:');
-  console.error('EMAIL_USER:', process.env.EMAIL_USER ? '✅ Set' : '❌ Missing');
-  console.error('EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ Set' : '❌ Missing');
-  console.error('FRONTEND_URL:', process.env.FRONTEND_URL || '❌ Missing');
-} else {
-  console.log('📧 Email Configuration:');
-  console.log('  EMAIL_USER:', process.env.EMAIL_USER);
-  console.log('  FRONTEND_URL:', process.env.FRONTEND_URL);
-}
-
-// Verify transporter configuration on startup
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error('❌ Email transporter configuration error:', error);
-    console.error('Please check your EMAIL_USER and EMAIL_PASS');
-    console.error('Make sure you are using a Gmail App Password, not your regular password');
-    console.error('For Render deployment: Set these in Environment Variables section');
-  } else {
-    console.log('✅ Email server is ready to send messages');
-  }
-});
-
 export const createUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -84,10 +60,8 @@ export const createUser = async (req, res, next) => {
 
       // Resend verification email after response (fire and forget)
       setImmediate(() => {
-        console.log(`📧 Attempting to send verification email to: ${email}`);
         sendVerificationEmail(email, emailVerificationToken).catch(err => {
-          console.error('❌ Failed to send verification email to:', email);
-          console.error('Error details:', err.message || err);
+          console.error('Failed to send verification email:', err);
         });
       });
       
@@ -108,24 +82,22 @@ export const createUser = async (req, res, next) => {
       },
     });
 
-    // Send verification email BEFORE sending response (to catch errors)
-    try {
-      console.log(`📧 Attempting to send verification email to: ${email}`);
-      await sendVerificationEmail(email, emailVerificationToken);
-      
-      return res.status(201).json(new ApiResponse(201, { 
-        user: { 
-          id: newUser.id, 
-          email: newUser.email, 
-          isEmailVerified: newUser.isEmailVerified 
-        },
-        requiresVerification: true
-      }, "Registration successful! Please check your email to verify your account."));
-    } catch (emailError) {
-      console.error('❌ Failed to send verification email to:', email);
-      console.error('Error details:', emailError.message || emailError);
-      return next(new ApiError(500, "Account created but failed to send verification email. Please use resend verification."));
-    }
+    // Send response first (don't wait for email)
+    res.status(201).json(new ApiResponse(201, { 
+      user: { 
+        id: newUser.id, 
+        email: newUser.email, 
+        isEmailVerified: newUser.isEmailVerified 
+      },
+      requiresVerification: true
+    }, "Registration successful! Please check your email to verify your account."));
+
+    // Send email asynchronously after response (fire and forget)
+    setImmediate(() => {
+      sendVerificationEmail(email, emailVerificationToken).catch(err => {
+        console.error('Failed to send verification email:', err);
+      });
+    });
     
   } catch (error) {
     next(new ApiError(500, error.message));
@@ -195,7 +167,7 @@ export const signInUser = async (req, res, next) => {
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite:  process.env.NODE_ENV === 'production' ? 'none' : 'lax', 
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     };
 
@@ -376,19 +348,17 @@ export const resendVerificationEmail = async (req, res, next) => {
       }
     });
 
-    // Send verification email BEFORE sending response (to catch errors)
-    try {
-      console.log(`📧 Attempting to resend verification email to: ${email}`);
-      await sendVerificationEmail(email, emailVerificationToken);
-      
-      return res.status(200).json(
-        new ApiResponse(200, null, "Verification email sent successfully")
-      );
-    } catch (emailError) {
-      console.error('❌ Failed to resend verification email to:', email);
-      console.error('Error details:', emailError.message || emailError);
-      return next(new ApiError(500, `Failed to send verification email: ${emailError.message}`));
-    }
+    // Send response first
+    res.status(200).json(
+      new ApiResponse(200, null, "Verification email sent successfully")
+    );
+
+    // Send verification email after response (fire and forget)
+    setImmediate(() => {
+      sendVerificationEmail(email, emailVerificationToken).catch(err => {
+        console.error('Failed to send verification email:', err);
+      });
+    });
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error resending verification email"));
@@ -397,13 +367,7 @@ export const resendVerificationEmail = async (req, res, next) => {
 
 // Helper functions for sending emails
 const sendVerificationEmail = async (email, token) => {
-  console.log('🔍 Email sending debug info:');
-  console.log('  FRONTEND_URL:', process.env.FRONTEND_URL);
-  console.log('  EMAIL_USER:', process.env.EMAIL_USER);
-  console.log('  Token:', token.substring(0, 10) + '...');
-  
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
-  console.log('  Verification URL:', verificationUrl);
   
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -419,11 +383,7 @@ const sendVerificationEmail = async (email, token) => {
     `
   };
 
-  console.log('📤 Sending email via Gmail transporter...');
-  const result = await transporter.sendMail(mailOptions);
-  console.log(`✅ Verification email sent successfully to: ${email}`);
-  console.log('📬 Email response:', JSON.stringify(result, null, 2));
-  return result;
+  await transporter.sendMail(mailOptions);
 };
 
 const sendPasswordResetEmail = async (email, token) => {
@@ -478,6 +438,26 @@ export const logoutUser = async (req, res, next) => {
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error logging out"));
+  }
+};
+
+export const getCurrentUser = async (req, res, next) => {
+  try {
+    // This endpoint is called with verifyToken middleware
+    // So req.user is already set
+    if (!req.user) {
+      return next(new ApiError(401, "Not authenticated"));
+    }
+
+    // Return user data without sensitive fields
+    const { password, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, accessToken, sessionToken, ...userWithoutPassword } = req.user;
+    
+    return res.status(200).json(
+      new ApiResponse(200, userWithoutPassword, "User data retrieved")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error getting user"));
   }
 };
 

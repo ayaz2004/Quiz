@@ -4,18 +4,16 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: 'https://quiz-d4de.onrender.com',
   timeout: 10000,
+  withCredentials: true, // Enable sending cookies with requests
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
+// Request interceptor - No longer need to manually add token
+// Cookies are sent automatically with withCredentials: true
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => {
@@ -28,9 +26,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Unauthorized - clear auth data and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // Unauthorized - redirect to login
+      // Cookies will be cleared by calling the logout endpoint
       window.location.href = '/signin';
     }
     return Promise.reject(error);
