@@ -11,6 +11,12 @@ export { default as SearchAndSort } from './quizzes/SearchAndSort';
 export { default as QuizGrid } from './quizzes/QuizGrid';
 export { default as StatsBar } from './quizzes/StatsBar';
 
+// Quiz Taking Components
+export { default as QuizTimer } from './quiz/QuizTimer';
+export { default as QuizProgress } from './quiz/QuizProgress';
+export { default as QuestionCard } from './quiz/QuestionCard';
+export { default as QuizNavigation } from './quiz/QuizNavigation';
+
 // Navbar Subcomponents (Modular - Used in Header)
 export { default as NavLink } from './navbar/NavLink';
 export { default as NavLinks } from './navbar/NavLinks';

@@ -66,8 +66,8 @@ const Quizzes = () => {
   const fetchMyQuizzes = async () => {
     try {
       const response = await getMyQuizzes();
-      // API returns { success: true, data: [...quizzes...] }
-      const quizzes = Array.isArray(response.data) ? response.data : [];
+      // API returns { success: true, data: { quizzes: [...], total: n } }
+      const quizzes = response.data?.quizzes || [];
       setMyQuizzes(quizzes);
     } catch (error) {
       console.error('Error fetching my quizzes:', error);

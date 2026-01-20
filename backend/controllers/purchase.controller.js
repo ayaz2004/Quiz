@@ -262,7 +262,7 @@ export const checkUserAccess = async (req, res, next) => {
 };
 
 /**
- * API 4: Get all purchased quizzes (simplified list)
+ * API 4: Get all accessible quizzes (free + purchased)
  * GET /api/purchase/my-quizzes
  * Requires authentication
  */
@@ -270,51 +270,65 @@ export const getMyQuizzes = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
+    // Get all active quizzes
+    const allQuizzes = await prisma.quiz.findMany({
+      where: { 
+        isActive: true
+      },
+      select: {
+        id: true,
+        title: true,
+        subject: true,
+        examYear: true,
+        prize: true,
+        isPaid: true,
+        _count: {
+          select: { questions: true }
+        }
+      }
+    });
+
+    // Get purchased quiz IDs
     const purchases = await prisma.purchase.findMany({
       where: { 
         userId,
         status: "completed"
       },
-      include: {
-        quiz: {
-          where: { isActive: true },
-          select: {
-            id: true,
-            title: true,
-            subject: true,
-            examYear: true,
-            prize: true,
-            _count: {
-              select: { questions: true }
-            }
-          }
-        }
-      },
-      orderBy: {
-        purchasedAt: 'desc'
+      select: {
+        quizId: true,
+        purchasedAt: true
       }
     });
 
-    const myQuizzes = purchases
-      .filter(p => p.quiz !== null)
-      .map(purchase => ({
-        quizId: purchase.quiz.id,
-        title: purchase.quiz.title,
-        subject: purchase.quiz.subject,
-        examYear: purchase.quiz.examYear,
-        prize: purchase.quiz.prize,
-        questionCount: purchase.quiz._count.questions,
-        purchasedAt: purchase.purchasedAt
+    const purchasedQuizIds = new Set(purchases.map(p => p.quizId));
+    const purchaseDateMap = {};
+    purchases.forEach(p => {
+      purchaseDateMap[p.quizId] = p.purchasedAt;
+    });
+
+    // Filter accessible quizzes (free or purchased)
+    const accessibleQuizzes = allQuizzes
+      .filter(quiz => !quiz.isPaid || purchasedQuizIds.has(quiz.id))
+      .map(quiz => ({
+        id: quiz.id,
+        title: quiz.title,
+        subject: quiz.subject,
+        examYear: quiz.examYear,
+        prize: quiz.prize,
+        questionCount: quiz._count.questions,
+        isPaid: quiz.isPaid,
+        isPurchased: purchasedQuizIds.has(quiz.id),
+        accessDate: quiz.isPaid ? purchaseDateMap[quiz.id] : null
       }));
 
     res.status(200).json(
       new ApiResponse(200, {
-        quizzes: myQuizzes,
-        totalPurchased: myQuizzes.length
-      }, "Your purchased quizzes fetched successfully")
+        quizzes: accessibleQuizzes,
+        total: accessibleQuizzes.length
+      }, "Accessible quizzes fetched successfully")
     );
 
   } catch (error) {
-    next(new ApiError(500, error.message || "Error fetching your quizzes"));
+    next(new ApiError(500, error.message || "Error fetching quizzes"));
   }
 };

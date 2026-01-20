@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Quizzes from './pages/Quizzes';
+import TakeQuiz from './pages/TakeQuiz';
+import QuizResult from './pages/QuizResult';
 import Attempts from './pages/Attempts';
 import Leaderboard from './pages/Leaderboard';
 import About from './pages/About';
@@ -26,6 +28,16 @@ export default function App() {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password/:token" element={<ResetPassword />} />
           <Route path="quizzes" element={<Quizzes />} />
+          <Route path="quiz/:quizId" element={
+            <ProtectedRoute>
+              <TakeQuiz />
+            </ProtectedRoute>
+          } />
+          <Route path="quiz/result/:quizId" element={
+            <ProtectedRoute>
+              <QuizResult />
+            </ProtectedRoute>
+          } />
           <Route path="attempts" element={
             <ProtectedRoute>
               <Attempts />

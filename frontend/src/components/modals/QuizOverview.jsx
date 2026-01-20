@@ -69,7 +69,8 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
     }
 
     // Start the quiz (navigate to quiz page)
-    navigate(`/quiz/${quiz.id}/start`);
+    onClose(); // Close modal first
+    navigate(`/quiz/${quiz.id}`);
   };
 
   const getButtonText = () => {
