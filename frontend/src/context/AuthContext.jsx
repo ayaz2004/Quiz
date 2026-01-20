@@ -113,12 +113,19 @@ export const AuthProvider = ({ children }) => {
       await axios.post('https://quiz-d4de.onrender.com/api/users/logout', {}, {
         withCredentials: true
       });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Clear local state regardless of backend response
+      
+      // Clear local state
       setUser(null);
       setIsAuthenticated(false);
+      
+      // Force reload to clear any cached data
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Clear local state even if backend fails
+      setUser(null);
+      setIsAuthenticated(false);
+      window.location.href = '/';
     }
   };
 
