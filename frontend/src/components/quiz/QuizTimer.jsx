@@ -7,19 +7,23 @@ const QuizTimer = ({ onTimeUpdate, isActive = true }) => {
   const { isDark } = useTheme();
   const [seconds, setSeconds] = useState(0);
 
+  // Update timer every second
   useEffect(() => {
     let interval = null;
     if (isActive) {
       interval = setInterval(() => {
-        setSeconds(prev => {
-          const newTime = prev + 1;
-          onTimeUpdate(newTime);
-          return newTime;
-        });
+        setSeconds(prev => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isActive, onTimeUpdate]);
+  }, [isActive]);
+
+  // Notify parent of time changes
+  useEffect(() => {
+    if (onTimeUpdate) {
+      onTimeUpdate(seconds);
+    }
+  }, [seconds, onTimeUpdate]);
 
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);

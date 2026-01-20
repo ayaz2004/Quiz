@@ -37,8 +37,10 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      // User is not authenticated or session expired
-      console.error('Auth check failed:', error);
+      // 403/401 errors are expected when user is not logged in - don't log as errors
+      if (error.response?.status !== 403 && error.response?.status !== 401) {
+        console.error('Auth check failed:', error);
+      }
       setUser(null);
       setIsAuthenticated(false);
     } finally {
