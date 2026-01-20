@@ -5,6 +5,12 @@ export { default as QuizCard } from './cards/QuizCard';
 export { default as QuizOverview } from './modals/QuizOverview';
 export { default as PurchaseModal } from './modals/PurchaseModal';
 
+// Quizzes Page Components
+export { default as FilterBar } from './quizzes/FilterBar';
+export { default as SearchAndSort } from './quizzes/SearchAndSort';
+export { default as QuizGrid } from './quizzes/QuizGrid';
+export { default as StatsBar } from './quizzes/StatsBar';
+
 // Navbar Subcomponents (Modular - Used in Header)
 export { default as NavLink } from './navbar/NavLink';
 export { default as NavLinks } from './navbar/NavLinks';

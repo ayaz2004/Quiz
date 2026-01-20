@@ -1,55 +1,243 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import { getQuizzes, getMyQuizzes } from '../utils/quizApi';
+import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview, PurchaseModal } from '../components';
+
 const Quizzes = () => {
+  const { isAuthenticated } = useAuth();
+  const [allQuizzes, setAllQuizzes] = useState([]);
+  const [filteredQuizzes, setFilteredQuizzes] = useState([]);
+  const [myQuizzes, setMyQuizzes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
+  
+  // Modal states
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [showOverview, setShowOverview] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  
+  // Unique subjects and years
+  const [subjects, setSubjects] = useState([]);
+  const [years, setYears] = useState([]);
+
+  // Fetch quizzes on mount
+  useEffect(() => {
+    fetchQuizzes();
+  }, []);
+
+  // Fetch my quizzes when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchMyQuizzes();
+    } else {
+      setMyQuizzes([]);
+    }
+  }, [isAuthenticated]);
+
+  const fetchQuizzes = async () => {
+    try {
+      setLoading(true);
+      const response = await getQuizzes();
+      // Backend returns: { success: true, data: { quizzes: [...], pagination: {...} } }
+      const quizzes = response.data?.quizzes || [];
+      setAllQuizzes(quizzes);
+      setFilteredQuizzes(quizzes);
+      
+      // Extract unique subjects and years
+      const uniqueSubjects = [...new Set(quizzes.map(q => q.subject))].filter(Boolean);
+      const uniqueYears = [...new Set(quizzes.map(q => q.examYear))].filter(Boolean).sort((a, b) => b - a);
+      setSubjects(uniqueSubjects);
+      setYears(uniqueYears);
+    } catch (error) {
+      console.error('Error fetching quizzes:', error);
+      setAllQuizzes([]);
+      setFilteredQuizzes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMyQuizzes = async () => {
+    try {
+      const response = await getMyQuizzes();
+      // API returns { success: true, data: [...quizzes...] }
+      const quizzes = Array.isArray(response.data) ? response.data : [];
+      setMyQuizzes(quizzes);
+    } catch (error) {
+      console.error('Error fetching my quizzes:', error);
+      setMyQuizzes([]);
+    }
+  };
+
+  // Apply filters whenever any filter changes
+  useEffect(() => {
+    applyFilters();
+  }, [activeFilter, searchTerm, selectedSubject, selectedYear, allQuizzes, myQuizzes]);
+
+  const applyFilters = () => {
+    // Safety check: ensure allQuizzes is an array
+    if (!Array.isArray(allQuizzes)) {
+      setFilteredQuizzes([]);
+      return;
+    }
+    
+    let filtered = [...allQuizzes];
+
+    // Filter by type (all/free/paid/purchased)
+    if (activeFilter === 'free') {
+      filtered = filtered.filter(q => !q.isPaid);
+    } else if (activeFilter === 'paid') {
+      filtered = filtered.filter(q => q.isPaid);
+    } else if (activeFilter === 'purchased') {
+      const purchasedIds = myQuizzes.map(q => q.id);
+      filtered = filtered.filter(q => purchasedIds.includes(q.id));
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(q =>
+        q.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by subject
+    if (selectedSubject) {
+      filtered = filtered.filter(q => q.subject === selectedSubject);
+    }
+
+    // Filter by year
+    if (selectedYear) {
+      filtered = filtered.filter(q => q.examYear === parseInt(selectedYear));
+    }
+
+    setFilteredQuizzes(filtered);
+  };
+
+  const handleQuizClick = (quiz) => {
+    setSelectedQuiz(quiz);
+    setShowOverview(true);
+  };
+
+  const handlePurchaseClick = (quiz) => {
+    setSelectedQuiz(quiz);
+    setShowPurchaseModal(true);
+  };
+
+  const handlePurchaseSuccess = () => {
+    setShowPurchaseModal(false);
+    fetchMyQuizzes();
+    fetchQuizzes();
+  };
+
+  // Calculate stats with safety checks
+  const stats = {
+    total: Array.isArray(allQuizzes) ? allQuizzes.length : 0,
+    free: Array.isArray(allQuizzes) ? allQuizzes.filter(q => !q.isPaid).length : 0,
+    paid: Array.isArray(allQuizzes) ? allQuizzes.filter(q => q.isPaid).length : 0,
+    purchased: Array.isArray(myQuizzes) ? myQuizzes.length : 0,
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Available Quizzes
+      {/* Page Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center"
+      >
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          Explore Quizzes
         </h1>
-        <div className="flex space-x-4">
-          <select className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-            <option>All Subjects</option>
-            <option>Mathematics</option>
-            <option>Science</option>
-            <option>English</option>
-          </select>
-          <select className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-            <option>All Years</option>
-            <option>2024</option>
-            <option>2023</option>
-            <option>2022</option>
-          </select>
-        </div>
-      </div>
+        <p className="text-gray-600 dark:text-gray-400">
+          Test your knowledge with our comprehensive quiz collection
+        </p>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((quiz) => (
-          <div key={quiz} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-            <div className="flex justify-between items-start mb-4">
-              <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
-                Mathematics
-              </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">2024</span>
-            </div>
-            
-            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-              Sample Quiz {quiz}
-            </h3>
-            
-            <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-              Test your knowledge with this comprehensive quiz covering various topics.
-            </p>
-            
-            <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <span>20 Questions</span>
-              <span>Free</span>
-            </div>
-            
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors duration-200">
-              Start Quiz
-            </button>
-          </div>
-        ))}
-      </div>
+      {/* Stats Bar */}
+      <StatsBar
+        totalQuizzes={stats.total}
+        freeCount={stats.free}
+        paidCount={stats.paid}
+        purchasedCount={stats.purchased}
+      />
+
+      {/* Filter Bar */}
+      <FilterBar
+        activeFilter={activeFilter}
+        onFilterChange={setActiveFilter}
+      />
+
+      {/* Search and Sort */}
+      <SearchAndSort
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedSubject={selectedSubject}
+        onSubjectChange={setSelectedSubject}
+        selectedYear={selectedYear}
+        onYearChange={setSelectedYear}
+        subjects={subjects}
+        years={years}
+      />
+
+      {/* Results Count */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex items-center justify-between"
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Showing <span className="font-semibold text-gray-800 dark:text-gray-200">{filteredQuizzes.length}</span> quiz{filteredQuizzes.length !== 1 ? 'zes' : ''}
+        </p>
+        {(searchTerm || selectedSubject || selectedYear || activeFilter !== 'all') && (
+          <button
+            onClick={() => {
+              setActiveFilter('all');
+              setSearchTerm('');
+              setSelectedSubject('');
+              setSelectedYear('');
+            }}
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Clear all filters
+          </button>
+        )}
+      </motion.div>
+
+      {/* Quiz Grid */}
+      <QuizGrid
+        quizzes={filteredQuizzes}
+        loading={loading}
+        onQuizClick={handleQuizClick}
+      />
+
+      {/* Modals */}
+      {showOverview && selectedQuiz && (
+        <QuizOverview
+          quiz={selectedQuiz}
+          isOpen={showOverview}
+          onClose={() => setShowOverview(false)}
+          onPurchase={() => {
+            setShowOverview(false);
+            handlePurchaseClick(selectedQuiz);
+          }}
+        />
+      )}
+
+      {showPurchaseModal && selectedQuiz && (
+        <PurchaseModal
+          quiz={selectedQuiz}
+          isOpen={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
+          onSuccess={handlePurchaseSuccess}
+        />
+      )}
     </div>
   );
 };
