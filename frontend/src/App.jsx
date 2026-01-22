@@ -8,6 +8,7 @@ import Attempts from './pages/Attempts';
 import Leaderboard from './pages/Leaderboard';
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import UserProfile from './pages/UserProfile';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import VerifyEmail from './pages/VerifyEmail';
@@ -41,6 +42,11 @@ export default function App() {
           <Route path="attempts" element={
             <ProtectedRoute>
               <Attempts />
+            </ProtectedRoute>
+          } />
+          <Route path="profile" element={
+            <ProtectedRoute>
+              <UserProfile />
             </ProtectedRoute>
           } />
           <Route path="leaderboard" element={<Leaderboard />} />

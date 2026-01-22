@@ -134,20 +134,24 @@ const Header = () => {
                     </p>
                   </div>
                 </div>
-                {user?.isAdmin && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setShowMobileMenu(false)}
-                    className={`block px-4 py-2 mt-2 text-sm rounded-lg ${isDark ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
+                <Link
+                  to={user?.isAdmin ? "/admin?tab=profile" : "/profile"}
+                  onClick={() => setShowMobileMenu(false)}
+                  className={`flex items-center space-x-2 px-4 py-2 mt-2 text-sm rounded-lg ${isDark ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>Profile</span>
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className={`w-full text-left px-4 py-2 mt-2 text-sm text-red-600 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  className={`w-full text-left px-4 py-2 mt-2 text-sm text-red-600 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} flex items-center space-x-2`}
                 >
-                  Sign Out
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span>Sign Out</span>
                 </button>
               </div>
             ) : (

@@ -1,19 +1,30 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { addQuiz, updateQuiz, getAllUsers, deleteUser, getAllQuizzes, deleteQuiz, getQuizById } from '../utils/adminApi';
 import MessageAlert from '../components/admin/MessageAlert';
-import TabNavigation from '../components/admin/TabNavigation';
+import DashSidebar from '../components/admin/DashSidebar';
+import DashProfile from '../components/admin/DashProfile';
+import DashOverview from '../components/admin/DashOverview';
 import QuizForm from '../components/admin/QuizForm';
 import QuizList from '../components/admin/QuizList';
 import UserList from '../components/admin/UserList';
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('quizzes');
+  const location = useLocation();
+  const [tab, setTab] = useState('');
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+
+  // Update tab based on URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tabFromUrl = urlParams.get('tab');
+    setTab(tabFromUrl || '');
+  }, [location.search]);
 
   // Quiz form state
   const [quizForm, setQuizForm] = useState({
@@ -31,12 +42,12 @@ const AdminDashboard = () => {
   const [editingQuizId, setEditingQuizId] = useState(null);
 
   useEffect(() => {
-    if (activeTab === 'users') {
+    if (tab === 'users') {
       fetchUsers();
-    } else if (activeTab === 'viewQuizzes') {
+    } else if (tab === 'viewQuizzes') {
       fetchQuizzes();
     }
-  }, [activeTab, currentPage]);
+  }, [tab, currentPage]);
 
   const fetchUsers = async () => {
     try {
@@ -249,67 +260,103 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage quizzes and users
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900">
+      {/* Sidebar */}
+      <div className="md:w-64 flex-shrink-0">
+        <DashSidebar />
+      </div>
 
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Message Alert */}
-        <MessageAlert message={message} />
+        {message.text && (
+          <div className="p-4 md:p-6">
+            <MessageAlert message={message} />
+          </div>
+        )}
 
-        {/* Tabs */}
-        <TabNavigation 
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          setCurrentPage={setCurrentPage}
-        />
+        {/* Tab Content */}
+        {/* Overview/Dashboard */}
+        {(!tab || tab === '') && <DashOverview />}
+
+        {/* Profile */}
+        {tab === 'profile' && <DashProfile />}
 
         {/* Quiz Management Tab */}
-        {activeTab === 'quizzes' && (
-          <QuizForm
-            quizForm={quizForm}
-            setQuizForm={setQuizForm}
-            editingQuizId={editingQuizId}
-            setEditingQuizId={setEditingQuizId}
-            loading={loading}
-            onSubmit={handleSubmitQuiz}
-            onAddQuestion={handleAddQuestion}
-            onQuestionChange={handleQuestionChange}
-            onImageUpload={handleImageUpload}
-            onRemoveQuestion={handleRemoveQuestion}
-          />
+        {tab === 'quizzes' && (
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Add/Edit Quiz
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Create new quizzes or edit existing ones
+                </p>
+              </div>
+              <QuizForm
+                quizForm={quizForm}
+                setQuizForm={setQuizForm}
+                editingQuizId={editingQuizId}
+                setEditingQuizId={setEditingQuizId}
+                loading={loading}
+                onSubmit={handleSubmitQuiz}
+                onAddQuestion={handleAddQuestion}
+                onQuestionChange={handleQuestionChange}
+                onImageUpload={handleImageUpload}
+                onRemoveQuestion={handleRemoveQuestion}
+              />
+            </div>
+          </div>
         )}
 
         {/* View All Quizzes Tab */}
-        {activeTab === 'viewQuizzes' && (
-          <QuizList
-            quizzes={quizzes}
-            loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-            onEdit={handleEditQuiz}
-            onDelete={handleDeleteQuiz}
-          />
+        {tab === 'viewQuizzes' && (
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  All Quizzes
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  View and manage all quizzes in the platform
+                </p>
+              </div>
+              <QuizList
+                quizzes={quizzes}
+                loading={loading}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+                onEdit={handleEditQuiz}
+                onDelete={handleDeleteQuiz}
+              />
+            </div>
+          </div>
         )}
 
         {/* User Management Tab */}
-        {activeTab === 'users' && (
-          <UserList
-            users={users}
-            loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-            onDelete={handleDeleteUser}
-          />
+        {tab === 'users' && (
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Manage Users
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  View and manage user accounts
+                </p>
+              </div>
+              <UserList
+                users={users}
+                loading={loading}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+                onDelete={handleDeleteUser}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>
