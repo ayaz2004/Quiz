@@ -16,6 +16,7 @@ const Home = () => {
   const [showOverview, setShowOverview] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [purchaseQuiz, setPurchaseQuiz] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchQuizzes();
@@ -24,6 +25,7 @@ const Home = () => {
   const fetchQuizzes = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await getQuizzes({ limit: 20 });
       
       if (response.success) {
@@ -38,6 +40,15 @@ const Home = () => {
       }
     } catch (error) {
       console.error('Error fetching quizzes:', error);
+      
+      // Set user-friendly error message
+      if (error.code === 'ECONNABORTED') {
+        setError('The server is taking longer than usual to respond. This may be due to the free hosting service waking up. Please wait a moment and try again.');
+      } else if (error.message?.includes('Network Error')) {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        setError('Failed to load quizzes. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
@@ -154,6 +165,27 @@ const Home = () => {
                 <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             ))}
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-8">
+            <div className="flex flex-col items-center text-center gap-4">
+              <svg className="w-16 h-16 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h3 className="text-xl font-bold text-red-800 dark:text-red-200 mb-2">Failed to Load Quizzes</h3>
+                <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+              </div>
+              <button
+                onClick={() => fetchQuizzes()}
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Try Again
+              </button>
+            </div>
           </div>
         ) : freeQuizzes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

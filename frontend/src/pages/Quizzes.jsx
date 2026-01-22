@@ -25,6 +25,9 @@ const Quizzes = () => {
   // Unique subjects and years
   const [subjects, setSubjects] = useState([]);
   const [years, setYears] = useState([]);
+  
+  // Error state
+  const [error, setError] = useState(null);
 
   // Fetch quizzes on mount
   useEffect(() => {
@@ -43,6 +46,7 @@ const Quizzes = () => {
   const fetchQuizzes = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await getQuizzes();
       // Backend returns: { success: true, data: { quizzes: [...], pagination: {...} } }
       const quizzes = response.data?.quizzes || [];
@@ -56,6 +60,16 @@ const Quizzes = () => {
       setYears(uniqueYears);
     } catch (error) {
       console.error('Error fetching quizzes:', error);
+      
+      // Set user-friendly error message
+      if (error.code === 'ECONNABORTED') {
+        setError('The server is taking longer than usual to respond. This may be due to the free hosting service waking up. Please wait a moment and try again.');
+      } else if (error.message?.includes('Network Error')) {
+        setError('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        setError('Failed to load quizzes. Please try again later.');
+      }
+      
       setAllQuizzes([]);
       setFilteredQuizzes([]);
     } finally {
@@ -209,6 +223,34 @@ const Quizzes = () => {
           </button>
         )}
       </motion.div>
+
+      {/* Error Message */}
+      {error && !loading && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6"
+        >
+          <div className="flex items-start gap-3">
+            <svg className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="flex-1">
+              <h3 className="text-red-800 dark:text-red-200 font-semibold mb-1">Failed to Load Quizzes</h3>
+              <p className="text-red-700 dark:text-red-300 text-sm mb-3">{error}</p>
+              <button
+                onClick={() => fetchQuizzes()}
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Try Again
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Quiz Grid */}
       <QuizGrid
