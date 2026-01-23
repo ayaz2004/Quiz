@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import gsap from 'gsap';
 import { useAuth } from '../context/AuthContext';
 import { getQuizzes } from '../utils/quizApi';
 import QuizCard from '../components/cards/QuizCard';
@@ -9,6 +10,7 @@ import PurchaseModal from '../components/modals/PurchaseModal';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
+  const heroRef = useRef(null);
   const [freeQuizzes, setFreeQuizzes] = useState([]);
   const [paidQuizzes, setPaidQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,50 @@ const Home = () => {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [purchaseQuiz, setPurchaseQuiz] = useState(null);
   const [error, setError] = useState(null);
+
+  // GSAP Animation for Hero Background
+  useEffect(() => {
+    if (!heroRef.current) return;
+
+    // Get all animated elements
+    const blobs = heroRef.current.querySelectorAll('[data-blob]');
+    const particles = heroRef.current.querySelectorAll('[data-particle]');
+
+    // Create timeline for blob animations
+    const timeline = gsap.timeline({ repeat: -1 });
+
+    blobs.forEach((blob, index) => {
+      timeline.to(
+        blob,
+        {
+          duration: 4 + index,
+          x: Math.sin(index) * 100,
+          y: Math.cos(index) * 100,
+          rotation: 360,
+          opacity: 0.3,
+          ease: 'sine.inOut',
+        },
+        0
+      );
+    });
+
+    // Animate particles with stagger
+    gsap.to(particles, {
+      duration: 1.5,
+      y: -20,
+      opacity: 0.8,
+      stagger: {
+        each: 0.05,
+        repeat: -1,
+        yoyo: true,
+      },
+      ease: 'power1.inOut',
+    });
+
+    return () => {
+      timeline.kill();
+    };
+  }, []);
 
   useEffect(() => {
     fetchQuizzes();
@@ -74,53 +120,159 @@ const Home = () => {
 
   return (
     <div className="space-y-12">
-      {/* Hero Section */}
+      {/* Hero Section -  */}
       <motion.section 
+        ref={heroRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-2xl p-8 md:p-12 text-white shadow-2xl overflow-hidden"
+        className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 md:p-16 lg:p-20 text-gray-900 shadow-2xl overflow-hidden min-h-[500px] flex flex-col justify-between border border-white/40"
       >
-        {/* Animated background patterns */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl transform translate-x-1/2 translate-y-1/2"></div>
+        {/* OLD CODE - Previous Framer Motion version:
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div animate={{ x: [0, 30, 0], y: [0, 20, 0] }} ... />
+          <motion.div animate={{ x: [0, -30, 0], y: [0, -20, 0] }} ... />
+          <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }} ... />
+        </div>
+        */}
+
+        {/* NEW CODE - GSAP Animated Background */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Subtle Academic Pattern Background */}
+          <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+            <defs>
+              <pattern id="academicPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                {/* Diagonal lines */}
+                <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(59, 130, 246, 0.08)" strokeWidth="1" />
+                <line x1="100" y1="0" x2="0" y2="100" stroke="rgba(59, 130, 246, 0.08)" strokeWidth="1" />
+                
+                {/* Small circles at corners */}
+                <circle cx="0" cy="0" r="2" fill="rgba(59, 130, 246, 0.12)" />
+                <circle cx="100" cy="100" r="2" fill="rgba(59, 130, 246, 0.12)" />
+                
+                {/* Subtle grid */}
+                <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(139, 92, 246, 0.05)" strokeWidth="0.5" />
+                <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(139, 92, 246, 0.05)" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#academicPattern)" />
+          </svg>
+
+          {/* Animated Blobs with GSAP */}
+          <div
+            data-blob
+            className="absolute top-0 left-0 w-72 h-72 bg-blue-300 rounded-full blur-3xl opacity-20"
+          ></div>
+          <div
+            data-blob
+            className="absolute bottom-10 right-10 w-96 h-96 bg-purple-300 rounded-full blur-3xl opacity-15"
+          ></div>
+          <div
+            data-blob
+            className="absolute top-1/2 left-1/2 w-80 h-80 bg-blue-200 rounded-full blur-3xl opacity-15"
+          ></div>
+
+          {/* Animated Particles with GSAP */}
+          {[...Array(30)].map((_, i) => (
+            <div
+              key={i}
+              data-particle
+              className="absolute w-2 h-2 bg-blue-400 rounded-full opacity-0"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+            ></div>
+          ))}
         </div>
         
         <div className="relative z-10">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4"
+          {/* Badge/Tag */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="inline-block mb-6"
           >
-            Welcome to JMI Quiz Platform
+            <span className="px-4 py-2 bg-blue-100/60 backdrop-blur-md text-blue-700 text-sm font-semibold rounded-full border border-blue-300/50 hover:bg-blue-100/80 transition-all">
+              ✨ Master Your Skills
+            </span>
+          </motion.div>
+
+          {/* Main Heading */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight"
+          >
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-blue-700 to-purple-600">
+              Master Your Knowledge
+            </span>
+            <br />
+            <span className="text-gray-800">with JMI Quiz Platform</span>
           </motion.h1>
+
+          {/* Subheading */}
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-lg md:text-xl mb-8 max-w-2xl text-blue-50"
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="text-lg md:text-xl max-w-3xl text-gray-600 font-medium leading-relaxed mb-10"
           >
-            Test your knowledge, track your progress, and compete with others. 
-            Access free quizzes or unlock premium content!
+            Challenge yourself with premium quizzes, track your progress, compete on leaderboards, and unlock your full potential. 
+            Start with free quizzes or go premium for exclusive content.
           </motion.p>
+
+          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="flex flex-wrap gap-4"
           >
             <Link 
               to={isAuthenticated ? "/quizzes" : "/signup"}
-              className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="group inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-1"
             >
-              {isAuthenticated ? "Browse All Quizzes" : "Get Started"}
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              {isAuthenticated ? "Browse All Quizzes" : "Start Your Journey"}
+              <motion.span
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </motion.span>
             </Link>
+            
+            {isAuthenticated && (
+              <Link 
+                to="/leaderboard"
+                className="group inline-flex items-center justify-center gap-2 bg-purple-100/70 backdrop-blur-md text-purple-700 px-8 py-4 rounded-xl font-bold text-lg border border-purple-300/50 hover:bg-purple-100 hover:border-purple-400 transition-all duration-300 shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Check Leaderboard
+              </Link>
+            )}
           </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="relative z-10 flex justify-center mt-12"
+        >
+          <div className="text-gray-600 text-sm font-medium flex flex-col items-center gap-2">
+            <span>Scroll to explore</span>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+        </motion.div>
       </motion.section>
 
       {/* Free Quizzes Section */}
