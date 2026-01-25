@@ -173,3 +173,20 @@ export const getQuizById = async (quizId) => {
     throw error;
   }
 };
+
+/**
+ * Get dashboard statistics
+ * @returns {Promise} API response with dashboard stats
+ */
+export const getDashboardStats = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/admin/dashboard-stats`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get Dashboard Stats Error:", error.response?.data || error.message);
+    throw error;
+  }
+};

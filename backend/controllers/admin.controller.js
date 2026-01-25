@@ -263,3 +263,73 @@ export const deleteUser = async (req, res, next) => {
     return next(new ApiError(500, error.message || "Error deleting user"));
   }
 };
+
+/**
+ * Get dashboard statistics
+ * @route GET /api/admin/dashboard-stats
+ * @access Admin only
+ */
+export const getDashboardStats = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can view dashboard stats"));
+    }
+
+    // Get all statistics in parallel
+    const [totalUsers, totalQuizzes, freeQuizzes, paidQuizzes, totalAttempts, recentActiveUsers] = await Promise.all([
+      // Total users count
+      prisma.user.count(),
+      
+      // Total quizzes count
+      prisma.quiz.count(),
+      
+      // Free quizzes count
+      prisma.quiz.count({
+        where: { isPaid: false }
+      }),
+      
+      // Paid quizzes count
+      prisma.quiz.count({
+        where: { isPaid: true }
+      }),
+      
+      // Total quiz attempts
+      prisma.quizAttempt.count(),
+      
+      // Active users (users who made attempts in last 30 days)
+      prisma.quizAttempt.findMany({
+        where: {
+          attemptedAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+          }
+        },
+        select: {
+          userId: true
+        },
+        distinct: ['userId']
+      })
+    ]);
+
+    const activeUsers = recentActiveUsers.length;
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          totalUsers,
+          totalQuizzes,
+          freeQuizzes,
+          paidQuizzes,
+          totalAttempts,
+          activeUsers
+        },
+        "Dashboard stats retrieved successfully"
+      )
+    );
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error);
+    return next(new ApiError(500, error.message || "Error retrieving dashboard stats"));
+  }
+};

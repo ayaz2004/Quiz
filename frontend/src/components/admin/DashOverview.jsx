@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { Link } from 'react-router-dom';
+import { getDashboardStats } from '../../utils/adminApi';
 
 const DashOverview = () => {
   const { isDark } = useTheme();
@@ -20,22 +21,21 @@ const DashOverview = () => {
 
   const fetchStats = async () => {
     try {
-      // TODO: Implement API call to fetch stats
-      // const response = await getAdminStats();
+      const response = await getDashboardStats();
       
-      // Simulate API call with mock data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setStats({
-        totalQuizzes: 24,
-        totalUsers: 156,
-        totalAttempts: 892,
-        freeQuizzes: 18,
-        paidQuizzes: 6,
-        activeUsers: 89
-      });
+      if (response.success && response.data) {
+        setStats({
+          totalQuizzes: response.data.totalQuizzes,
+          totalUsers: response.data.totalUsers,
+          totalAttempts: response.data.totalAttempts,
+          freeQuizzes: response.data.freeQuizzes,
+          paidQuizzes: response.data.paidQuizzes,
+          activeUsers: response.data.activeUsers
+        });
+      }
     } catch (error) {
       console.error('Error fetching stats:', error);
+      // Keep default values if API fails
     } finally {
       setLoading(false);
     }
