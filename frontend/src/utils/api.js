@@ -40,4 +40,8 @@ export const forgotPassword = (email) => api.post('/api/users/forgot-password', 
 export const resetPassword = (token, password) => api.post(`/api/users/reset-password/${token}`, { password });
 export const resendVerification = (email) => api.post('/api/users/resend-verification', { email });
 
+// Profile API functions
+export const updateProfile = (data) => api.put('/api/users/update-profile', data);
+export const changePassword = (data) => api.put('/api/users/change-password', data);
+
 export default api;

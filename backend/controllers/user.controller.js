@@ -461,4 +461,94 @@ export const getCurrentUser = async (req, res, next) => {
   }
 };
 
+export const updateProfile = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return next(new ApiError(401, "Not authenticated"));
+    }
 
+    const { email, profilePhoto } = req.body;
+
+    // Validate input
+    if (!email && !profilePhoto) {
+      return next(new ApiError(400, "At least one field (email or profilePhoto) is required"));
+    }
+
+    // Check if email is already taken by another user
+    if (email && email !== req.user.email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
+      });
+
+      if (existingUser) {
+        return next(new ApiError(409, "Email is already in use"));
+      }
+    }
+
+    // Update user
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        ...(email && { email }),
+        ...(profilePhoto && { profilePhoto })
+      }
+    });
+
+    // Return updated user without sensitive fields
+    const { password, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, accessToken, sessionToken, ...userWithoutPassword } = updatedUser;
+
+    return res.status(200).json(
+      new ApiResponse(200, userWithoutPassword, "Profile updated successfully")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error updating profile"));
+  }
+};
+
+export const changePassword = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return next(new ApiError(401, "Not authenticated"));
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      return next(new ApiError(400, "Current password and new password are required"));
+    }
+
+    if (newPassword.length < 6) {
+      return next(new ApiError(400, "New password must be at least 6 characters"));
+    }
+
+    // Get user with password
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id }
+    });
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isPasswordValid) {
+      return next(new ApiError(401, "Current password is incorrect"));
+    }
+
+    // Hash new password
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+    // Update password
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { password: hashedPassword }
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, null, "Password changed successfully")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error changing password"));
+  }
+};

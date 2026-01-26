@@ -20,11 +20,19 @@ const UserMenu = ({ user, onLogout }) => {
           isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-200'
         }`}
       >
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-          {user?.username?.charAt(0).toUpperCase() || 'U'}
-        </div>
+        {user?.profilePhoto ? (
+          <img
+            src={user.profilePhoto}
+            alt="Profile"
+            className="w-8 h-8 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+            {user?.email?.charAt(0).toUpperCase() || 'U'}
+          </div>
+        )}
         <span className={`text-sm font-medium hidden sm:block ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-          {user?.username}
+          {user?.email?.split('@')[0] || 'User'}
         </span>
         <svg 
           className={`w-4 h-4 transition-transform ${showMenu ? 'rotate-180' : ''} ${isDark ? 'text-gray-400' : 'text-gray-500'}`} 
@@ -48,7 +56,7 @@ const UserMenu = ({ user, onLogout }) => {
           }`}>
             <div className={`px-4 py-3 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
               <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>
-                {user?.username}
+                {user?.email?.split('@')[0] || 'User'}
               </p>
               <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} truncate`}>
                 {user?.email}
@@ -88,9 +96,9 @@ const UserMenu = ({ user, onLogout }) => {
 
 UserMenu.propTypes = {
   user: PropTypes.shape({
-    username: PropTypes.string,
     email: PropTypes.string,
-    isAdmin: PropTypes.bool,
+    profilePhoto: PropTypes.string,
+    isAdmin: PropTypes.number,
   }),
   onLogout: PropTypes.func.isRequired,
 };
