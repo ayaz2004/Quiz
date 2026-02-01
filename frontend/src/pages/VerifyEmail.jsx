@@ -23,6 +23,9 @@ const VerifyEmail = () => {
 
     if (token) {
       verify();
+    } else {
+      setStatus('error');
+      setMessage('No verification token provided.');
     }
   }, [token]);
 

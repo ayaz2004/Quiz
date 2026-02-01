@@ -194,22 +194,36 @@ export const verifyEmail = async (req, res, next) => {
   try {
     const { token } = req.params;
 
-    const user = await prisma.user.findFirst({
+    if (!token) {
+      return next(new ApiError(400, "Verification token is required"));
+    }
+
+    // First, check if user exists with this token (regardless of expiration)
+    const userWithToken = await prisma.user.findFirst({
       where: {
-        emailVerificationToken: token,
-        emailVerificationExpires: {
-          gt: new Date()
-        }
+        emailVerificationToken: token
       }
     });
 
-    if (!user) {
-      return next(new ApiError(400, "Invalid or expired verification token"));
+    if (!userWithToken) {
+      return next(new ApiError(400, "Invalid verification token. The link may be incorrect."));
+    }
+
+    // Check if token is expired
+    if (userWithToken.emailVerificationExpires < new Date()) {
+      return next(new ApiError(400, "Verification token has expired. Please request a new verification email."));
+    }
+
+    // Check if already verified
+    if (userWithToken.isEmailVerified) {
+      return res.status(200).json(
+        new ApiResponse(200, null, "Email is already verified. You can sign in now.")
+      );
     }
 
     // Update user as verified
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: userWithToken.id },
       data: {
         isEmailVerified: true,
         emailVerificationToken: null,
@@ -218,7 +232,7 @@ export const verifyEmail = async (req, res, next) => {
     });
 
     res.status(200).json(
-      new ApiResponse(200, null, "Email verified successfully")
+      new ApiResponse(200, null, "Email verified successfully! You can now sign in.")
     );
 
   } catch (error) {
