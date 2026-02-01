@@ -3,6 +3,7 @@ import {
   getAllUsers,
   addQuiz,
   deleteUser,
+  deleteQuiz,
   updateQuiz,
   getDashboardStats,
 } from "../controllers/admin.controller.js";
@@ -49,6 +50,12 @@ router.delete(
     "/delete-user/:userId",
     verifyToken,
      deleteUser
+);
+
+router.delete(
+    "/delete-quiz/:quizId",
+    verifyToken,
+    deleteQuiz
 );
 
 export default router;

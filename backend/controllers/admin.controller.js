@@ -267,6 +267,44 @@ export const deleteUser = async (req, res, next) => {
 };
 
 /**
+ * Delete a quiz by ID
+ * @route DELETE /api/admin/delete-quiz/:quizId
+ * @access Admin only
+ */
+export const deleteQuiz = async (req, res, next) => {
+  try {
+    const { quizId } = req.params;
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can delete quizzes"));
+    }
+
+    // Check if quiz exists
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: parseInt(quizId) },
+      include: { questions: true }
+    });
+
+    if (!quiz) {
+      return next(new ApiError(404, "Quiz not found"));
+    }
+
+    // Delete quiz (questions will be deleted automatically due to cascade)
+    await prisma.quiz.delete({
+      where: { id: parseInt(quizId) }
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, null, "Quiz deleted successfully"));
+  } catch (error) {
+    console.error("Delete Quiz Error:", error);
+    return next(new ApiError(500, error.message || "Error deleting quiz"));
+  }
+};
+
+/**
  * Get dashboard statistics
  * @route GET /api/admin/dashboard-stats
  * @access Admin only
