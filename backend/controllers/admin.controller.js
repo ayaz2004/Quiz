@@ -18,7 +18,7 @@ export const addQuiz = async (req, res, next) => {
         return next(new ApiError(403, "Only admins can add quizzes"));
     }
     const data = JSON.parse(req.body.quizData);
- 
+    console.log(data);
     const {
       title,
       description,
@@ -53,7 +53,10 @@ export const addQuiz = async (req, res, next) => {
           if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
           // }
 
-          return {
+          
+        }
+
+        return {
             questionText: q.questionText,
             option1: q.option1,
             option2: q.option2,
@@ -63,7 +66,6 @@ export const addQuiz = async (req, res, next) => {
             explanation: q.explanation || null,
             imageUrl: cloudinaryUrl || null,
           };
-        }
       })
     );
 
