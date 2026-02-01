@@ -21,7 +21,6 @@ const About = () => {
         <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-6">
           <li>Wide range of subjects and topics</li>
           <li>Real-time score tracking and analytics</li>
-          <li>Competitive leaderboards</li>
           <li>Detailed performance insights</li>
           <li>Free and premium quiz options</li>
         </ul>

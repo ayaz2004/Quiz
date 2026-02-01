@@ -220,7 +220,7 @@ const Home = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-lg md:text-xl max-w-3xl text-gray-600 font-medium leading-relaxed mb-10"
           >
-            Challenge yourself with premium quizzes, track your progress, compete on leaderboards, and unlock your full potential. 
+            Challenge yourself with premium quizzes, track your progress, and unlock your full potential. 
             Start with free quizzes or go premium for exclusive content.
           </motion.p>
 
@@ -245,18 +245,6 @@ const Home = () => {
                 </svg>
               </motion.span>
             </Link>
-            
-            {isAuthenticated && (
-              <Link 
-                to="/leaderboard"
-                className="group inline-flex items-center justify-center gap-2 bg-purple-100/70 backdrop-blur-md text-purple-700 px-8 py-4 rounded-xl font-bold text-lg border border-purple-300/50 hover:bg-purple-100 hover:border-purple-400 transition-all duration-300 shadow-lg"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Check Leaderboard
-              </Link>
-            )}
           </motion.div>
         </div>
 
@@ -462,10 +450,10 @@ const Home = () => {
             </svg>
           </div>
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-            Compete & Win
+            Track Progress
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Challenge others and climb the leaderboard to win exciting prizes
+            Monitor your performance and improve with detailed analytics
           </p>
         </motion.div>
       </section>

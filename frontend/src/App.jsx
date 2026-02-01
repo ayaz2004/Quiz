@@ -5,7 +5,6 @@ import Quizzes from './pages/Quizzes';
 import TakeQuiz from './pages/TakeQuiz';
 import QuizResult from './pages/QuizResult';
 import Attempts from './pages/Attempts';
-import Leaderboard from './pages/Leaderboard';
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
 import UserProfile from './pages/UserProfile';
@@ -49,7 +48,6 @@ export default function App() {
               <UserProfile />
             </ProtectedRoute>
           } />
-          <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="about" element={<About />} />
           <Route path="admin" element={
             <ProtectedRoute>

@@ -15,7 +15,6 @@ const Header = () => {
     { name: 'Home', path: '/' },
     { name: 'Quizzes', path: '/quizzes' },
     { name: 'My Attempts', path: '/attempts', protected: true },
-    { name: 'Leaderboard', path: '/leaderboard' },
     { name: 'About', path: '/about' },
   ];
 
