@@ -5,6 +5,8 @@ import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const SignUp = () => {
   const navigate = useNavigate();
   const { isDark } = useTheme();
@@ -75,7 +77,7 @@ const SignUp = () => {
     setIsExistingUnverified(false);
     
     try {
-      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/add', {
+      const response = await axios.post(`${API_URL}/api/users/add`, {
         email: formData.email,
         password: formData.password
       });

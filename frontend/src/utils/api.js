@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: 'https://quiz-d4de.onrender.com',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 30000, // Increased to 30 seconds for cold starts on free hosting
   withCredentials: true, // Enable sending cookies with requests
   headers: {

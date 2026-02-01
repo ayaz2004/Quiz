@@ -14,7 +14,8 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://quiz-d4de.onrender.com',
+  'http://64.227.148.189:3000',
+  'http://64.227.148.189',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 

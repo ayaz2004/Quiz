@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // Configure axios defaults for cookie-based auth
 axios.defaults.withCredentials = true;
 
@@ -28,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Check authentication by calling backend endpoint
       // Backend will verify cookies and return user data
-      const response = await axios.get('https://quiz-d4de.onrender.com/api/users/me', {
+      const response = await axios.get(`${API_URL}/api/users/me`, {
         withCredentials: true
       });
       
@@ -50,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/signin', 
+      const response = await axios.post(`${API_URL}/api/users/signin`, 
         { email, password },
         { withCredentials: true }
       );
@@ -91,7 +93,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await axios.post('https://quiz-d4de.onrender.com/api/users/add', 
+      const response = await axios.post(`${API_URL}/api/users/add`, 
         userData,
         { withCredentials: true }
       );
@@ -112,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // Call backend logout endpoint to clear cookies
-      await axios.post('https://quiz-d4de.onrender.com/api/users/logout', {}, {
+      await axios.post(`${API_URL}/api/users/logout`, {}, {
         withCredentials: true
       });
       
