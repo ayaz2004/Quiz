@@ -316,7 +316,7 @@ export const submitQuizAttempt = async (req, res, next) => {
     const unanswered = totalQuestions - answers.length;
     wrongAnswers += unanswered; // Count unanswered as wrong
     const percentage = (correctAnswers / totalQuestions) * 100;
-    const score = Math.round(percentage);
+    const score = correctAnswers; // 1 point per correct answer
 
     // Save attempt to database
     const quizAttempt = await prisma.quizAttempt.create({
@@ -538,7 +538,96 @@ export const getUserStats = async (req, res, next) => {
 };
 
 /**
- * API 8: Get leaderboard for a specific quiz
+ * API 8: Get detailed result for a specific attempt
+ * GET /api/quiz/attempt-result/:attemptId
+ * Requires authentication (user must own the attempt)
+ */
+export const getAttemptResult = async (req, res, next) => {
+  try {
+    const { attemptId } = req.params;
+    const userId = req.user.id;
+
+    const attemptIdNum = parseInt(attemptId);
+
+    if (!attemptIdNum || isNaN(attemptIdNum)) {
+      return next(new ApiError(400, "Invalid attempt ID"));
+    }
+
+    // Fetch attempt with quiz and questions
+    const attempt = await prisma.quizAttempt.findUnique({
+      where: { id: attemptIdNum },
+      include: {
+        quiz: {
+          include: {
+            questions: true
+          }
+        }
+      }
+    });
+
+    if (!attempt) {
+      return next(new ApiError(404, "Attempt not found"));
+    }
+
+    // Verify user owns this attempt
+    if (attempt.userId !== userId) {
+      return next(new ApiError(403, "You don't have permission to view this attempt"));
+    }
+
+    // Parse user's answers
+    const userAnswers = JSON.parse(attempt.answers);
+
+    // Build detailed results
+    const detailedResults = attempt.quiz.questions.map(question => {
+      const userAnswer = userAnswers.find(a => a.questionId === question.id);
+      const selectedOption = userAnswer?.selectedOption || 0;
+      const isCorrect = question.isCorrect === selectedOption;
+
+      return {
+        questionId: question.id,
+        questionText: question.questionText,
+        imageUrl: question.imageUrl,
+        options: {
+          option1: question.option1,
+          option2: question.option2,
+          option3: question.option3,
+          option4: question.option4
+        },
+        userAnswer: selectedOption,
+        correctAnswer: question.isCorrect,
+        isCorrect,
+        explanation: question.explanation
+      };
+    });
+
+    res.status(200).json(
+      new ApiResponse(200, {
+        attemptId: attempt.id,
+        quiz: {
+          id: attempt.quiz.id,
+          title: attempt.quiz.title,
+          subject: attempt.quiz.subject,
+          examYear: attempt.quiz.examYear,
+          description: attempt.quiz.description
+        },
+        score: attempt.score,
+        totalQuestions: attempt.totalQuestions,
+        correctAnswers: attempt.correctAnswers,
+        wrongAnswers: attempt.wrongAnswers,
+        percentage: attempt.percentage,
+        timeTaken: attempt.timeTaken,
+        attemptedAt: attempt.attemptedAt,
+        results: detailedResults
+      }, "Attempt result fetched successfully")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error fetching attempt result"));
+  }
+};
+
+/**
+ * API 9: Get leaderboard for a specific quiz
  * GET /api/quiz/leaderboard/:quizId
  * Query params: limit (default: 10)
  */

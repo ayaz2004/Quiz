@@ -2,29 +2,85 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { useEffect, useState } from 'react';
+import { getAttemptResult } from '../utils/quizApi';
 
 const QuizResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { quizId } = useParams();
+  const { quizId } = useParams(); // This is actually attemptId or quizId depending on route
   const { isDark } = useTheme();
   
   const [showDetails, setShowDetails] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [resultData, setResultData] = useState(null);
   
-  const results = location.state?.results;
-  const quiz = location.state?.quiz;
+  // Data from navigation state (when coming from TakeQuiz)
+  const stateResults = location.state?.results;
+  const stateQuiz = location.state?.quiz;
 
   useEffect(() => {
-    if (!results || !quiz) {
+    // If we have data from state, use it
+    if (stateResults && stateQuiz) {
+      setResultData({
+        results: stateResults,
+        quiz: stateQuiz
+      });
+    } else if (quizId) {
+      // Otherwise, fetch from API using attemptId (quizId param)
+      fetchAttemptResult(quizId);
+    } else {
       navigate('/quizzes');
     }
-  }, [results, quiz, navigate]);
+  }, [quizId, stateResults, stateQuiz]);
 
-  if (!results || !quiz) {
+  const fetchAttemptResult = async (attemptId) => {
+    try {
+      setLoading(true);
+      const response = await getAttemptResult(attemptId);
+      
+      // Transform API response to match expected format
+      setResultData({
+        results: {
+          attemptId: response.data.attemptId,
+          correctAnswers: response.data.correctAnswers,
+          wrongAnswers: response.data.wrongAnswers,
+          totalQuestions: response.data.totalQuestions,
+          score: response.data.score,
+          percentage: response.data.percentage,
+          timeTaken: response.data.timeTaken,
+          attemptedAt: response.data.attemptedAt,
+          results: response.data.results
+        },
+        quiz: response.data.quiz
+      });
+    } catch (error) {
+      console.error('Error fetching attempt result:', error);
+      alert('Failed to load quiz result');
+      navigate('/attempts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            Loading results...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!resultData) {
     return null;
   }
 
-  const { correctAnswers, wrongAnswers, totalQuestions, score, percentage } = results;
+  const { results, quiz } = resultData;
+  const { correctAnswers, wrongAnswers, totalQuestions, score, percentage, timeTaken } = results;
   const unanswered = totalQuestions - (correctAnswers + wrongAnswers);
   
   const formatTime = (seconds) => {
@@ -131,7 +187,7 @@ const QuizResult = () => {
             </div>
 
             <div className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-              {score} / {totalQuestions * 4} Points
+              {score} / {totalQuestions} Points
             </div>
           </div>
 
@@ -185,6 +241,14 @@ const QuizResult = () => {
               <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Total</div>
             </motion.div>
           </div>
+
+          {timeTaken && (
+            <div className="mt-4 text-center">
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Time Taken: <span className="font-semibold">{formatTime(timeTaken)}</span>
+              </p>
+            </div>
+          )}
         </motion.div>
 
         {/* Action Buttons */}
@@ -249,82 +313,96 @@ const QuizResult = () => {
                 exit={{ opacity: 0, height: 0 }}
                 className="space-y-4"
               >
-                {results.results.map((result, index) => (
-                  <motion.div
-                    key={result.questionId}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`p-6 rounded-2xl ${
-                      isDark ? 'bg-gray-800' : 'bg-white shadow-lg'
-                    } ${
-                      result.isCorrect 
-                        ? 'border-2 border-green-500' 
-                        : result.selectedOption === 0 
-                        ? 'border-2 border-gray-500' 
-                        : 'border-2 border-red-500'
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                {results.results.map((result, index) => {
+                  const getOptionText = (optionNum) => {
+                    return result.options[`option${optionNum}`];
+                  };
+
+                  return (
+                    <motion.div
+                      key={result.questionId}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className={`p-6 rounded-2xl ${
+                        isDark ? 'bg-gray-800' : 'bg-white shadow-lg'
+                      } ${
                         result.isCorrect 
-                          ? 'bg-green-500 text-white' 
-                          : result.selectedOption === 0 
-                          ? 'bg-gray-500 text-white' 
-                          : 'bg-red-500 text-white'
-                      }`}>
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                          {quiz.questions[index].questionText}
-                        </h3>
-                        
-                        <div className="space-y-2 mb-3">
-                          {result.selectedOption > 0 && (
-                            <div className={`p-3 rounded-lg ${
-                              result.isCorrect 
-                                ? 'bg-green-500/20 border border-green-500' 
-                                : 'bg-red-500/20 border border-red-500'
-                            }`}>
-                              <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                Your Answer: {String.fromCharCode(64 + result.selectedOption)}. {
-                                  quiz.questions[index][`option${result.selectedOption}`]
-                                }
-                              </span>
-                            </div>
+                          ? 'border-2 border-green-500' 
+                          : result.userAnswer === 0 
+                          ? 'border-2 border-gray-500' 
+                          : 'border-2 border-red-500'
+                      }`}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                          result.isCorrect 
+                            ? 'bg-green-500 text-white' 
+                            : result.userAnswer === 0 
+                            ? 'bg-gray-500 text-white' 
+                            : 'bg-red-500 text-white'
+                        }`}>
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                            {result.questionText}
+                          </h3>
+
+                          {result.imageUrl && (
+                            <img 
+                              src={result.imageUrl} 
+                              alt="Question" 
+                              className="mb-3 rounded-lg max-w-md"
+                            />
                           )}
                           
-                          {result.selectedOption === 0 && (
-                            <div className="p-3 rounded-lg bg-gray-500/20 border border-gray-500">
-                              <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                Not Answered
-                              </span>
-                            </div>
-                          )}
-                          
-                          {!result.isCorrect && (
-                            <div className="p-3 rounded-lg bg-green-500/20 border border-green-500">
-                              <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                Correct Answer: {String.fromCharCode(64 + result.correctOption)}. {
-                                  quiz.questions[index][`option${result.correctOption}`]
-                                }
-                              </span>
+                          <div className="space-y-2 mb-3">
+                            {result.userAnswer > 0 && (
+                              <div className={`p-3 rounded-lg ${
+                                result.isCorrect 
+                                  ? 'bg-green-500/20 border border-green-500' 
+                                  : 'bg-red-500/20 border border-red-500'
+                              }`}>
+                                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  Your Answer: {String.fromCharCode(64 + result.userAnswer)}. {
+                                    getOptionText(result.userAnswer)
+                                  }
+                                </span>
+                              </div>
+                            )}
+                            
+                            {result.userAnswer === 0 && (
+                              <div className="p-3 rounded-lg bg-gray-500/20 border border-gray-500">
+                                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  Not Answered
+                                </span>
+                              </div>
+                            )}
+                            
+                            {!result.isCorrect && (
+                              <div className="p-3 rounded-lg bg-green-500/20 border border-green-500">
+                                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  Correct Answer: {String.fromCharCode(64 + result.correctAnswer)}. {
+                                    getOptionText(result.correctAnswer)
+                                  }
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {result.explanation && (
+                            <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
+                              <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
+                                <span className="font-semibold">Explanation:</span> {result.explanation}
+                              </p>
                             </div>
                           )}
                         </div>
-
-                        {quiz.questions[index].explanation && (
-                          <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
-                            <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
-                              <span className="font-semibold">Explanation:</span> {quiz.questions[index].explanation}
-                            </p>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </motion.div>
             )}
           </motion.div>

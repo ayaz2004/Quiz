@@ -7,6 +7,7 @@ import {
   submitQuizAttempt,
   getUserAttempts,
   getUserStats,
+  getAttemptResult,
   getQuizLeaderboard
 } from "../controllers/quiz.controller.js";
 import { verifyToken } from "../middlewares/verifyUser.js";
@@ -24,6 +25,7 @@ router.get("/leaderboard/:quizId", generalLimiter, getQuizLeaderboard);
 // Protected routes - require authentication
 router.get("/my-attempts", verifyToken, generalLimiter, getUserAttempts);
 router.get("/stats", verifyToken, generalLimiter, getUserStats);
+router.get("/attempt-result/:attemptId", verifyToken, generalLimiter, getAttemptResult);
 router.post("/attempt/:quizId", verifyToken, quizAttemptLimiter, submitQuizAttempt);
 
 // Optional auth - shows different data based on login status

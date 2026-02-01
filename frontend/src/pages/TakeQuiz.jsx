@@ -5,10 +5,10 @@ import { getQuizById } from '../utils/quizApi';
 import { submitQuizAttempt } from '../utils/quizApi';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import QuizTimer from '../components/quiz/QuizTimer';
-import QuizProgress from '../components/quiz/QuizProgress';
-import QuestionCard from '../components/quiz/QuestionCard';
-import QuizNavigation from '../components/quiz/QuizNavigation';
+import QuizTimer from '../components/quiz-player/QuizTimer';
+import QuizProgress from '../components/quiz-player/QuizProgress';
+import QuestionCard from '../components/quiz-player/QuestionCard';
+import QuizNavigation from '../components/quiz-player/QuizNavigation';
 
 const TakeQuiz = () => {
   const { quizId } = useParams();

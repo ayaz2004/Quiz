@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { useAuth } from '../context/AuthContext';
 import { getQuizzes } from '../utils/quizApi';
-import QuizCard from '../components/cards/QuizCard';
+import QuizCard from '../components/quiz-browser/QuizCard';
 import QuizOverview from '../components/modals/QuizOverview';
 import PurchaseModal from '../components/modals/PurchaseModal';
 

@@ -1,21 +1,19 @@
-// Card Components
-export { default as QuizCard } from './cards/QuizCard';
-
 // Modal Components
 export { default as QuizOverview } from './modals/QuizOverview';
 export { default as PurchaseModal } from './modals/PurchaseModal';
 
-// Quizzes Page Components
-export { default as FilterBar } from './quizzes/FilterBar';
-export { default as SearchAndSort } from './quizzes/SearchAndSort';
-export { default as QuizGrid } from './quizzes/QuizGrid';
-export { default as StatsBar } from './quizzes/StatsBar';
+// Quiz Browser Components - Browse & Select Quizzes
+export { default as QuizCard } from './quiz-browser/QuizCard';
+export { default as FilterBar } from './quiz-browser/FilterBar';
+export { default as SearchAndSort } from './quiz-browser/SearchAndSort';
+export { default as QuizGrid } from './quiz-browser/QuizGrid';
+export { default as StatsBar } from './quiz-browser/StatsBar';
 
-// Quiz Taking Components
-export { default as QuizTimer } from './quiz/QuizTimer';
-export { default as QuizProgress } from './quiz/QuizProgress';
-export { default as QuestionCard } from './quiz/QuestionCard';
-export { default as QuizNavigation } from './quiz/QuizNavigation';
+// Quiz Player Components - Active Quiz Session
+export { default as QuizTimer } from './quiz-player/QuizTimer';
+export { default as QuizProgress } from './quiz-player/QuizProgress';
+export { default as QuestionCard } from './quiz-player/QuestionCard';
+export { default as QuizNavigation } from './quiz-player/QuizNavigation';
 
 // Navbar Subcomponents (Modular - Used in Header)
 export { default as NavLink } from './navbar/NavLink';

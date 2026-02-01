@@ -95,6 +95,39 @@ export const submitQuizAttempt = async (quizId, answers, timeTaken) => {
   }
 };
 
+// Get user's quiz attempts (requires auth)
+export const getUserAttempts = async (page = 1, limit = 10, quizId = null) => {
+  try {
+    const params = { page, limit };
+    if (quizId) params.quizId = quizId;
+    
+    const response = await api.get('/api/quiz/my-attempts', { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get detailed result for a specific attempt (requires auth)
+export const getAttemptResult = async (attemptId) => {
+  try {
+    const response = await api.get(`/api/quiz/attempt-result/${attemptId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get user's quiz statistics (requires auth)
+export const getUserStats = async () => {
+  try {
+    const response = await api.get('/api/quiz/stats');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export default {
   getQuizzes,
   getQuizById,
@@ -103,5 +136,8 @@ export default {
   checkQuizAccess,
   purchaseQuiz,
   getMyQuizzes,
-  submitQuizAttempt
+  submitQuizAttempt,
+  getUserAttempts,
+  getAttemptResult,
+  getUserStats
 };
