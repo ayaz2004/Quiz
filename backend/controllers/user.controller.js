@@ -3,24 +3,12 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/error.js";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import * as brevo from '@getbrevo/brevo';
 import crypto from 'crypto';
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // Use SSL
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000
-});
+// Initialize Brevo API
+const apiInstance = new brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
 export const createUser = async (req, res, next) => {
   try {
@@ -391,42 +379,40 @@ export const resendVerificationEmail = async (req, res, next) => {
 const sendVerificationEmail = async (email, token) => {
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
   
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'Verify Your Email - Quiz App',
-    html: `
-      <h2>Email Verification</h2>
-      <p>Please click the link below to verify your email address:</p>
-      <a href="${verificationUrl}">Verify Email</a>
-      <p>Or copy and paste this link in your browser:</p>
-      <p>${verificationUrl}</p>
-      <p>This link will expire in 24 hours.</p>
-    `
-  };
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  sendSmtpEmail.sender = { name: "Quiz App", email: process.env.EMAIL_USER };
+  sendSmtpEmail.to = [{ email }];
+  sendSmtpEmail.subject = "Verify Your Email - Quiz App";
+  sendSmtpEmail.htmlContent = `
+    <h2>Email Verification</h2>
+    <p>Please click the link below to verify your email address:</p>
+    <a href="${verificationUrl}">Verify Email</a>
+    <p>Or copy and paste this link in your browser:</p>
+    <p>${verificationUrl}</p>
+    <p>This link will expire in 24 hours.</p>
+  `;
 
-  await transporter.sendMail(mailOptions);
+  await apiInstance.sendTransacEmail(sendSmtpEmail);
 };
 
 const sendPasswordResetEmail = async (email, token) => {
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
   
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'Password Reset - Quiz App',
-    html: `
-      <h2>Password Reset</h2>
-      <p>You requested a password reset. Click the link below to reset your password:</p>
-      <a href="${resetUrl}">Reset Password</a>
-      <p>Or copy and paste this link in your browser:</p>
-      <p>${resetUrl}</p>
-      <p>This link will expire in 1 hour.</p>
-      <p>If you didn't request this, please ignore this email.</p>
-    `
-  };
+  const sendSmtpEmail = new brevo.SendSmtpEmail();
+  sendSmtpEmail.sender = { name: "Quiz App", email: process.env.EMAIL_USER };
+  sendSmtpEmail.to = [{ email }];
+  sendSmtpEmail.subject = "Password Reset - Quiz App";
+  sendSmtpEmail.htmlContent = `
+    <h2>Password Reset</h2>
+    <p>You requested a password reset. Click the link below to reset your password:</p>
+    <a href="${resetUrl}">Reset Password</a>
+    <p>Or copy and paste this link in your browser:</p>
+    <p>${resetUrl}</p>
+    <p>This link will expire in 1 hour.</p>
+    <p>If you didn't request this, please ignore this email.</p>
+  `;
 
-  await transporter.sendMail(mailOptions);
+  await apiInstance.sendTransacEmail(sendSmtpEmail);
 };
 
 export const logoutUser = async (req, res, next) => {
