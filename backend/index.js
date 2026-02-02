@@ -10,6 +10,9 @@ configDotenv();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - needed for rate limiting and getting real IP behind Nginx
+app.set('trust proxy', 1);
+
 // Allowed origins for CORS
 const allowedOrigins = [
   'http://localhost:5173',
