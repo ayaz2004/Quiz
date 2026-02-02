@@ -100,7 +100,7 @@ const Attempts = () => {
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {stats.averagePercentage.toFixed(1)}%
+                {stats.averagePercentage ? stats.averagePercentage.toFixed(1) : '0'}%
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Average Score</p>
             </div>
@@ -112,7 +112,7 @@ const Attempts = () => {
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {stats.overallAccuracy.toFixed(1)}%
+                {stats.overallAccuracy ? stats.overallAccuracy.toFixed(1) : '0'}%
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Accuracy</p>
             </div>
@@ -197,7 +197,7 @@ const Attempts = () => {
                       attempt.percentage >= 40 ? 'text-yellow-600 dark:text-yellow-400' :
                       'text-red-600 dark:text-red-400'
                     }`}>
-                      Score: {attempt.percentage.toFixed(1)}%
+                      Score: {attempt.percentage ? attempt.percentage.toFixed(1) : '0'}%
                     </span>
                     <span>
                       Correct: {attempt.correctAnswers}/{attempt.totalQuestions}
