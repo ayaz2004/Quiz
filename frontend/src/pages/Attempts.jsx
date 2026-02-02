@@ -28,11 +28,15 @@ const Attempts = () => {
         getUserStats()
       ]);
       
-      setAttempts(attemptsData.data.attempts);
-      setPagination(attemptsData.data.pagination);
-      setStats(statsData.data);
+      setAttempts(attemptsData.data.attempts || []);
+      setPagination(attemptsData.data.pagination || { currentPage: 1, totalPages: 1, totalAttempts: 0 });
+      setStats(statsData.data || null);
     } catch (error) {
       console.error('Error fetching attempts:', error);
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please log in again.');
+        navigate('/signin');
+      }
     } finally {
       setLoading(false);
     }
@@ -94,32 +98,32 @@ const Attempts = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                {stats.totalAttempts}
+                {stats?.totalAttempts || 0}
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Total Attempts</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {stats.averagePercentage ? stats.averagePercentage.toFixed(1) : '0'}%
+                {stats?.averagePercentage ? stats.averagePercentage.toFixed(1) : '0'}%
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Average Score</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                {stats.bestScore}%
+                {stats?.bestScore || 0}%
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Best Score</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
-                {stats.overallAccuracy ? stats.overallAccuracy.toFixed(1) : '0'}%
+                {stats?.overallAccuracy ? stats.overallAccuracy.toFixed(1) : '0'}%
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-1">Accuracy</p>
             </div>
           </div>
 
           {/* Subject-wise stats */}
-          {stats.subjectWiseStats.length > 0 && (
+          {stats?.subjectWiseStats && stats.subjectWiseStats.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
                 Subject-wise Performance
