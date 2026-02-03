@@ -104,26 +104,28 @@ const TakeQuiz = () => {
       setSubmitting(true);
       setShowSubmitConfirm(false);
 
-      // Format answers for backend
-      const formattedAnswers = answers
-        .map((answer, index) => ({
-          questionId: quiz.questions[index].id,
-          selectedOption: answer || 0, // 0 for unanswered
-        }))
-        .filter(a => a.selectedOption !== 0); // Only send answered questions
+      // Format answers for backend - include all answers, even unanswered (as 0)
+      const formattedAnswers = answers.map((answer, index) => ({
+        questionId: quiz.questions[index].id,
+        selectedOption: answer || 0, // 0 for unanswered
+      }));
 
+      console.log('Submitting quiz attempt...', { formattedAnswers, timeTaken });
       const response = await submitQuizAttempt(quizId, formattedAnswers, timeTaken);
+      console.log('Submit response:', response);
       
       // Navigate to results page with data
       navigate(`/quiz/result/${quizId}`, { 
         state: { 
           results: response.data,
           quiz: quiz 
-        } 
+        },
+        replace: true
       });
     } catch (error) {
       console.error('Error submitting quiz:', error);
-      alert('Failed to submit quiz. Please try again.');
+      const errorMsg = error?.message || error?.error || 'Failed to submit quiz. Please try again.';
+      alert(errorMsg);
       setSubmitting(false);
     }
   };

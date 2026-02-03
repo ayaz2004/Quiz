@@ -241,9 +241,14 @@ export const submitQuizAttempt = async (req, res, next) => {
       return next(new ApiError(400, "Invalid quiz ID"));
     }
 
-    if (!answers || !Array.isArray(answers) || answers.length === 0) {
-      return next(new ApiError(400, "Answers are required"));
+    if (!answers || !Array.isArray(answers)) {
+      return next(new ApiError(400, "Answers must be an array"));
     }
+
+    // Allow empty answers (e.g., when timer runs out with no answers)
+    // if (answers.length === 0) {
+    //   return next(new ApiError(400, "At least one answer is required"));
+    // }
 
     const quizIdNum = parseInt(quizId);
 
@@ -290,13 +295,16 @@ export const submitQuizAttempt = async (req, res, next) => {
       const question = quiz.questions.find(q => q.id === userAnswer.questionId);
       
       if (question) {
-        const isCorrect = question.isCorrect === userAnswer.selectedOption;
+        // Check if question was answered (0 means unanswered)
+        const wasAnswered = userAnswer.selectedOption !== 0;
+        const isCorrect = wasAnswered && question.isCorrect === userAnswer.selectedOption;
         
         if (isCorrect) {
           correctAnswers++;
-        } else {
+        } else if (wasAnswered) {
           wrongAnswers++;
         }
+        // If not answered, it's neither correct nor wrong (will be counted as unanswered)
 
         detailedResults.push({
           questionId: question.id,
