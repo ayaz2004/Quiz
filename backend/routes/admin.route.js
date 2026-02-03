@@ -6,6 +6,7 @@ import {
   deleteQuiz,
   updateQuiz,
   getDashboardStats,
+  getQuizByIdForAdmin,
 } from "../controllers/admin.controller.js";
 import { validateQuiz, validateQuizUpdate } from "../utils/validateQuiz.js";
 import uploadMiddleware from "../middlewares/multer.js";
@@ -42,6 +43,12 @@ router.get(
     "/dashboard-stats",
     verifyToken,
     getDashboardStats
+);
+
+router.get(
+    "/quiz/:id",
+    verifyToken,
+    getQuizByIdForAdmin
 );
 
 ///////////////////////////////Admin Delete Apis //////////////////////////////

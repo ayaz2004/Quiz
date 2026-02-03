@@ -373,3 +373,55 @@ export const getDashboardStats = async (req, res, next) => {
     return next(new ApiError(500, error.message || "Error retrieving dashboard stats"));
   }
 };
+
+/**
+ * Get quiz by ID for admin editing (includes all fields including explanation and correct answers)
+ * @route GET /api/admin/quiz/:id
+ * @access Admin only
+ */
+export const getQuizByIdForAdmin = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can access this endpoint"));
+    }
+
+    const { id } = req.params;
+    const quizId = parseInt(id);
+
+    if (!quizId || isNaN(quizId)) {
+      return next(new ApiError(400, "Invalid quiz ID"));
+    }
+
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: {
+        questions: {
+          select: {
+            id: true,
+            questionText: true,
+            option1: true,
+            option2: true,
+            option3: true,
+            option4: true,
+            isCorrect: true,
+            explanation: true,
+            imageUrl: true
+          }
+        }
+      }
+    });
+
+    if (!quiz) {
+      return next(new ApiError(404, "Quiz not found"));
+    }
+
+    return res.status(200).json(
+      new ApiResponse(200, quiz, "Quiz retrieved successfully")
+    );
+  } catch (error) {
+    console.error("Get Quiz By ID Error:", error);
+    return next(new ApiError(500, error.message || "Error retrieving quiz"));
+  }
+};

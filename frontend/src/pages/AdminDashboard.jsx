@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { addQuiz, updateQuiz, getAllUsers, deleteUser, getAllQuizzes, deleteQuiz, getQuizById } from '../utils/adminApi';
 import MessageAlert from '../components/admin/MessageAlert';
 import DashSidebar from '../components/admin/DashSidebar';
@@ -11,6 +11,7 @@ import UserList from '../components/admin/UserList';
 
 const AdminDashboard = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [tab, setTab] = useState('');
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
@@ -236,11 +237,11 @@ const AdminDashboard = () => {
       // Populate form with quiz data
       setQuizForm({
         title: quiz.title,
-        description: quiz.description,
+        description: quiz.description || '',
         subject: quiz.subject,
         examYear: quiz.examYear,
         createdBy: 1,
-        isActive: true,
+        isActive: quiz.isActive !== undefined ? quiz.isActive : true,
         isPaid: quiz.isPaid,
         price: quiz.price || 0,
         questions: quiz.questions.map((q, idx) => ({
@@ -258,7 +259,7 @@ const AdminDashboard = () => {
       });
       
       setEditingQuizId(quizId);
-      setActiveTab('quizzes');
+      navigate('/admin?tab=quizzes');
       showMessage('success', 'Quiz loaded for editing');
     } catch (error) {
       showMessage('error', error.message);

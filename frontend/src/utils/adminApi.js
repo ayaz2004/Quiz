@@ -157,14 +157,14 @@ export const deleteQuiz = async (quizId) => {
 };
 
 /**
- * Get a single quiz by ID with all questions
+ * Get a single quiz by ID with all questions (for admin editing - includes explanations and correct answers)
  * @param {number} quizId - ID of the quiz
  * @returns {Promise} API response with quiz details
  */
 export const getQuizById = async (quizId) => {
   try {
     const response = await axios.get(
-      `${API_URL}/api/quiz/${quizId}`,
+      `${API_URL}/api/admin/quiz/${quizId}`,
       { withCredentials: true }
     );
     return response.data;
