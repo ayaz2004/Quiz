@@ -475,11 +475,22 @@ export const updateProfile = async (req, res, next) => {
       return next(new ApiError(401, "Not authenticated"));
     }
 
-    const { email, profilePhoto } = req.body;
+    const { email, profilePhoto, phoneNumber, location, qualification } = req.body;
 
-    // Validate input
-    if (!email && !profilePhoto) {
-      return next(new ApiError(400, "At least one field (email or profilePhoto) is required"));
+    // Build update data object
+    const updateData = {};
+
+    // Validate qualification if provided
+    const validQualifications = [
+      'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 
+      'Class 10', 'Class 11', 'Class 12', 'Bachelors', 'Masters'
+    ];
+    
+    if (qualification !== undefined) {
+      if (qualification && !validQualifications.includes(qualification)) {
+        return next(new ApiError(400, "Invalid qualification"));
+      }
+      updateData.qualification = qualification;
     }
 
     // Check if email is already taken by another user
@@ -491,15 +502,29 @@ export const updateProfile = async (req, res, next) => {
       if (existingUser) {
         return next(new ApiError(409, "Email is already in use"));
       }
+      updateData.email = email;
+    }
+
+    // Add other fields if provided
+    if (profilePhoto !== undefined) {
+      updateData.profilePhoto = profilePhoto;
+    }
+    if (phoneNumber !== undefined) {
+      updateData.phoneNumber = phoneNumber;
+    }
+    if (location !== undefined) {
+      updateData.location = location;
+    }
+
+    // Check if there's anything to update
+    if (Object.keys(updateData).length === 0) {
+      return next(new ApiError(400, "No fields to update"));
     }
 
     // Update user
     const updatedUser = await prisma.user.update({
       where: { id: req.user.id },
-      data: {
-        ...(email && { email }),
-        ...(profilePhoto && { profilePhoto })
-      }
+      data: updateData
     });
 
     // Return updated user without sensitive fields

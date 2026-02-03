@@ -138,6 +138,21 @@ export const AuthProvider = ({ children }) => {
     // No need to store in localStorage - user data will be fetched from backend
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/users/me`, {
+        withCredentials: true
+      });
+      
+      if (response.data.success && response.data.data) {
+        setUser(response.data.data);
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -146,6 +161,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     updateUser,
+    refreshUser,
   };
 
   return (
