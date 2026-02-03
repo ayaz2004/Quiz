@@ -216,6 +216,11 @@ export const getAllUsers = async (req, res, next) => {
           email: true,
           isEmailVerified: true,
           createdAt: true,
+          _count: {
+            select: {
+              quizAttempts: true
+            }
+          }
         },
         skip,
         take: limit,
@@ -224,13 +229,22 @@ export const getAllUsers = async (req, res, next) => {
       prisma.user.count(),
     ]);
 
+    // Format users with attempt count
+    const formattedUsers = users.map(user => ({
+      id: user.id,
+      email: user.email,
+      isEmailVerified: user.isEmailVerified,
+      createdAt: user.createdAt,
+      attemptCount: user._count.quizAttempts
+    }));
+
     const totalPages = Math.ceil(totalUsers / limit);
 
     return res.status(200).json(
       new ApiResponse(
         200,
         {
-          users,
+          users: formattedUsers,
           pagination: {
             currentPage: page,
             totalPages,

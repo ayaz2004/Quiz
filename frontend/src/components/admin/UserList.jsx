@@ -33,6 +33,9 @@ const UserList = ({
                 Email Verified
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Quiz Attempts
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Created At
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -56,6 +59,11 @@ const UserList = ({
                       : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                   }`}>
                     {user.isEmailVerified ? 'Verified' : 'Not Verified'}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                  <span className="px-3 py-1 inline-flex text-sm font-semibold rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+                    {user.attemptCount || 0}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
