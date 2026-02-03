@@ -20,6 +20,7 @@ const TakeQuiz = () => {
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [reviewMarked, setReviewMarked] = useState([]);
   const [timeTaken, setTimeTaken] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
@@ -45,6 +46,7 @@ const TakeQuiz = () => {
 
       setQuiz(quizData);
       setAnswers(new Array(quizData.questions.length).fill(undefined));
+      setReviewMarked(new Array(quizData.questions.length).fill(false));
     } catch (error) {
       console.error('Error fetching quiz:', error);
       alert('Failed to load quiz. ' + (error.message || ''));
@@ -62,6 +64,12 @@ const TakeQuiz = () => {
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = optionKey;
     setAnswers(newAnswers);
+  };
+
+  const toggleReviewMark = () => {
+    const newReviewMarked = [...reviewMarked];
+    newReviewMarked[currentQuestionIndex] = !newReviewMarked[currentQuestionIndex];
+    setReviewMarked(newReviewMarked);
   };
 
   const handlePrevious = () => {
@@ -141,9 +149,19 @@ const TakeQuiz = () => {
   const answeredCount = answers.filter(a => a !== undefined).length;
 
   return (
-    <div className={`min-h-screen pb-20 pt-8 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen pb-20 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Fixed Timer at Top - Below Header */}
+      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-auto">
+        <QuizTimer 
+          onTimeUpdate={handleTimeUpdate} 
+          isActive={!submitting}
+          timeLimit={quiz.timeLimit}
+          onTimeUp={submitQuiz}
+        />
+      </div>
+
       {/* Main Content */}
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 pt-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Progress Sidebar */}
           {!sidebarCollapsed && (
@@ -195,6 +213,8 @@ const TakeQuiz = () => {
                 questionNumber={currentQuestionIndex + 1}
                 selectedAnswer={answers[currentQuestionIndex]}
                 onAnswerSelect={handleAnswerSelect}
+                isMarkedForReview={reviewMarked[currentQuestionIndex]}
+                onToggleReview={toggleReviewMark}
               />
             </AnimatePresence>
           </div>
@@ -211,6 +231,7 @@ const TakeQuiz = () => {
             onNext={handleNext}
             onSubmit={handleSubmit}
             answers={answers}
+            reviewMarked={reviewMarked}
             onQuestionClick={handleQuestionClick}
           />
         </div>

@@ -28,6 +28,7 @@ export const addQuiz = async (req, res, next) => {
       isActive,
       isPaid,
       price,
+      timeLimit,
       questions,
     } = data;
     // 2. Process Questions and Upload Images
@@ -80,6 +81,7 @@ export const addQuiz = async (req, res, next) => {
         isActive: isActive !== undefined ? isActive : true,
         isPaid: isPaid || false,
         price: price ? parseFloat(price) : 0,
+        timeLimit: timeLimit ? parseInt(timeLimit) : null,
         questions: {
           create: questionsWithImages,
         },
@@ -121,6 +123,7 @@ export const updateQuiz = async (req, res, next) => {
       isActive,
       isPaid,
       price,
+      timeLimit,
       questions,
     } = data;
 
@@ -170,6 +173,7 @@ export const updateQuiz = async (req, res, next) => {
           examYear: parseInt(examYear),
           isActive: isActive !== undefined ? isActive : true,
           isPaid: isPaid || false,
+          timeLimit: timeLimit ? parseInt(timeLimit) : null,
           price: price ? parseFloat(price) : 0,
           questions: {
             create: questionsWithImages,

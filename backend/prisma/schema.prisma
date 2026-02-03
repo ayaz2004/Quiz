@@ -45,6 +45,7 @@ model Quiz {
   isPaid      Boolean   @default(false) @map("is_paid")
   price       Float?
   prize       String?
+  timeLimit   Int?      @map("time_limit") // Time limit in minutes
   createdAt   DateTime  @default(now()) @map("created_at")
   questions   Question[]
   quizAttempts QuizAttempt[]

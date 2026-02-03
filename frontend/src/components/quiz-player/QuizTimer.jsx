@@ -1,22 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 
-const QuizTimer = ({ onTimeUpdate, isActive = true }) => {
+const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }) => {
   const { isDark } = useTheme();
   const [seconds, setSeconds] = useState(0);
+  const timeUpCalledRef = useRef(false);
 
   // Update timer every second
   useEffect(() => {
     let interval = null;
     if (isActive) {
       interval = setInterval(() => {
-        setSeconds(prev => prev + 1);
+        setSeconds(prev => {
+          const newSeconds = prev + 1;
+          // Check if time limit is reached
+          if (timeLimit && newSeconds >= timeLimit * 60 && !timeUpCalledRef.current) {
+            timeUpCalledRef.current = true;
+            if (onTimeUp) {
+              onTimeUp();
+            }
+          }
+          return newSeconds;
+        });
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isActive]);
+  }, [isActive, timeLimit, onTimeUp]);
 
   // Notify parent of time changes
   useEffect(() => {
@@ -37,9 +48,23 @@ const QuizTimer = ({ onTimeUpdate, isActive = true }) => {
   };
 
   const getTimerColor = () => {
-    if (seconds < 600) return 'text-green-600 dark:text-green-400'; // < 10 min
-    if (seconds < 1800) return 'text-yellow-600 dark:text-yellow-400'; // < 30 min
-    return 'text-red-600 dark:text-red-400'; // > 30 min
+    if (!timeLimit) {
+      // No limit - use elapsed time colors
+      if (seconds < 600) return 'text-green-600 dark:text-green-400';
+      if (seconds < 1800) return 'text-yellow-600 dark:text-yellow-400';
+      return 'text-red-600 dark:text-red-400';
+    }
+    
+    // With limit - use remaining time colors
+    const remainingSeconds = (timeLimit * 60) - seconds;
+    if (remainingSeconds > timeLimit * 60 * 0.5) return 'text-green-600 dark:text-green-400';
+    if (remainingSeconds > timeLimit * 60 * 0.2) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
+  };
+
+  const getDisplaySeconds = () => {
+    if (!timeLimit) return seconds;
+    return Math.max(0, (timeLimit * 60) - seconds);
   };
 
   return (
@@ -49,9 +74,9 @@ const QuizTimer = ({ onTimeUpdate, isActive = true }) => {
       className={`flex items-center gap-3 px-6 py-3 rounded-2xl ${
         isDark ? 'bg-gray-800' : 'bg-white'
       } shadow-lg border-2 ${
-        seconds < 600 
+        !timeLimit || getDisplaySeconds() > timeLimit * 60 * 0.5
           ? 'border-green-500/20' 
-          : seconds < 1800 
+          : getDisplaySeconds() > timeLimit * 60 * 0.2
           ? 'border-yellow-500/20' 
           : 'border-red-500/20'
       }`}
@@ -71,10 +96,10 @@ const QuizTimer = ({ onTimeUpdate, isActive = true }) => {
       </svg>
       <div>
         <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'} font-medium`}>
-          Time Elapsed
+          {timeLimit ? 'Time Remaining' : 'Time Elapsed'}
         </p>
         <p className={`text-2xl font-bold font-mono ${getTimerColor()}`}>
-          {formatTime(seconds)}
+          {formatTime(getDisplaySeconds())}
         </p>
       </div>
     </motion.div>
@@ -84,6 +109,8 @@ const QuizTimer = ({ onTimeUpdate, isActive = true }) => {
 QuizTimer.propTypes = {
   onTimeUpdate: PropTypes.func.isRequired,
   isActive: PropTypes.bool,
+  timeLimit: PropTypes.number, // Time limit in minutes (null for no limit)
+  onTimeUp: PropTypes.func, // Callback when time runs out
 };
 
 export default QuizTimer;

@@ -59,6 +59,7 @@ export const listQuizzes = async (req, res, next) => {
         isPaid: true,
         price: true,
         prize: true,
+        timeLimit: true,
         createdAt: true,
         _count: {
           select: { questions: true }
@@ -79,6 +80,7 @@ export const listQuizzes = async (req, res, next) => {
       isPaid: quiz.isPaid,
       price: quiz.price,
       prize: quiz.prize,
+      timeLimit: quiz.timeLimit,
       questionCount: quiz._count.questions,
       createdAt: quiz.createdAt
     }));
@@ -161,6 +163,7 @@ export const getQuizById = async (req, res, next) => {
         isPaid: quiz.isPaid,
         price: quiz.price,
         prize: quiz.prize,
+        timeLimit: quiz.timeLimit,
         questionCount: quiz.questions.length,
         hasAccess,
         accessMessage,

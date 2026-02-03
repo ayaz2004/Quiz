@@ -37,6 +37,7 @@ const AdminDashboard = () => {
     isActive: true,
     isPaid: false,
     price: 0,
+    timeLimit: null, // Time limit in minutes
     questions: []
   });
 
@@ -184,6 +185,7 @@ const AdminDashboard = () => {
         isActive: true,
         isPaid: false,
         price: 0,
+        timeLimit: null,
         questions: []
       });
       setEditingQuizId(null);
@@ -244,6 +246,7 @@ const AdminDashboard = () => {
         isActive: quiz.isActive !== undefined ? quiz.isActive : true,
         isPaid: quiz.isPaid,
         price: quiz.price || 0,
+        timeLimit: quiz.timeLimit || null,
         questions: quiz.questions.map((q, idx) => ({
           id: q.id || Date.now() + idx, // Use existing ID or generate one
           questionText: q.questionText,

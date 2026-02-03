@@ -177,8 +177,12 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-2xl font-bold text-gray-800 dark:text-white">~{Math.ceil(quizDetails.questionCount * 1.5)}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Minutes</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-white">
+                  {quizDetails.timeLimit ? quizDetails.timeLimit : `~${Math.ceil(quizDetails.questionCount * 1.5)}`}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {quizDetails.timeLimit ? 'Minutes (Limit)' : 'Minutes (Est.)'}
+                </p>
               </div>
 
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-4 text-center">

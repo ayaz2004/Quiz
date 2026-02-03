@@ -23,6 +23,7 @@ const QuizForm = ({
       isActive: true,
       isPaid: false,
       price: 0,
+      timeLimit: null,
       questions: []
     });
   };
@@ -87,6 +88,20 @@ const QuizForm = ({
               value={quizForm.price}
               onChange={(e) => setQuizForm({ ...quizForm, price: parseFloat(e.target.value) || 0 })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Time Limit (minutes)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={quizForm.timeLimit || ''}
+              onChange={(e) => setQuizForm({ ...quizForm, timeLimit: e.target.value ? parseInt(e.target.value) : null })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Leave empty for no limit"
             />
           </div>
         </div>
