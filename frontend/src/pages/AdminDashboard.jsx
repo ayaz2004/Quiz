@@ -38,6 +38,8 @@ const AdminDashboard = () => {
     isPaid: false,
     price: 0,
     timeLimit: null, // Time limit in minutes
+    hasNegativeMarking: false,
+    negativeMarks: null,
     questions: []
   });
 
@@ -186,6 +188,8 @@ const AdminDashboard = () => {
         isPaid: false,
         price: 0,
         timeLimit: null,
+        hasNegativeMarking: false,
+        negativeMarks: null,
         questions: []
       });
       setEditingQuizId(null);
@@ -247,6 +251,8 @@ const AdminDashboard = () => {
         isPaid: quiz.isPaid,
         price: quiz.price || 0,
         timeLimit: quiz.timeLimit || null,
+        hasNegativeMarking: quiz.hasNegativeMarking || false,
+        negativeMarks: quiz.negativeMarks || null,
         questions: quiz.questions.map((q, idx) => ({
           id: q.id || Date.now() + idx, // Use existing ID or generate one
           questionText: q.questionText,

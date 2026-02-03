@@ -84,11 +84,22 @@ const QuizForm = ({
             </label>
             <input
               type="number"
-              step="0.01"
+              min="0"
               value={quizForm.price}
-              onChange={(e) => setQuizForm({ ...quizForm, price: parseFloat(e.target.value) || 0 })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 0;
+                setQuizForm({ 
+                  ...quizForm, 
+                  price: value,
+                  isPaid: value > 0 ? true : quizForm.isPaid
+                });
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Enter price (e.g., 99, 149) or 0 for free"
             />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Enter price greater than 0 to make this a paid quiz. Set to 0 for free quiz.
+            </p>
           </div>
 
           <div>
@@ -103,6 +114,31 @@ const QuizForm = ({
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Leave empty for no limit"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Negative Marks (per wrong answer)
+            </label>
+            <input
+              type="number"
+              step="0.25"
+              min="0"
+              value={quizForm.negativeMarks || ''}
+              onChange={(e) => {
+                const value = e.target.value ? parseFloat(e.target.value) : null;
+                setQuizForm({ 
+                  ...quizForm, 
+                  negativeMarks: value,
+                  hasNegativeMarking: value && value > 0 ? true : quizForm.hasNegativeMarking
+                });
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="e.g., 0.25, 0.5, 1 (Leave empty for no negative marking)"
+            />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Enter value to enable negative marking. Leave empty for no negative marking.
+            </p>
           </div>
         </div>
 
@@ -134,10 +170,32 @@ const QuizForm = ({
             <input
               type="checkbox"
               checked={quizForm.isPaid}
-              onChange={(e) => setQuizForm({ ...quizForm, isPaid: e.target.checked })}
+              onChange={(e) => setQuizForm({ ...quizForm, isPaid: e.target.checked, price: e.target.checked ? quizForm.price : 0 })}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700 dark:text-gray-300">Paid Quiz</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Paid Quiz {quizForm.price > 0 && (
+                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                  (₹{quizForm.price})
+                </span>
+              )}
+            </span>
+          </label>
+
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={quizForm.hasNegativeMarking}
+              onChange={(e) => setQuizForm({ ...quizForm, hasNegativeMarking: e.target.checked, negativeMarks: e.target.checked ? quizForm.negativeMarks : null })}
+              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+            />
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Negative Marking {quizForm.negativeMarks && quizForm.negativeMarks > 0 && (
+                <span className="text-red-600 dark:text-red-400 font-medium">
+                  (-{quizForm.negativeMarks} per wrong)
+                </span>
+              )}
+            </span>
           </label>
         </div>
 

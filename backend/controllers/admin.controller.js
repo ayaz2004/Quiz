@@ -29,6 +29,8 @@ export const addQuiz = async (req, res, next) => {
       isPaid,
       price,
       timeLimit,
+      hasNegativeMarking,
+      negativeMarks,
       questions,
     } = data;
     // 2. Process Questions and Upload Images
@@ -82,6 +84,8 @@ export const addQuiz = async (req, res, next) => {
         isPaid: isPaid || false,
         price: price ? parseFloat(price) : 0,
         timeLimit: timeLimit ? parseInt(timeLimit) : null,
+        hasNegativeMarking: hasNegativeMarking || false,
+        negativeMarks: negativeMarks ? parseFloat(negativeMarks) : null,
         questions: {
           create: questionsWithImages,
         },
@@ -124,6 +128,8 @@ export const updateQuiz = async (req, res, next) => {
       isPaid,
       price,
       timeLimit,
+      hasNegativeMarking,
+      negativeMarks,
       questions,
     } = data;
 
@@ -175,6 +181,8 @@ export const updateQuiz = async (req, res, next) => {
           isPaid: isPaid || false,
           timeLimit: timeLimit ? parseInt(timeLimit) : null,
           price: price ? parseFloat(price) : 0,
+          hasNegativeMarking: hasNegativeMarking || false,
+          negativeMarks: negativeMarks ? parseFloat(negativeMarks) : null,
           questions: {
             create: questionsWithImages,
           },

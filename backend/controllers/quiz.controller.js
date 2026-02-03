@@ -60,6 +60,8 @@ export const listQuizzes = async (req, res, next) => {
         price: true,
         prize: true,
         timeLimit: true,
+        hasNegativeMarking: true,
+        negativeMarks: true,
         createdAt: true,
         _count: {
           select: { questions: true }
@@ -81,6 +83,8 @@ export const listQuizzes = async (req, res, next) => {
       price: quiz.price,
       prize: quiz.prize,
       timeLimit: quiz.timeLimit,
+      hasNegativeMarking: quiz.hasNegativeMarking,
+      negativeMarks: quiz.negativeMarks,
       questionCount: quiz._count.questions,
       createdAt: quiz.createdAt
     }));
@@ -164,6 +168,8 @@ export const getQuizById = async (req, res, next) => {
         price: quiz.price,
         prize: quiz.prize,
         timeLimit: quiz.timeLimit,
+        hasNegativeMarking: quiz.hasNegativeMarking,
+        negativeMarks: quiz.negativeMarks,
         questionCount: quiz.questions.length,
         hasAccess,
         accessMessage,
@@ -325,9 +331,19 @@ export const submitQuizAttempt = async (req, res, next) => {
 
     const totalQuestions = quiz.questions.length;
     const unanswered = totalQuestions - answers.length;
-    wrongAnswers += unanswered; // Count unanswered as wrong
-    const percentage = (correctAnswers / totalQuestions) * 100;
-    const score = correctAnswers; // 1 point per correct answer
+    const actualWrongAnswers = wrongAnswers; // Store actual wrong answers before adding unanswered
+    wrongAnswers += unanswered; // Count unanswered as wrong for percentage calculation
+    
+    // Calculate score with negative marking if enabled
+    let score = correctAnswers; // 1 point per correct answer
+    if (quiz.hasNegativeMarking && quiz.negativeMarks) {
+      // Only apply negative marking to actually wrong answers, not unanswered questions
+      const deduction = actualWrongAnswers * quiz.negativeMarks;
+      score = Math.max(0, correctAnswers - deduction); // Ensure score doesn't go below 0
+    }
+    
+    // Calculate percentage based on final score (after negative marking)
+    const percentage = (score / totalQuestions) * 100;
 
     // Save attempt to database
     const quizAttempt = await prisma.quizAttempt.create({
@@ -351,6 +367,7 @@ export const submitQuizAttempt = async (req, res, next) => {
         totalQuestions,
         correctAnswers,
         wrongAnswers,
+        actualWrongAnswers, // Actual wrong answers (excluding unanswered)
         unanswered,
         score,
         percentage: parseFloat(percentage.toFixed(2)),
@@ -588,11 +605,17 @@ export const getAttemptResult = async (req, res, next) => {
     // Parse user's answers
     const userAnswers = JSON.parse(attempt.answers);
 
-    // Build detailed results
+    // Build detailed results and calculate actual wrong answers
+    let actualWrongCount = 0;
     const detailedResults = attempt.quiz.questions.map(question => {
       const userAnswer = userAnswers.find(a => a.questionId === question.id);
       const selectedOption = userAnswer?.selectedOption || 0;
       const isCorrect = question.isCorrect === selectedOption;
+      
+      // Count actually wrong answers (answered but incorrect, not unanswered)
+      if (selectedOption !== 0 && !isCorrect) {
+        actualWrongCount++;
+      }
 
       return {
         questionId: question.id,
@@ -619,12 +642,15 @@ export const getAttemptResult = async (req, res, next) => {
           title: attempt.quiz.title,
           subject: attempt.quiz.subject,
           examYear: attempt.quiz.examYear,
-          description: attempt.quiz.description
+          description: attempt.quiz.description,
+          hasNegativeMarking: attempt.quiz.hasNegativeMarking,
+          negativeMarks: attempt.quiz.negativeMarks
         },
         score: attempt.score,
         totalQuestions: attempt.totalQuestions,
         correctAnswers: attempt.correctAnswers,
         wrongAnswers: attempt.wrongAnswers,
+        actualWrongAnswers: actualWrongCount,
         percentage: attempt.percentage,
         timeTaken: attempt.timeTaken,
         attemptedAt: attempt.attemptedAt,

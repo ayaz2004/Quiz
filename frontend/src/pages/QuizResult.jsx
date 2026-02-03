@@ -26,7 +26,10 @@ import {
   Timer,
   BarChart3,
   TrendingDown,
-  Percent
+  Percent,
+  Star,
+  ThumbsUp,
+  Dumbbell
 } from 'lucide-react';
 
 const QuizResult = () => {
@@ -69,6 +72,7 @@ const QuizResult = () => {
           attemptId: response.data.attemptId,
           correctAnswers: response.data.correctAnswers,
           wrongAnswers: response.data.wrongAnswers,
+          actualWrongAnswers: response.data.actualWrongAnswers,
           totalQuestions: response.data.totalQuestions,
           score: response.data.score,
           percentage: response.data.percentage,
@@ -105,8 +109,18 @@ const QuizResult = () => {
   }
 
   const { results, quiz } = resultData;
-  const { correctAnswers, wrongAnswers, totalQuestions, score, percentage, timeTaken } = results;
-  const unanswered = totalQuestions - (correctAnswers + wrongAnswers);
+  const { correctAnswers, wrongAnswers, actualWrongAnswers, totalQuestions, score, percentage, timeTaken } = results;
+  // Calculate unanswered: total - correct - actually wrong answers
+  const unanswered = actualWrongAnswers !== undefined 
+    ? totalQuestions - correctAnswers - actualWrongAnswers 
+    : totalQuestions - correctAnswers - wrongAnswers;
+  
+  // Calculate attempted questions (total - unanswered)
+  const attemptedQuestions = totalQuestions - unanswered;
+  
+  // Accuracy rate should match the score percentage (which includes negative marking)
+  // Not just correct/attempted ratio
+  const accuracyRate = percentage; // Use the percentage from backend which includes negative marking
   
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
@@ -121,37 +135,37 @@ const QuizResult = () => {
 
   const getPerformanceLevel = (percentage) => {
     if (percentage >= 90) return { 
-      level: 'Outstanding! 🏆', 
+      level: 'Outstanding!', 
       color: 'from-emerald-500 to-teal-600', 
-      emoji: '🎉',
+      icon: Trophy,
       message: 'Exceptional performance! You\'ve mastered this topic.',
       bg: 'from-emerald-50 to-teal-50'
     };
     if (percentage >= 75) return { 
-      level: 'Great Job! ⭐', 
+      level: 'Great Job!', 
       color: 'from-emerald-400 to-green-600', 
-      emoji: '🌟',
+      icon: Star,
       message: 'Excellent work! You have a strong understanding.',
       bg: 'from-emerald-50 to-green-50'
     };
     if (percentage >= 60) return { 
-      level: 'Good Effort! 👍', 
+      level: 'Good Effort!', 
       color: 'from-blue-500 to-cyan-600', 
-      emoji: '👍',
+      icon: ThumbsUp,
       message: 'Good job! Keep practicing to improve further.',
       bg: 'from-blue-50 to-cyan-50'
     };
     if (percentage >= 40) return { 
-      level: 'Keep Trying! 📚', 
+      level: 'Keep Trying!', 
       color: 'from-yellow-500 to-orange-600', 
-      emoji: '📚',
+      icon: BookOpen,
       message: 'You\'re making progress. Review the material and try again.',
       bg: 'from-yellow-50 to-orange-50'
     };
     return { 
-      level: 'Needs Work 💪', 
+      level: 'Needs Work', 
       color: 'from-red-500 to-pink-600', 
-      emoji: '💪',
+      icon: Dumbbell,
       message: 'Don\'t give up! Practice more and you\'ll improve.',
       bg: 'from-red-50 to-pink-50'
     };
@@ -220,9 +234,9 @@ const QuizResult = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
-              className="text-6xl md:text-7xl"
+              className={`p-4 rounded-2xl bg-gradient-to-r ${performance.color}`}
             >
-              {performance.emoji}
+              {performance.icon && <performance.icon className="w-12 h-12 md:w-16 md:h-16 text-white" />}
             </motion.div>
           </div>
         </motion.div>
@@ -288,7 +302,7 @@ const QuizResult = () => {
                         {percentage ? percentage.toFixed(1) : '0'}%
                       </motion.div>
                       <div className={`text-xs md:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Accuracy
+                        Score Percentage
                       </div>
                     </div>
                   </div>
@@ -444,13 +458,13 @@ const QuizResult = () => {
                       Accuracy Rate
                     </span>
                     <span className={`text-sm font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                      {percentage.toFixed(1)}%
+                      {accuracyRate.toFixed(1)}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2">
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${percentage}%` }}
+                      animate={{ width: `${Math.min(100, Math.max(0, accuracyRate))}%` }}
                       transition={{ duration: 1, delay: 0.8 }}
                       className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full"
                     />
@@ -464,18 +478,50 @@ const QuizResult = () => {
                       Attempt Rate
                     </span>
                     <span className={`text-sm font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                      {((correctAnswers + wrongAnswers) / totalQuestions * 100).toFixed(0)}%
+                      {attemptedQuestions > 0 ? ((attemptedQuestions / totalQuestions) * 100).toFixed(0) : 0}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2">
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${(correctAnswers + wrongAnswers) / totalQuestions * 100}%` }}
+                      animate={{ width: `${Math.min(100, Math.max(0, attemptedQuestions > 0 ? (attemptedQuestions / totalQuestions) * 100 : 0))}%` }}
                       transition={{ duration: 1, delay: 0.9 }}
                       className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full"
                     />
                   </div>
                 </div>
+
+                {quiz.hasNegativeMarking && (
+                  <div className={`p-3 rounded-lg ${isDark ? 'bg-red-900/30 border border-red-700/30' : 'bg-red-50 border border-red-200'}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className={`text-sm font-medium flex items-center gap-1 ${isDark ? 'text-red-400' : 'text-red-700'}`}>
+                        <AlertCircle className="w-4 h-4" />
+                        Negative Marking
+                      </span>
+                      <span className={`text-sm font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                        -{quiz.negativeMarks} per wrong
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Base Score (Correct × 1)</span>
+                        <span className={`font-medium ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                          +{correctAnswers}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Deduction (Wrong × {quiz.negativeMarks})</span>
+                        <span className={`font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                          -{((actualWrongAnswers || 0) * quiz.negativeMarks).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className={`flex justify-between text-sm font-bold pt-1 border-t ${isDark ? 'border-gray-700 text-white' : 'border-gray-300 text-gray-800'}`}>
+                        <span>Final Score</span>
+                        <span>{typeof score === 'number' ? score.toFixed(2) : score}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {quiz.prize && (
                   <motion.div 
@@ -534,7 +580,7 @@ const QuizResult = () => {
               </button>
 
               <button
-                onClick={() => window.location.reload()}
+                onClick={() => navigate(`/quiz/${quiz.id}`)}
                 className={`w-full px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
                   isDark 
                     ? 'bg-emerald-900/30 hover:bg-emerald-900/50 text-emerald-400 border border-emerald-700/50' 

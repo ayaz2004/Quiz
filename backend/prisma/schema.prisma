@@ -49,6 +49,8 @@ model Quiz {
   price       Float?
   prize       String?
   timeLimit   Int?      @map("time_limit") // Time limit in minutes
+  hasNegativeMarking Boolean @default(false) @map("has_negative_marking") // Enable negative marking
+  negativeMarks      Float?  @map("negative_marks") // Negative marks per wrong answer (e.g., 0.25, 0.5, 1)
   createdAt   DateTime  @default(now()) @map("created_at")
   questions   Question[]
   quizAttempts QuizAttempt[]

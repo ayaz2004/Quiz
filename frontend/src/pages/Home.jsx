@@ -379,10 +379,10 @@ const Home = () => {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </span>
-                Premium Mock Tests
+                Premium Mock Tests (Coming Soon)
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Full-length mock tests with detailed solutions, compete for prizes, and track your rank!
+                Advanced features with detailed solutions and expert guidance launching soon!
               </p>
             </motion.div>
             
@@ -483,10 +483,22 @@ const Home = () => {
           } border ${isDark ? 'border-gray-600' : 'border-emerald-100'}`}>
             <CheckCircle2 className={`w-8 h-8 mb-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
             <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Free & Premium Tests
+              Free Practice Tests
             </h3>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Access free practice quizzes and premium tests with detailed explanations
+              Access all quizzes completely free with detailed performance breakdown
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-red-50'
+          } border ${isDark ? 'border-gray-600' : 'border-red-100'}`}>
+            <Award className={`w-8 h-8 mb-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Negative Marking
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Optional negative marking system to simulate real exam scoring patterns
             </p>
           </div>
 
@@ -499,18 +511,6 @@ const Home = () => {
             </h3>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Get immediate feedback with detailed performance breakdown after every quiz
-            </p>
-          </div>
-
-          <div className={`p-6 rounded-2xl ${
-            isDark ? 'bg-gray-700/50' : 'bg-pink-50'
-          } border ${isDark ? 'border-gray-600' : 'border-pink-100'}`}>
-            <Target className={`w-8 h-8 mb-4 ${isDark ? 'text-pink-400' : 'text-pink-600'}`} />
-            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Mark for Review
-            </h3>
-            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Flag questions during tests and review them before final submission
             </p>
           </div>
         </div>

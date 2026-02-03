@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Quiz" ADD COLUMN IF NOT EXISTS "has_negative_marking" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Quiz" ADD COLUMN IF NOT EXISTS "negative_marks" DOUBLE PRECISION;
