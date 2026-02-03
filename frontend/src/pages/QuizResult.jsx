@@ -3,6 +3,31 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { useEffect, useState } from 'react';
 import { getAttemptResult } from '../utils/quizApi';
+import { 
+  Tag, 
+  Calendar, 
+  Clock, 
+  Home, 
+  ClipboardList, 
+  RefreshCw, 
+  TrendingUp, 
+  CheckCircle2, 
+  XCircle, 
+  MinusCircle, 
+  AlertCircle,
+  Info,
+  Trophy,
+  FileText,
+  Target,
+  Zap,
+  Award,
+  BookOpen,
+  ChevronDown,
+  Timer,
+  BarChart3,
+  TrendingDown,
+  Percent
+} from 'lucide-react';
 
 const QuizResult = () => {
   const location = useLocation();
@@ -95,214 +120,468 @@ const QuizResult = () => {
   };
 
   const getPerformanceLevel = (percentage) => {
-    if (percentage >= 90) return { level: 'Excellent', color: 'from-green-500 to-emerald-600', emoji: '🎉' };
-    if (percentage >= 75) return { level: 'Very Good', color: 'from-blue-500 to-cyan-600', emoji: '🌟' };
-    if (percentage >= 60) return { level: 'Good', color: 'from-indigo-500 to-purple-600', emoji: '👍' };
-    if (percentage >= 40) return { level: 'Fair', color: 'from-yellow-500 to-orange-600', emoji: '📚' };
-    return { level: 'Needs Improvement', color: 'from-red-500 to-pink-600', emoji: '💪' };
+    if (percentage >= 90) return { 
+      level: 'Outstanding! 🏆', 
+      color: 'from-emerald-500 to-teal-600', 
+      emoji: '🎉',
+      message: 'Exceptional performance! You\'ve mastered this topic.',
+      bg: 'from-emerald-50 to-teal-50'
+    };
+    if (percentage >= 75) return { 
+      level: 'Great Job! ⭐', 
+      color: 'from-emerald-400 to-green-600', 
+      emoji: '🌟',
+      message: 'Excellent work! You have a strong understanding.',
+      bg: 'from-emerald-50 to-green-50'
+    };
+    if (percentage >= 60) return { 
+      level: 'Good Effort! 👍', 
+      color: 'from-blue-500 to-cyan-600', 
+      emoji: '👍',
+      message: 'Good job! Keep practicing to improve further.',
+      bg: 'from-blue-50 to-cyan-50'
+    };
+    if (percentage >= 40) return { 
+      level: 'Keep Trying! 📚', 
+      color: 'from-yellow-500 to-orange-600', 
+      emoji: '📚',
+      message: 'You\'re making progress. Review the material and try again.',
+      bg: 'from-yellow-50 to-orange-50'
+    };
+    return { 
+      level: 'Needs Work 💪', 
+      color: 'from-red-500 to-pink-600', 
+      emoji: '💪',
+      message: 'Don\'t give up! Practice more and you\'ll improve.',
+      bg: 'from-red-50 to-pink-50'
+    };
   };
 
   const performance = getPerformanceLevel(percentage);
 
   return (
-    <div className={`min-h-screen py-12 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', duration: 0.6 }}
-            className="text-6xl mb-4"
-          >
-            {performance.emoji}
-          </motion.div>
-          <h1 className={`text-4xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-            Quiz Completed!
-          </h1>
-          <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            {quiz.title}
-          </p>
-        </motion.div>
+    <div className={`min-h-screen py-8 md:py-12 ${isDark ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-emerald-50 to-teal-50'}`}>
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Confetti Background Effect */}
+        {percentage >= 75 && (
+          <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ y: -100, x: Math.random() * window.innerWidth, opacity: 1 }}
+                animate={{ 
+                  y: window.innerHeight + 100, 
+                  rotate: 360,
+                  opacity: 0 
+                }}
+                transition={{ 
+                  duration: 3 + Math.random() * 2, 
+                  delay: i * 0.1,
+                  repeat: Infinity,
+                  repeatDelay: 2
+                }}
+                className="absolute w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"
+              />
+            ))}
+          </div>
+        )}
 
-        {/* Score Card */}
+        {/* Header with Quiz Info */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className={`max-w-2xl mx-auto mb-8 p-8 rounded-3xl shadow-2xl ${
-            isDark ? 'bg-gradient-to-br from-gray-800 to-gray-900' : 'bg-white'
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`mb-6 md:mb-8 p-4 md:p-6 rounded-2xl ${
+            isDark ? 'bg-gray-800/50 backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm shadow-lg'
           }`}
         >
-          <div className="text-center mb-6">
-            <div className={`inline-block px-6 py-2 rounded-full bg-gradient-to-r ${performance.color} text-white font-bold text-lg mb-4`}>
-              {performance.level}
-            </div>
-            
-            <div className="relative w-40 h-40 mx-auto mb-4">
-              <svg className="transform -rotate-90 w-40 h-40">
-                <circle
-                  cx="80"
-                  cy="80"
-                  r="70"
-                  stroke="currentColor"
-                  strokeWidth="10"
-                  fill="transparent"
-                  className={isDark ? 'text-gray-700' : 'text-gray-200'}
-                />
-                <motion.circle
-                  cx="80"
-                  cy="80"
-                  r="70"
-                  stroke="url(#gradient)"
-                  strokeWidth="10"
-                  fill="transparent"
-                  strokeLinecap="round"
-                  initial={{ strokeDashoffset: 440 }}
-                  animate={{ strokeDashoffset: 440 - (440 * percentage) / 100 }}
-                  transition={{ duration: 1, delay: 0.5 }}
-                  style={{ strokeDasharray: 440 }}
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3B82F6" />
-                    <stop offset="100%" stopColor="#8B5CF6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    {percentage ? percentage.toFixed(1) : '0'}%
-                  </div>
-                  <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Score
-                  </div>
-                </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left">
+              <h2 className={`text-xl md:text-2xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                {quiz.title}
+              </h2>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm">
+                <span className={`flex items-center gap-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <Tag className="w-4 h-4" />
+                  {quiz.subject}
+                </span>
+                <span className={`flex items-center gap-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <Calendar className="w-4 h-4" />
+                  Year: {quiz.examYear}
+                </span>
+                {timeTaken && (
+                  <span className={`flex items-center gap-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <Clock className="w-4 h-4" />
+                    Time: {formatTime(timeTaken)}
+                  </span>
+                )}
               </div>
             </div>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.2 }}
+              className="text-6xl md:text-7xl"
+            >
+              {performance.emoji}
+            </motion.div>
+          </div>
+        </motion.div>
 
-            <div className={`text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-              {score} / {totalQuestions} Points
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
+          {/* Left Column - Score Card */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Main Score Display */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className={`p-6 md:p-8 rounded-3xl shadow-2xl ${
+                isDark 
+                  ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
+                  : 'bg-gradient-to-br from-white to-gray-50'
+              }`}
+            >
+              <div className="text-center">
+                <div className={`inline-block px-6 py-3 rounded-full bg-gradient-to-r ${performance.color} text-white font-bold text-lg md:text-xl mb-4 shadow-lg`}>
+                  {performance.level}
+                </div>
+                
+                <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
+                  <svg className="transform -rotate-90 w-full h-full">
+                    <circle
+                      cx="50%"
+                      cy="50%"
+                      r="45%"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="transparent"
+                      className={isDark ? 'text-gray-700' : 'text-gray-200'}
+                    />
+                    <motion.circle
+                      cx="50%"
+                      cy="50%"
+                      r="45%"
+                      stroke="url(#emeraldGradient)"
+                      strokeWidth="8"
+                      fill="transparent"
+                      strokeLinecap="round"
+                      initial={{ strokeDashoffset: 440 }}
+                      animate={{ strokeDashoffset: 440 - (440 * percentage) / 100 }}
+                      transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                      style={{ strokeDasharray: 440 }}
+                    />
+                    <defs>
+                      <linearGradient id="emeraldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#10b981" />
+                        <stop offset="100%" stopColor="#0d9488" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.8, type: "spring" }}
+                        className={`text-3xl md:text-4xl font-bold bg-gradient-to-r ${performance.color} bg-clip-text text-transparent`}
+                      >
+                        {percentage ? percentage.toFixed(1) : '0'}%
+                      </motion.div>
+                      <div className={`text-xs md:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Accuracy
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <Target className={`w-6 h-6 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                  <div className={`text-2xl md:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    {score} / {totalQuestions}
+                    <span className={`text-base md:text-lg font-normal ml-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Points
+                    </span>
+                  </div>
+                </motion.div>
+
+                <p className={`text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-md mx-auto`}>
+                  {performance.message}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Detailed Stats Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
+                  isDark 
+                    ? 'bg-gradient-to-br from-emerald-900/40 to-green-900/40 border border-emerald-700/30' 
+                    : 'bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200'
+                }`}
+              >
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                  className="absolute top-2 right-2 opacity-20"
+                >
+                  <Zap className="w-8 h-8 text-emerald-500" />
+                </motion.div>
+                <div className="text-3xl md:text-4xl font-bold text-emerald-500 mb-1">{correctAnswers}</div>
+                <div className={`text-xs md:text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Correct</div>
+                <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                  {totalQuestions > 0 ? ((correctAnswers / totalQuestions) * 100).toFixed(0) : 0}%
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
+                  isDark 
+                    ? 'bg-gradient-to-br from-red-900/40 to-pink-900/40 border border-red-700/30' 
+                    : 'bg-gradient-to-br from-red-50 to-pink-50 border border-red-200'
+                }`}
+              >
+                <motion.div 
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.5, type: "spring" }}
+                  className="absolute top-2 right-2 opacity-20"
+                >
+                  <TrendingDown className="w-8 h-8 text-red-500" />
+                </motion.div>
+                <div className="text-3xl md:text-4xl font-bold text-red-500 mb-1">{wrongAnswers}</div>
+                <div className={`text-xs md:text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Wrong</div>
+                <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                  {totalQuestions > 0 ? ((wrongAnswers / totalQuestions) * 100).toFixed(0) : 0}%
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
+                  isDark 
+                    ? 'bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600' 
+                    : 'bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300'
+                }`}
+              >
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.6, type: "spring" }}
+                  className="absolute top-2 right-2 opacity-20"
+                >
+                  <Timer className="w-8 h-8 text-gray-500" />
+                </motion.div>
+                <div className="text-3xl md:text-4xl font-bold text-gray-500 mb-1">{unanswered}</div>
+                <div className={`text-xs md:text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Skipped</div>
+                <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                  {totalQuestions > 0 ? ((unanswered / totalQuestions) * 100).toFixed(0) : 0}%
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
+                  isDark 
+                    ? 'bg-gradient-to-br from-blue-900/40 to-cyan-900/40 border border-blue-700/30' 
+                    : 'bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200'
+                }`}
+              >
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.7, type: "spring" }}
+                  className="absolute top-2 right-2 opacity-20"
+                >
+                  <BarChart3 className="w-8 h-8 text-blue-500" />
+                </motion.div>
+                <div className="text-3xl md:text-4xl font-bold text-blue-500 mb-1">{totalQuestions}</div>
+                <div className={`text-xs md:text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Total</div>
+                <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                  Questions
+                </div>
+              </motion.div>
             </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {/* Right Column - Action Cards */}
+          <div className="space-y-4">
+            {/* Performance Insights */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className={`p-4 rounded-2xl text-center ${
-                isDark ? 'bg-gray-700' : 'bg-gray-50'
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+              className={`p-5 md:p-6 rounded-2xl ${
+                isDark 
+                  ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
+                  : 'bg-gradient-to-br from-white to-gray-50 shadow-lg'
               }`}
             >
-              <div className="text-3xl font-bold text-green-500 mb-1">{correctAnswers}</div>
-              <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Correct</div>
+              <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <TrendingUp className="w-5 h-5 text-emerald-500" />
+                Performance Insights
+              </h3>
+              <div className="space-y-3">
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-emerald-50'}`}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={`text-sm font-medium flex items-center gap-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <Percent className="w-4 h-4" />
+                      Accuracy Rate
+                    </span>
+                    <span className={`text-sm font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                      {percentage.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percentage}%` }}
+                      transition={{ duration: 1, delay: 0.8 }}
+                      className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full"
+                    />
+                  </div>
+                </div>
+
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-blue-50'}`}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={`text-sm font-medium flex items-center gap-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <Target className="w-4 h-4" />
+                      Attempt Rate
+                    </span>
+                    <span className={`text-sm font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                      {((correctAnswers + wrongAnswers) / totalQuestions * 100).toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(correctAnswers + wrongAnswers) / totalQuestions * 100}%` }}
+                      transition={{ duration: 1, delay: 0.9 }}
+                      className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full"
+                    />
+                  </div>
+                </div>
+
+                {quiz.prize && (
+                  <motion.div 
+                    initial={{ scale: 0.8, rotate: -10 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 1, type: "spring" }}
+                    className={`p-3 rounded-lg border-2 ${
+                    isDark 
+                      ? 'border-yellow-700/50 bg-yellow-900/20' 
+                      : 'border-yellow-300 bg-yellow-50'
+                  }`}>
+                    <div className="flex items-start gap-2">
+                      <div className="relative">
+                        <Trophy className="w-6 h-6 text-yellow-500" />
+                        <Award className="w-3 h-3 text-yellow-600 absolute -top-1 -right-1" />
+                      </div>
+                      <div>
+                        <div className={`text-sm font-semibold ${isDark ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                          Prize Available
+                        </div>
+                        <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {quiz.prize}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             </motion.div>
 
+            {/* Action Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className={`p-4 rounded-2xl text-center ${
-                isDark ? 'bg-gray-700' : 'bg-gray-50'
-              }`}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8 }}
+              className="space-y-3"
             >
-              <div className="text-3xl font-bold text-red-500 mb-1">{wrongAnswers}</div>
-              <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Wrong</div>
-            </motion.div>
+              <button
+                onClick={() => navigate('/quizzes')}
+                className={`w-full px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                  isDark 
+                    ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700' 
+                    : 'bg-white hover:bg-gray-50 text-gray-800 shadow-lg border border-gray-200'
+                }`}
+              >
+                <Home className="w-5 h-5" />
+                Back to Quizzes
+              </button>
+              
+              <button
+                onClick={() => navigate('/attempts')}
+                className="w-full px-6 py-4 rounded-xl font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <ClipboardList className="w-5 h-5" />
+                View All Attempts
+              </button>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className={`p-4 rounded-2xl text-center ${
-                isDark ? 'bg-gray-700' : 'bg-gray-50'
-              }`}
-            >
-              <div className="text-3xl font-bold text-gray-500 mb-1">{unanswered}</div>
-              <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Skipped</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className={`p-4 rounded-2xl text-center ${
-                isDark ? 'bg-gray-700' : 'bg-gray-50'
-              }`}
-            >
-              <div className="text-3xl font-bold text-blue-500 mb-1">{totalQuestions}</div>
-              <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Total</div>
+              <button
+                onClick={() => window.location.reload()}
+                className={`w-full px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                  isDark 
+                    ? 'bg-emerald-900/30 hover:bg-emerald-900/50 text-emerald-400 border border-emerald-700/50' 
+                    : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
+                }`}
+              >
+                <RefreshCw className="w-5 h-5" />
+                Retake Quiz
+              </button>
             </motion.div>
           </div>
-
-          {timeTaken && (
-            <div className="mt-4 text-center">
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                Time Taken: <span className="font-semibold">{formatTime(timeTaken)}</span>
-              </p>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-4 mb-8"
-        >
-          <button
-            onClick={() => navigate('/quizzes')}
-            className={`flex-1 px-8 py-4 rounded-2xl font-semibold transition-all ${
-              isDark 
-                ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-                : 'bg-white hover:bg-gray-50 text-gray-800 shadow-lg'
-            }`}
-          >
-            Back to Quizzes
-          </button>
-          <button
-            onClick={() => navigate(`/attempts`)}
-            className="flex-1 px-8 py-4 rounded-2xl font-semibold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all shadow-lg"
-          >
-            View All Attempts
-          </button>
-        </motion.div>
+        </div>
 
         {/* Detailed Results Toggle */}
         {results.results && results.results.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="max-w-4xl mx-auto"
+            transition={{ delay: 1 }}
+            className="mt-8"
           >
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className={`w-full p-4 rounded-2xl font-semibold transition-all mb-4 ${
+              className={`w-full p-5 md:p-6 rounded-2xl font-semibold transition-all mb-6 ${
                 isDark 
-                  ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-                  : 'bg-white hover:bg-gray-50 text-gray-800 shadow-lg'
+                  ? 'bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white border border-gray-700' 
+                  : 'bg-gradient-to-r from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-gray-800 shadow-lg'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span>Question-by-Question Review</span>
-                <motion.svg
+                <div className="flex items-center gap-3">
+                  <span className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg">
+                    <FileText className="w-6 h-6 text-white" />
+                  </span>
+                  <div className="text-left">
+                    <div className="text-lg md:text-xl font-bold">Detailed Question Review</div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      View answers and explanations for all {totalQuestions} questions
+                    </div>
+                  </div>
+                </div>
+                <motion.div
                   animate={{ rotate: showDetails ? 180 : 0 }}
-                  className="w-6 h-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                  transition={{ duration: 0.3 }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </motion.svg>
+                  <ChevronDown className="w-6 h-6 flex-shrink-0" />
+                </motion.div>
               </div>
             </button>
 
@@ -311,7 +590,7 @@ const QuizResult = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="space-y-4"
+                className="space-y-4 md:space-y-5"
               >
                 {results.results.map((result, index) => {
                   const getOptionText = (optionNum) => {
@@ -323,79 +602,149 @@ const QuizResult = () => {
                       key={result.questionId}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`p-6 rounded-2xl ${
-                        isDark ? 'bg-gray-800' : 'bg-white shadow-lg'
+                      transition={{ delay: index * 0.05 }}
+                      className={`p-5 md:p-6 rounded-2xl ${
+                        isDark ? 'bg-gray-800 border-2' : 'bg-white shadow-lg border-2'
                       } ${
                         result.isCorrect 
-                          ? 'border-2 border-green-500' 
+                          ? isDark ? 'border-emerald-700/50' : 'border-emerald-300' 
                           : result.userAnswer === 0 
-                          ? 'border-2 border-gray-500' 
-                          : 'border-2 border-red-500'
+                          ? isDark ? 'border-gray-600' : 'border-gray-300'
+                          : isDark ? 'border-red-700/50' : 'border-red-300'
                       }`}
                     >
-                      <div className="flex items-start gap-4">
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-                          result.isCorrect 
-                            ? 'bg-green-500 text-white' 
-                            : result.userAnswer === 0 
-                            ? 'bg-gray-500 text-white' 
-                            : 'bg-red-500 text-white'
-                        }`}>
-                          {index + 1}
+                      <div className="flex flex-col md:flex-row gap-4">
+                        {/* Question Number Badge */}
+                        <div className="flex-shrink-0">
+                          <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center font-bold text-lg ${
+                            result.isCorrect 
+                              ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg' 
+                              : result.userAnswer === 0 
+                              ? isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                              : 'bg-gradient-to-br from-red-500 to-pink-600 text-white shadow-lg'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          {/* Status Icon */}
+                          <div className="mt-2 text-center">
+                            {result.isCorrect ? (
+                              <CheckCircle2 className="w-6 h-6 text-emerald-500 mx-auto" />
+                            ) : result.userAnswer === 0 ? (
+                              <MinusCircle className="w-6 h-6 text-gray-500 mx-auto" />
+                            ) : (
+                              <XCircle className="w-6 h-6 text-red-500 mx-auto" />
+                            )}
+                          </div>
                         </div>
+
                         <div className="flex-1">
-                          <h3 className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                            {result.questionText}
-                          </h3>
+                          <div className="flex items-start gap-2 mb-3">
+                            <BookOpen className={`w-5 h-5 flex-shrink-0 mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                            <h3 className={`font-semibold text-base md:text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                              {result.questionText}
+                            </h3>
+                          </div>
 
                           {result.imageUrl && (
                             <img 
                               src={result.imageUrl} 
                               alt="Question" 
-                              className="mb-3 rounded-lg max-w-md"
+                              className="mb-4 rounded-xl max-w-full md:max-w-md shadow-md"
                             />
                           )}
                           
                           <div className="space-y-2 mb-3">
                             {result.userAnswer > 0 && (
-                              <div className={`p-3 rounded-lg ${
+                              <div className={`p-3 md:p-4 rounded-xl border-2 ${
                                 result.isCorrect 
-                                  ? 'bg-green-500/20 border border-green-500' 
-                                  : 'bg-red-500/20 border border-red-500'
+                                  ? isDark 
+                                    ? 'bg-emerald-900/20 border-emerald-700' 
+                                    : 'bg-emerald-50 border-emerald-300'
+                                  : isDark 
+                                    ? 'bg-red-900/20 border-red-700' 
+                                    : 'bg-red-50 border-red-300'
                               }`}>
-                                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  Your Answer: {String.fromCharCode(64 + result.userAnswer)}. {
-                                    getOptionText(result.userAnswer)
-                                  }
-                                </span>
+                                <div className="flex items-start gap-2">
+                                  <span className={`px-2 py-1 rounded-md text-xs font-bold ${
+                                    result.isCorrect 
+                                      ? 'bg-emerald-500 text-white' 
+                                      : 'bg-red-500 text-white'
+                                  }`}>
+                                    {String.fromCharCode(64 + result.userAnswer)}
+                                  </span>
+                                  <div className="flex-1">
+                                    <div className={`text-xs font-semibold mb-1 ${
+                                      result.isCorrect 
+                                        ? isDark ? 'text-emerald-400' : 'text-emerald-700'
+                                        : isDark ? 'text-red-400' : 'text-red-700'
+                                    }`}>
+                                      Your Answer {result.isCorrect ? '✓' : '✗'}
+                                    </div>
+                                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                      {getOptionText(result.userAnswer)}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             )}
                             
                             {result.userAnswer === 0 && (
-                              <div className="p-3 rounded-lg bg-gray-500/20 border border-gray-500">
-                                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  Not Answered
-                                </span>
+                              <div className={`p-3 md:p-4 rounded-xl border-2 ${
+                                isDark 
+                                  ? 'bg-gray-700/50 border-gray-600' 
+                                  : 'bg-gray-100 border-gray-300'
+                              }`}>
+                                <div className="flex items-center gap-2">
+                                  <AlertCircle className="w-5 h-5 text-gray-500" />
+                                  <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    Question Not Attempted
+                                  </span>
+                                </div>
                               </div>
                             )}
                             
                             {!result.isCorrect && (
-                              <div className="p-3 rounded-lg bg-green-500/20 border border-green-500">
-                                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  Correct Answer: {String.fromCharCode(64 + result.correctAnswer)}. {
-                                    getOptionText(result.correctAnswer)
-                                  }
-                                </span>
+                              <div className={`p-3 md:p-4 rounded-xl border-2 ${
+                                isDark 
+                                  ? 'bg-emerald-900/20 border-emerald-700' 
+                                  : 'bg-emerald-50 border-emerald-300'
+                              }`}>
+                                <div className="flex items-start gap-2">
+                                  <span className="px-2 py-1 rounded-md text-xs font-bold bg-emerald-500 text-white">
+                                    {String.fromCharCode(64 + result.correctAnswer)}
+                                  </span>
+                                  <div className="flex-1">
+                                    <div className={`text-xs font-semibold mb-1 ${
+                                      isDark ? 'text-emerald-400' : 'text-emerald-700'
+                                    }`}>
+                                      Correct Answer ✓
+                                    </div>
+                                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                                      {getOptionText(result.correctAnswer)}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             )}
                           </div>
 
                           {result.explanation && (
-                            <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
-                              <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
-                                <span className="font-semibold">Explanation:</span> {result.explanation}
-                              </p>
+                            <div className={`p-3 md:p-4 rounded-xl ${
+                              isDark 
+                                ? 'bg-blue-900/20 border border-blue-800' 
+                                : 'bg-blue-50 border border-blue-200'
+                            }`}>
+                              <div className="flex items-start gap-2">
+                                <Info className={`w-5 h-5 flex-shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                                <div>
+                                  <p className={`text-xs font-semibold mb-1 ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
+                                    Explanation
+                                  </p>
+                                  <p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>
+                                    {result.explanation}
+                                  </p>
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>

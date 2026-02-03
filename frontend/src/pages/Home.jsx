@@ -3,13 +3,19 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { getQuizzes } from '../utils/quizApi';
+import { 
+  Users, BookOpen, Award, TrendingUp, Clock, Target, 
+  CheckCircle2, Zap, Brain, GraduationCap, Trophy, Rocket 
+} from 'lucide-react';
 import QuizCard from '../components/quiz-browser/QuizCard';
 import QuizOverview from '../components/modals/QuizOverview';
 import PurchaseModal from '../components/modals/PurchaseModal';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
+  const { isDark } = useTheme();
   const heroRef = useRef(null);
   const [freeQuizzes, setFreeQuizzes] = useState([]);
   const [paidQuizzes, setPaidQuizzes] = useState([]);
@@ -194,8 +200,8 @@ const Home = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="inline-block mb-6"
           >
-            <span className="px-4 py-2 bg-blue-100/60 backdrop-blur-md text-blue-700 text-sm font-semibold rounded-full border border-blue-300/50 hover:bg-blue-100/80 transition-all">
-              ✨ Master Your Skills
+            <span className="px-4 py-2 bg-emerald-100/60 backdrop-blur-md text-emerald-700 text-sm font-semibold rounded-full border border-emerald-300/50 hover:bg-emerald-100/80 transition-all">
+              🎓 AMU & JMI Entrance Preparation
             </span>
           </motion.div>
 
@@ -207,10 +213,10 @@ const Home = () => {
             className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight"
           >
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-700">
-              Master Your Knowledge
+              Ace Your Dream
             </span>
             <br />
-            <span className="text-gray-800">with JMI Quiz Platform</span>
+            <span className="text-gray-800">AMU & JMI Entrance</span>
           </motion.h1>
 
           {/* Subheading */}
@@ -220,8 +226,8 @@ const Home = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-lg md:text-xl max-w-3xl text-gray-600 font-medium leading-relaxed mb-10"
           >
-            Challenge yourself with premium quizzes, track your progress, and unlock your full potential. 
-            Start with free quizzes or go premium for exclusive content.
+            Your complete preparation platform for Aligarh Muslim University (AMU) and Jamia Millia Islamia (JMI) entrance exams. 
+            Practice with subject-wise quizzes, mock tests, and compete with thousands of aspirants nationwide.
           </motion.p>
 
           {/* CTAs */}
@@ -233,9 +239,9 @@ const Home = () => {
           >
             <Link 
               to={isAuthenticated ? "/quizzes" : "/signup"}
-              className="group inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-110 hover:-translate-y-1"
+              className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1"
             >
-              {isAuthenticated ? "Browse All Quizzes" : "Start Your Journey"}
+              {isAuthenticated ? "Browse All Quizzes" : "Start Preparing Now"}
               <motion.span
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1, repeat: Infinity }}
@@ -244,6 +250,16 @@ const Home = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </motion.span>
+            </Link>
+            
+            <Link 
+              to="/about"
+              className="group inline-flex items-center justify-center gap-2 bg-white/80 backdrop-blur-sm text-gray-800 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-gray-200 hover:border-emerald-300"
+            >
+              Learn More
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </motion.div>
         </div>
@@ -272,15 +288,15 @@ const Home = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-              <span className="flex items-center justify-center w-10 h-10 bg-green-500 text-white rounded-lg">
+              <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-lg shadow-lg">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </span>
-              Free Quizzes
+              Free Practice Tests
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Start learning with our free quizzes - no login required!
+              Start your AMU & JMI preparation with our free subject-wise quizzes!
             </p>
           </motion.div>
           
@@ -358,15 +374,15 @@ const Home = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-                <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg">
+                <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg shadow-lg">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </span>
-                Premium Quizzes
+                Premium Mock Tests
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Unlock advanced quizzes with detailed explanations and exclusive content
+                Full-length mock tests with detailed solutions, compete for prizes, and track your rank!
               </p>
             </motion.div>
             
@@ -395,6 +411,192 @@ const Home = () => {
         </section>
       )}
 
+      {/* What We Offer Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className={`rounded-3xl p-8 md:p-10 ${
+          isDark 
+            ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
+            : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200'
+        } shadow-xl`}
+      >
+        <div className="text-center mb-10">
+          <motion.div
+            initial={{ scale: 0.8 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 mb-4"
+          >
+            <Rocket className={`w-8 h-8 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+          </motion.div>
+          <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            What We Offer
+          </h2>
+          <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`}>
+            Features designed for AMU & JMI entrance exam preparation
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-blue-50'
+          } border ${isDark ? 'border-gray-600' : 'border-blue-100'}`}>
+            <Clock className={`w-8 h-8 mb-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Timed Mock Tests
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Practice with real exam conditions using timed quizzes that simulate actual entrance tests
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-purple-50'
+          } border ${isDark ? 'border-gray-600' : 'border-purple-100'}`}>
+            <TrendingUp className={`w-8 h-8 mb-4 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Performance Analytics
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Track your progress with detailed statistics, accuracy rates, and performance insights
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-orange-50'
+          } border ${isDark ? 'border-gray-600' : 'border-orange-100'}`}>
+            <BookOpen className={`w-8 h-8 mb-4 ${isDark ? 'text-orange-400' : 'text-orange-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Subject-wise Quizzes
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Comprehensive coverage of Physics, Chemistry, Mathematics, Biology, English & GK
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-emerald-50'
+          } border ${isDark ? 'border-gray-600' : 'border-emerald-100'}`}>
+            <CheckCircle2 className={`w-8 h-8 mb-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Free & Premium Tests
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Access free practice quizzes and premium tests with detailed explanations
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-green-50'
+          } border ${isDark ? 'border-gray-600' : 'border-green-100'}`}>
+            <Zap className={`w-8 h-8 mb-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Instant Results
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Get immediate feedback with detailed performance breakdown after every quiz
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-2xl ${
+            isDark ? 'bg-gray-700/50' : 'bg-pink-50'
+          } border ${isDark ? 'border-gray-600' : 'border-pink-100'}`}>
+            <Target className={`w-8 h-8 mb-4 ${isDark ? 'text-pink-400' : 'text-pink-600'}`} />
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Mark for Review
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Flag questions during tests and review them before final submission
+            </p>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Your Preparation Journey */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className={`rounded-3xl p-8 md:p-10 ${
+          isDark 
+            ? 'bg-gradient-to-br from-emerald-900/40 to-teal-900/40 border border-emerald-700/30' 
+            : 'bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200'
+        } shadow-xl`}
+      >
+        <div className="text-center mb-10">
+          <GraduationCap className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+          <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Your Success Journey
+          </h2>
+          <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'} max-w-2xl mx-auto`}>
+            Follow these simple steps to maximize your preparation
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+              isDark ? 'bg-emerald-800/50' : 'bg-emerald-500'
+            } text-white font-bold text-2xl shadow-lg`}>
+              1
+            </div>
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Sign Up Free
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Create your account in seconds and access free quizzes
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+              isDark ? 'bg-teal-800/50' : 'bg-teal-500'
+            } text-white font-bold text-2xl shadow-lg`}>
+              2
+            </div>
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Take Free Tests
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Start with free subject-wise quizzes to assess your level
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+              isDark ? 'bg-green-800/50' : 'bg-green-500'
+            } text-white font-bold text-2xl shadow-lg`}>
+              3
+            </div>
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Analyze Results
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Review detailed analytics to identify weak areas
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+              isDark ? 'bg-emerald-700/50' : 'bg-emerald-600'
+            } text-white font-bold text-2xl shadow-lg`}>
+              4
+            </div>
+            <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Ace the Exam
+            </h3>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Practice regularly and achieve your dream score
+            </p>
+          </div>
+        </div>
+      </motion.section>
+
       {/* Features Section */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <motion.div
@@ -410,10 +612,10 @@ const Home = () => {
             </svg>
           </div>
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-            Multiple Subjects
+            Complete Subject Coverage
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Access quizzes across various subjects and topics to expand your knowledge
+            Physics, Chemistry, Mathematics, Biology, English & GK - all subjects covered as per AMU & JMI syllabus
           </p>
         </motion.div>
 
@@ -430,10 +632,10 @@ const Home = () => {
             </svg>
           </div>
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-            Track Progress
+            Performance Analytics
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Monitor your performance and improvement over time with detailed analytics
+            Track your accuracy, time management, and compare with other aspirants to identify improvement areas
           </p>
         </motion.div>
 
@@ -450,10 +652,10 @@ const Home = () => {
             </svg>
           </div>
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
-            Track Progress
+            Exam-Like Experience
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Monitor your performance and improve with detailed analytics
+            Timed tests with negative marking simulation to prepare you for the actual entrance exam day
           </p>
         </motion.div>
       </section>
