@@ -17,8 +17,8 @@ const Button = ({
 
   const variants = {
     primary: isDark
-      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl focus:ring-blue-500'
-      : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl focus:ring-blue-500',
+      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl focus:ring-emerald-500'
+      : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl focus:ring-emerald-500',
     secondary: isDark
       ? 'bg-gray-700 hover:bg-gray-600 text-white border-2 border-gray-600 focus:ring-gray-500'
       : 'bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300 focus:ring-gray-300',

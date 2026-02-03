@@ -206,7 +206,7 @@ const Home = () => {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-blue-700 to-purple-600">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-700">
               Master Your Knowledge
             </span>
             <br />

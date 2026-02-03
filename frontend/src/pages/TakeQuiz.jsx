@@ -23,6 +23,7 @@ const TakeQuiz = () => {
   const [timeTaken, setTimeTaken] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -73,6 +74,10 @@ const TakeQuiz = () => {
     if (currentQuestionIndex < quiz.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
+  };
+
+  const handleQuestionClick = (questionIndex) => {
+    setCurrentQuestionIndex(questionIndex);
   };
 
   const handleSubmit = () => {
@@ -136,40 +141,53 @@ const TakeQuiz = () => {
   const answeredCount = answers.filter(a => a !== undefined).length;
 
   return (
-    <div className={`min-h-screen pb-20 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* Header */}
-      <div className={`sticky top-0 z-40 ${isDark ? 'bg-gray-900' : 'bg-gray-50'} border-b ${isDark ? 'border-gray-800' : 'border-gray-200'} shadow-sm`}>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                {quiz.title}
-              </h1>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                {quiz.subject} • {quiz.examYear}
-              </p>
-            </div>
-            <QuizTimer onTimeUpdate={handleTimeUpdate} isActive={!submitting} />
-          </div>
-        </div>
-      </div>
-
+    <div className={`min-h-screen pb-20 pt-8 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Progress Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-32">
-              <QuizProgress
-                currentQuestion={currentQuestionIndex + 1}
-                totalQuestions={quiz.questions.length}
-                answeredCount={answeredCount}
-              />
+          {!sidebarCollapsed && (
+            <div className="lg:col-span-1">
+              <div className="sticky top-32">
+                <div className="relative">
+                  <button
+                    onClick={() => setSidebarCollapsed(true)}
+                    className={`absolute -right-3 top-4 z-10 p-2 rounded-full shadow-lg transition-colors ${
+                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-white hover:bg-gray-100 text-gray-600'
+                    }`}
+                    title="Hide progress panel"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <QuizProgress
+                    currentQuestion={currentQuestionIndex + 1}
+                    totalQuestions={quiz.questions.length}
+                    answeredCount={answeredCount}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Question Area */}
-          <div className="lg:col-span-2">
+          <div className={sidebarCollapsed ? 'lg:col-span-3' : 'lg:col-span-2'}>
+            {/* Show/Hide Sidebar Button */}
+            {sidebarCollapsed && (
+              <button
+                onClick={() => setSidebarCollapsed(false)}
+                className={`mb-4 px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2 ${
+                  isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-white hover:bg-gray-50 text-gray-700'
+                }`}
+                title="Show progress panel"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                <span className="text-sm font-medium">Show Progress</span>
+              </button>
+            )}
             <AnimatePresence mode="wait">
               <QuestionCard
                 key={currentQuestionIndex}
@@ -193,6 +211,7 @@ const TakeQuiz = () => {
             onNext={handleNext}
             onSubmit={handleSubmit}
             answers={answers}
+            onQuestionClick={handleQuestionClick}
           />
         </div>
       </div>

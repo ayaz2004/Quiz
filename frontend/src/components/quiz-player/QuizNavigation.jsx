@@ -8,7 +8,8 @@ const QuizNavigation = ({
   onPrevious, 
   onNext, 
   onSubmit,
-  answers 
+  answers,
+  onQuestionClick
 }) => {
   const { isDark } = useTheme();
   const isFirstQuestion = currentQuestion === 1;
@@ -45,34 +46,39 @@ const QuizNavigation = ({
         </motion.button>
 
         {/* Question Indicators */}
-        <div className="hidden md:flex items-center gap-2 flex-wrap justify-center">
-          {Array.from({ length: totalQuestions }, (_, i) => {
-            const questionNum = i + 1;
-            const isAnswered = answers[i] !== undefined;
-            const isCurrent = questionNum === currentQuestion;
+        <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+          <div className="flex items-center gap-2 min-w-min px-2">
+            {Array.from({ length: totalQuestions }, (_, i) => {
+              const questionNum = i + 1;
+              const isAnswered = answers[i] !== undefined;
+              const isCurrent = questionNum === currentQuestion;
 
-            return (
-              <motion.div
-                key={i}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: i * 0.02 }}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all ${
-                  isCurrent
-                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg scale-110'
-                    : isAnswered
-                    ? isDark
-                      ? 'bg-green-700 text-white'
-                      : 'bg-green-500 text-white'
-                    : isDark
-                    ? 'bg-gray-700 text-gray-400'
-                    : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                {questionNum}
-              </motion.div>
-            );
-          })}
+              return (
+                <motion.button
+                  key={i}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: i * 0.02 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => onQuestionClick(i)}
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all cursor-pointer flex-shrink-0 ${
+                    isCurrent
+                      ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg ring-2 ring-emerald-300'
+                      : isAnswered
+                      ? isDark
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-500'
+                        : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                      : isDark
+                      ? 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  {questionNum}
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Next/Submit Button */}
@@ -81,7 +87,7 @@ const QuizNavigation = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onSubmit}
-            className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200 flex items-center gap-2"
+            className="px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg transition-all duration-200 flex items-center gap-2"
           >
             Submit Quiz
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,7 +101,7 @@ const QuizNavigation = ({
             onClick={onNext}
             className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 ${
               hasAnswer
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg'
                 : isDark
                 ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
                 : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
@@ -108,13 +114,6 @@ const QuizNavigation = ({
           </motion.button>
         )}
       </div>
-
-      {/* Mobile Question Counter */}
-      <div className="md:hidden mt-4 text-center">
-        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-          Question <span className="font-bold text-blue-600 dark:text-blue-400">{currentQuestion}</span> of {totalQuestions}
-        </p>
-      </div>
     </div>
   );
 };
@@ -126,6 +125,7 @@ QuizNavigation.propTypes = {
   onNext: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   answers: PropTypes.array.isRequired,
+  onQuestionClick: PropTypes.func.isRequired,
 };
 
 export default QuizNavigation;

@@ -24,7 +24,7 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
       onClick={() => onClick(quiz)}
     >
       {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-600/0 group-hover:from-blue-500/5 group-hover:to-purple-600/5 transition-all duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-teal-600/0 group-hover:from-emerald-500/5 group-hover:to-teal-600/5 transition-all duration-300" />
       
       {/* Lock icon for paid quizzes that user doesn't have access to */}
       {showLockIcon && isPaid && (
@@ -39,7 +39,7 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold rounded-full shadow-sm">
+            <span className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-semibold rounded-full shadow-sm">
               {subject}
             </span>
             {prize && (
@@ -57,7 +57,7 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
         </div>
         
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200">
           {title}
         </h3>
         
@@ -97,7 +97,7 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
 
         {/* Hover effect arrow */}
         <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-          <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </div>

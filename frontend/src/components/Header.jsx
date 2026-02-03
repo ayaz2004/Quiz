@@ -30,7 +30,7 @@ const Header = () => {
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+            <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
               <span className="text-white font-bold text-xl">Q</span>
             </div>
             <span className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
@@ -49,7 +49,7 @@ const Header = () => {
                   className={({ isActive }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`
                   }
@@ -128,7 +128,7 @@ const Header = () => {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-semibold">
                       {user?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
                   )}
@@ -175,7 +175,7 @@ const Header = () => {
                 <Link
                   to="/signup"
                   onClick={() => setShowMobileMenu(false)}
-                  className="px-4 py-2 text-sm font-medium text-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 transition-all shadow-md"
+                  className="px-4 py-2 text-sm font-medium text-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 transition-all shadow-md"
                 >
                   Sign Up
                 </Link>

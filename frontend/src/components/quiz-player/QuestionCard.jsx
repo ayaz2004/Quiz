@@ -23,7 +23,7 @@ const QuestionCard = ({ question, questionNumber, selectedAnswer, onAnswerSelect
     >
       {/* Question Header */}
       <div className="flex items-start gap-4 mb-6">
-        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
           {questionNumber}
         </div>
         <div className="flex-grow">

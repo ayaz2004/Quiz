@@ -11,7 +11,7 @@ const QuizProgress = ({ currentQuestion, totalQuestions, answeredCount }) => {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="text-center">
-          <p className={`text-2xl font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+          <p className={`text-2xl font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>
             {currentQuestion}
           </p>
           <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -19,7 +19,7 @@ const QuizProgress = ({ currentQuestion, totalQuestions, answeredCount }) => {
           </p>
         </div>
         <div className="text-center">
-          <p className={`text-2xl font-bold ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+          <p className={`text-2xl font-bold ${isDark ? 'text-teal-400' : 'text-teal-600'}`}>
             {answeredCount}
           </p>
           <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -51,7 +51,7 @@ const QuizProgress = ({ currentQuestion, totalQuestions, answeredCount }) => {
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
+            className="h-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full"
           />
         </div>
       </div>
