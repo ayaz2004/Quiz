@@ -143,7 +143,7 @@ const QuizForm = ({
 
           {quizForm.questions.map((question, index) => (
             <QuestionItem
-              key={index}
+              key={question.id || index}
               question={question}
               index={index}
               onQuestionChange={onQuestionChange}

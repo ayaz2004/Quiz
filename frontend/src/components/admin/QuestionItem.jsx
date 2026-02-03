@@ -1,4 +1,6 @@
-const QuestionItem = ({ 
+import { memo } from 'react';
+
+const QuestionItem = memo(({ 
   question, 
   index, 
   onQuestionChange, 
@@ -104,6 +106,8 @@ const QuestionItem = ({
       </div>
     </div>
   );
-};
+});
+
+QuestionItem.displayName = 'QuestionItem';
 
 export default QuestionItem;

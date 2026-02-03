@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { addQuiz, updateQuiz, getAllUsers, deleteUser, getAllQuizzes, deleteQuiz, getQuizById } from '../utils/adminApi';
 import MessageAlert from '../components/admin/MessageAlert';
@@ -84,12 +84,13 @@ const AdminDashboard = () => {
     setTimeout(() => setMessage({ type: '', text: '' }), 5000);
   };
 
-  const handleAddQuestion = () => {
-    setQuizForm({
-      ...quizForm,
+  const handleAddQuestion = useCallback(() => {
+    setQuizForm(prevForm => ({
+      ...prevForm,
       questions: [
-        ...quizForm.questions,
+        ...prevForm.questions,
         {
+          id: Date.now() + Math.random(), // Unique ID for React key
           questionText: '',
           option1: '',
           option2: '',
@@ -101,25 +102,31 @@ const AdminDashboard = () => {
           imageFile: null
         }
       ]
+    }));
+  }, []);
+
+  const handleQuestionChange = useCallback((index, field, value) => {
+    setQuizForm(prevForm => {
+      const updatedQuestions = [...prevForm.questions];
+      updatedQuestions[index] = { ...updatedQuestions[index], [field]: value };
+      return { ...prevForm, questions: updatedQuestions };
     });
-  };
+  }, []);
 
-  const handleQuestionChange = (index, field, value) => {
-    const updatedQuestions = [...quizForm.questions];
-    updatedQuestions[index][field] = value;
-    setQuizForm({ ...quizForm, questions: updatedQuestions });
-  };
+  const handleImageUpload = useCallback((index, file) => {
+    setQuizForm(prevForm => {
+      const updatedQuestions = [...prevForm.questions];
+      updatedQuestions[index] = { ...updatedQuestions[index], imageFile: file };
+      return { ...prevForm, questions: updatedQuestions };
+    });
+  }, []);
 
-  const handleImageUpload = (index, file) => {
-    const updatedQuestions = [...quizForm.questions];
-    updatedQuestions[index].imageFile = file;
-    setQuizForm({ ...quizForm, questions: updatedQuestions });
-  };
-
-  const handleRemoveQuestion = (index) => {
-    const updatedQuestions = quizForm.questions.filter((_, i) => i !== index);
-    setQuizForm({ ...quizForm, questions: updatedQuestions });
-  };
+  const handleRemoveQuestion = useCallback((index) => {
+    setQuizForm(prevForm => ({
+      ...prevForm,
+      questions: prevForm.questions.filter((_, i) => i !== index)
+    }));
+  }, []);
 
   const handleSubmitQuiz = async (e) => {
     e.preventDefault();
@@ -236,7 +243,8 @@ const AdminDashboard = () => {
         isActive: true,
         isPaid: quiz.isPaid,
         price: quiz.price || 0,
-        questions: quiz.questions.map(q => ({
+        questions: quiz.questions.map((q, idx) => ({
+          id: q.id || Date.now() + idx, // Use existing ID or generate one
           questionText: q.questionText,
           option1: q.option1,
           option2: q.option2,
