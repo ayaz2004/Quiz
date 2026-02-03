@@ -23,7 +23,7 @@ const TakeQuiz = () => {
   const [reviewMarked, setReviewMarked] = useState([]);
   const [timeTaken, setTimeTaken] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
@@ -89,20 +89,13 @@ const TakeQuiz = () => {
   };
 
   const handleSubmit = () => {
-    const answeredCount = answers.filter(a => a !== undefined).length;
-    const unansweredCount = quiz.questions.length - answeredCount;
-    
-    if (unansweredCount > 0) {
-      setShowSubmitConfirm(true);
-    } else {
-      submitQuiz();
-    }
+    setShowReviewModal(true);
   };
 
   const submitQuiz = async () => {
     try {
       setSubmitting(true);
-      setShowSubmitConfirm(false);
+      setShowReviewModal(false);
 
       // Format answers for backend - include all answers, even unanswered (as 0)
       const formattedAnswers = answers.map((answer, index) => ({
@@ -239,61 +232,180 @@ const TakeQuiz = () => {
         </div>
       </div>
 
-      {/* Submit Confirmation Modal */}
+      {/* Review Modal */}
       <AnimatePresence>
-        {showSubmitConfirm && (
+        {showReviewModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            onClick={() => setShowSubmitConfirm(false)}
+            onClick={() => setShowReviewModal(false)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className={`max-w-md w-full p-8 rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}
+              className={`max-w-4xl w-full max-h-[90vh] overflow-hidden rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}
             >
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-yellow-600 dark:text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
+              {/* Header */}
+              <div className={`px-6 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    Quiz Review
+                  </h3>
+                  <button
+                    onClick={() => setShowReviewModal(false)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      isDark ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-                <h3 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                  Submit Quiz?
-                </h3>
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  You have <span className="font-bold text-yellow-600">{quiz.questions.length - answeredCount}</span> unanswered question{quiz.questions.length - answeredCount !== 1 ? 's' : ''}
-                </p>
               </div>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowSubmitConfirm(false)}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-colors ${
-                    isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                  }`}
-                >
-                  Review
-                </button>
-                <button
-                  onClick={submitQuiz}
-                  disabled={submitting}
-                  className="flex-1 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all disabled:opacity-50"
-                >
-                  {submitting ? 'Submitting...' : 'Submit Anyway'}
-                </button>
+
+              {/* Summary Stats */}
+              <div className={`px-6 py-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                      {quiz.questions.length}
+                    </div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Total Questions
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-500">
+                      {answers.filter(a => a !== undefined).length}
+                    </div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Attempted
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-yellow-500">
+                      {reviewMarked.filter(Boolean).length}
+                    </div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      For Review
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-red-500">
+                      {answers.filter(a => a === undefined).length}
+                    </div>
+                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Not Attempted
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Question Grid */}
+              <div className="px-6 py-4 overflow-y-auto max-h-[50vh]">
+                <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2">
+                  {quiz.questions.map((_, index) => {
+                    const isAnswered = answers[index] !== undefined;
+                    const isReviewed = reviewMarked[index];
+                    const isCurrent = index === currentQuestionIndex;
+
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentQuestionIndex(index);
+                          setShowReviewModal(false);
+                        }}
+                        className={`relative aspect-square rounded-lg font-semibold text-sm transition-all transform hover:scale-110 ${
+                          isCurrent
+                            ? 'ring-2 ring-offset-2 ' + (isDark ? 'ring-blue-500 ring-offset-gray-800' : 'ring-blue-500 ring-offset-white')
+                            : ''
+                        } ${
+                          isReviewed
+                            ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-lg'
+                            : isAnswered
+                            ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md'
+                            : isDark
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        {index + 1}
+                        {isReviewed && (
+                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Legend */}
+                <div className="mt-6 flex flex-wrap gap-4 justify-center">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded bg-gradient-to-br from-emerald-500 to-teal-600"></div>
+                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Attempted</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded bg-gradient-to-br from-yellow-400 to-orange-500"></div>
+                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Marked for Review</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
+                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Not Attempted</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded ring-2 ring-blue-500 bg-emerald-500"></div>
+                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Current Question</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className={`px-6 py-4 border-t ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
+                {answers.filter(a => a === undefined).length > 0 ? (
+                  <div className={`mb-4 p-3 rounded-lg ${isDark ? 'bg-yellow-900/20 border border-yellow-800' : 'bg-yellow-50 border border-yellow-200'}`}>
+                    <p className={`text-sm font-medium ${isDark ? 'text-yellow-400' : 'text-yellow-800'}`}>
+                      ⚠️ You have {answers.filter(a => a === undefined).length} unanswered question{answers.filter(a => a === undefined).length !== 1 ? 's' : ''}. 
+                      Review them before submitting.
+                    </p>
+                  </div>
+                ) : null}
+                
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowReviewModal(false)}
+                    className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-colors ${
+                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                    }`}
+                  >
+                    Continue Quiz
+                  </button>
+                  <button
+                    onClick={submitQuiz}
+                    disabled={submitting}
+                    className="flex-1 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all disabled:opacity-50"
+                  >
+                    {submitting ? 'Submitting...' : 'Submit Quiz'}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
+
       {/* Submitting Overlay */}
-      {submitting && !showSubmitConfirm && (
+      {submitting && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="text-center">
             <div className="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
