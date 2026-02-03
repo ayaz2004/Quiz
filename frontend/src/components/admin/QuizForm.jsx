@@ -28,14 +28,14 @@ const QuizForm = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
         {editingQuizId ? 'Edit Quiz' : 'Add New Quiz'}
       </h2>
       
-      <form onSubmit={onSubmit} className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-4">
         {/* Quiz Basic Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Quiz Title *
@@ -45,7 +45,7 @@ const QuizForm = ({
               required
               value={quizForm.title}
               onChange={(e) => setQuizForm({ ...quizForm, title: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Enter quiz title"
             />
           </div>
@@ -59,7 +59,7 @@ const QuizForm = ({
               required
               value={quizForm.subject}
               onChange={(e) => setQuizForm({ ...quizForm, subject: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="e.g., Mathematics, Science"
             />
           </div>
@@ -73,7 +73,7 @@ const QuizForm = ({
               required
               value={quizForm.examYear}
               onChange={(e) => setQuizForm({ ...quizForm, examYear: parseInt(e.target.value) })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
 
@@ -86,7 +86,7 @@ const QuizForm = ({
               step="0.01"
               value={quizForm.price}
               onChange={(e) => setQuizForm({ ...quizForm, price: parseFloat(e.target.value) || 0 })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
           </div>
         </div>
@@ -99,18 +99,18 @@ const QuizForm = ({
             value={quizForm.description}
             onChange={(e) => setQuizForm({ ...quizForm, description: e.target.value })}
             rows="3"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Enter quiz description"
           />
         </div>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-4">
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
               checked={quizForm.isActive}
               onChange={(e) => setQuizForm({ ...quizForm, isActive: e.target.checked })}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
           </label>
@@ -127,15 +127,15 @@ const QuizForm = ({
         </div>
 
         {/* Questions Section */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Questions ({quizForm.questions.length})
             </h3>
             <button
               type="button"
               onClick={onAddQuestion}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-colors shadow-sm"
             >
               + Add Question
             </button>
@@ -159,7 +159,7 @@ const QuizForm = ({
             <button
               type="button"
               onClick={handleCancel}
-              className="px-6 py-3 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
             </button>
@@ -167,7 +167,7 @@ const QuizForm = ({
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Saving...' : editingQuizId ? 'Update Quiz' : 'Create Quiz'}
           </button>

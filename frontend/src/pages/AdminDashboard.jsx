@@ -292,10 +292,10 @@ const AdminDashboard = () => {
 
         {/* Quiz Management Tab */}
         {tab === 'quizzes' && (
-          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                   Add/Edit Quiz
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -320,10 +320,10 @@ const AdminDashboard = () => {
 
         {/* View All Quizzes Tab */}
         {tab === 'viewQuizzes' && (
-          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                   All Quizzes
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -345,10 +345,10 @@ const AdminDashboard = () => {
 
         {/* User Management Tab */}
         {tab === 'users' && (
-          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                   Manage Users
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">

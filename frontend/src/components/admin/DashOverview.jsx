@@ -50,7 +50,7 @@ const DashOverview = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
       ),
-      color: 'from-blue-500 to-blue-600',
+      color: 'from-emerald-500 to-teal-600',
       link: '/admin?tab=viewQuizzes'
     },
     {
@@ -61,7 +61,7 @@ const DashOverview = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
       ),
-      color: 'from-purple-500 to-purple-600',
+      color: 'from-teal-500 to-teal-600',
       link: '/admin?tab=users'
     },
     {
@@ -141,20 +141,20 @@ const DashOverview = () => {
   }
 
   return (
-    <div className="flex-1 p-6 md:p-8 overflow-y-auto">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Dashboard Overview
           </h2>
-          <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             Welcome back! Here's what's happening with your quiz platform.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((card, index) => (
             <div
               key={index}
@@ -162,7 +162,7 @@ const DashOverview = () => {
                 isDark ? 'bg-gray-800' : 'bg-white'
               }`}
             >
-              <div className="p-6">
+              <div className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <p className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -195,15 +195,15 @@ const DashOverview = () => {
 
         {/* Quick Actions */}
         <div>
-          <h3 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Quick Actions
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {quickActions.map((action, index) => (
               <Link
                 key={index}
                 to={action.link}
-                className={`p-6 rounded-xl border-2 transition-all hover:shadow-lg hover:-translate-y-1 ${
+                className={`p-4 rounded-xl border-2 transition-all hover:shadow-lg hover:-translate-y-1 ${
                   isDark
                     ? 'bg-gray-800 border-gray-700 hover:border-gray-600'
                     : 'bg-white border-gray-200 hover:border-gray-300'
