@@ -34,6 +34,7 @@ model User {
   createdAt     DateTime @default(now())
   quizAttempts  QuizAttempt[]
   purchases     Purchase[]
+  suggestions   Suggestion[]
 }
 
 
@@ -54,6 +55,7 @@ model Quiz {
   createdAt   DateTime  @default(now()) @map("created_at")
   questions   Question[]
   quizAttempts QuizAttempt[]
+  suggestions Suggestion[]
   purchases   Purchase[]
 }
 
@@ -109,4 +111,23 @@ model Purchase {
   @@index([quizId])
   @@index([purchasedAt])
   @@map("purchases")
+}
+
+model Suggestion {
+  id          Int      @id @default(autoincrement()) @map("suggestion_id")
+  userId      Int      @map("user_id")
+  quizId      Int      @map("quiz_id")
+  attemptId   Int?     @map("attempt_id")
+  suggestionText String  @map("suggestion_text") @db.Text
+  status      String   @default("pending") @db.VarChar(20) // pending, reviewed, resolved
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([quizId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("suggestions")
 }

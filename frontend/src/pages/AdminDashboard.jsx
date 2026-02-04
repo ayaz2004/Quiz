@@ -8,6 +8,8 @@ import DashOverview from '../components/admin/DashOverview';
 import QuizForm from '../components/admin/QuizForm';
 import QuizList from '../components/admin/QuizList';
 import UserList from '../components/admin/UserList';
+import SuggestionList from '../components/admin/SuggestionList';
+import AttemptList from '../components/admin/AttemptList';
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -373,6 +375,40 @@ const AdminDashboard = () => {
                 setCurrentPage={setCurrentPage}
                 onDelete={handleDeleteUser}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Suggestions Tab */}
+        {tab === 'suggestions' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  User Suggestions
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  View and manage user feedback and suggestions
+                </p>
+              </div>
+              <SuggestionList />
+            </div>
+          </div>
+        )}
+
+        {/* Attempts Tab */}
+        {tab === 'attempts' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  Quiz Attempts
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  View and manage all user quiz attempts
+                </p>
+              </div>
+              <AttemptList />
             </div>
           </div>
         )}

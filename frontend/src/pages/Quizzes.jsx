@@ -10,6 +10,10 @@ const Quizzes = () => {
   const [filteredQuizzes, setFilteredQuizzes] = useState([]);
   const [myQuizzes, setMyQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalQuizzes, setTotalQuizzes] = useState(0);
   
   // Filter states
   const [activeFilter, setActiveFilter] = useState('all');
@@ -43,21 +47,36 @@ const Quizzes = () => {
     }
   }, [isAuthenticated]);
 
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = async (page = 1, append = false) => {
     try {
-      setLoading(true);
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
       setError(null);
-      const response = await getQuizzes();
+      const response = await getQuizzes({ limit: 20, page });
       // Backend returns: { success: true, data: { quizzes: [...], pagination: {...} } }
       const quizzes = response.data?.quizzes || [];
-      setAllQuizzes(quizzes);
-      setFilteredQuizzes(quizzes);
+      const pagination = response.data?.pagination || {};
       
-      // Extract unique subjects and years
-      const uniqueSubjects = [...new Set(quizzes.map(q => q.subject))].filter(Boolean);
-      const uniqueYears = [...new Set(quizzes.map(q => q.examYear))].filter(Boolean).sort((a, b) => b - a);
-      setSubjects(uniqueSubjects);
-      setYears(uniqueYears);
+      if (append) {
+        setAllQuizzes(prev => [...prev, ...quizzes]);
+      } else {
+        setAllQuizzes(quizzes);
+      }
+      
+      setTotalQuizzes(pagination.totalQuizzes || 0);
+      setHasMore(pagination.currentPage < pagination.totalPages);
+      setCurrentPage(pagination.currentPage || 1);
+      
+      // Extract unique subjects and years from all loaded quizzes
+      if (!append) {
+        const uniqueSubjects = [...new Set(quizzes.map(q => q.subject))].filter(Boolean);
+        const uniqueYears = [...new Set(quizzes.map(q => q.examYear))].filter(Boolean).sort((a, b) => b - a);
+        setSubjects(uniqueSubjects);
+        setYears(uniqueYears);
+      }
     } catch (error) {
       console.error('Error fetching quizzes:', error);
       
@@ -70,10 +89,18 @@ const Quizzes = () => {
         setError('Failed to load quizzes. Please try again later.');
       }
       
-      setAllQuizzes([]);
-      setFilteredQuizzes([]);
+      if (!append) {
+        setAllQuizzes([]);
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const loadMoreQuizzes = () => {
+    if (!loadingMore && hasMore) {
+      fetchQuizzes(currentPage + 1, true);
     }
   };
 
@@ -258,6 +285,36 @@ const Quizzes = () => {
         loading={loading}
         onQuizClick={handleQuizClick}
       />
+
+      {/* Load More Button */}
+      {!loading && hasMore && filteredQuizzes.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col items-center gap-3 py-6"
+        >
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Showing {allQuizzes.length} of {totalQuizzes} quizzes
+          </p>
+          <button
+            onClick={loadMoreQuizzes}
+            disabled={loadingMore}
+            className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            {loadingMore ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading...
+              </span>
+            ) : (
+              'Load More Quizzes'
+            )}
+          </button>
+        </motion.div>
+      )}
 
       {/* Modals */}
       {showOverview && selectedQuiz && (

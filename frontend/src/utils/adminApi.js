@@ -190,3 +190,111 @@ export const getDashboardStats = async () => {
     throw error;
   }
 };
+
+/**
+ * Get all suggestions with pagination and filtering
+ * @param {number} page - Page number
+ * @param {number} limit - Items per page
+ * @param {string} status - Filter by status (all, pending, reviewed, resolved)
+ * @returns {Promise} API response with suggestions
+ */
+export const getAllSuggestions = async (page = 1, limit = 20, status = 'all') => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/admin/suggestions`,
+      { 
+        params: { page, limit, status },
+        withCredentials: true 
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get All Suggestions Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Update suggestion status
+ * @param {number} suggestionId - ID of the suggestion
+ * @param {string} status - New status (pending, reviewed, resolved)
+ * @returns {Promise} API response
+ */
+export const updateSuggestionStatus = async (suggestionId, status) => {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/api/admin/suggestions/${suggestionId}`,
+      { status },
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Update Suggestion Status Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Delete a suggestion
+ * @param {number} suggestionId - ID of the suggestion
+ * @returns {Promise} API response
+ */
+export const deleteSuggestion = async (suggestionId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/admin/suggestions/${suggestionId}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Delete Suggestion Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Get all quiz attempts with pagination and filtering
+ * @param {number} page - Page number
+ * @param {number} limit - Items per page
+ * @param {number} quizId - Filter by quiz ID (optional)
+ * @param {number} userId - Filter by user ID (optional)
+ * @returns {Promise} API response with attempts
+ */
+export const getAllAttempts = async (page = 1, limit = 20, quizId = null, userId = null) => {
+  try {
+    const params = { page, limit };
+    if (quizId) params.quizId = quizId;
+    if (userId) params.userId = userId;
+    
+    const response = await axios.get(
+      `${API_URL}/api/admin/attempts`,
+      { 
+        params,
+        withCredentials: true 
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get All Attempts Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Delete a quiz attempt
+ * @param {number} attemptId - ID of the attempt
+ * @returns {Promise} API response
+ */
+export const deleteAttempt = async (attemptId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/admin/attempts/${attemptId}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Delete Attempt Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+

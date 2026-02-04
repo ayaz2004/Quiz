@@ -451,3 +451,118 @@ export const getQuizByIdForAdmin = async (req, res, next) => {
     return next(new ApiError(500, error.message || "Error retrieving quiz"));
   }
 };
+
+/**
+ * Get all quiz attempts (Admin only)
+ * @route GET /api/admin/attempts
+ * @access Admin only
+ */
+export const getAllAttempts = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can access this endpoint"));
+    }
+
+    const { page = 1, limit = 20, quizId, userId } = req.query;
+    
+    const pageNum = parseInt(page);
+    const limitNum = Math.min(parseInt(limit), 50);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Build where clause
+    const where = {};
+    if (quizId) where.quizId = parseInt(quizId);
+    if (userId) where.userId = parseInt(userId);
+
+    // Get total count and attempts in parallel
+    const [totalAttempts, attempts] = await Promise.all([
+      prisma.quizAttempt.count({ where }),
+      prisma.quizAttempt.findMany({
+        where,
+        skip,
+        take: limitNum,
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profilePhoto: true
+            }
+          },
+          quiz: {
+            select: {
+              id: true,
+              title: true,
+              subject: true,
+              examYear: true
+            }
+          }
+        },
+        orderBy: {
+          attemptedAt: 'desc'
+        }
+      })
+    ]);
+
+    return res.status(200).json(
+      new ApiResponse(200, {
+        attempts,
+        pagination: {
+          currentPage: pageNum,
+          totalPages: Math.ceil(totalAttempts / limitNum),
+          totalAttempts,
+          limit: limitNum
+        }
+      }, "Attempts retrieved successfully")
+    );
+  } catch (error) {
+    console.error("Get All Attempts Error:", error);
+    return next(new ApiError(500, error.message || "Error retrieving attempts"));
+  }
+};
+
+/**
+ * Delete a quiz attempt (Admin only)
+ * @route DELETE /api/admin/attempts/:id
+ * @access Admin only
+ */
+export const deleteAttempt = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can delete attempts"));
+    }
+
+    const { id } = req.params;
+    const attemptId = parseInt(id);
+
+    if (!attemptId || isNaN(attemptId)) {
+      return next(new ApiError(400, "Invalid attempt ID"));
+    }
+
+    // Check if attempt exists
+    const attempt = await prisma.quizAttempt.findUnique({
+      where: { id: attemptId }
+    });
+
+    if (!attempt) {
+      return next(new ApiError(404, "Attempt not found"));
+    }
+
+    // Delete the attempt
+    await prisma.quizAttempt.delete({
+      where: { id: attemptId }
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, null, "Attempt deleted successfully")
+    );
+  } catch (error) {
+    console.error("Delete Attempt Error:", error);
+    return next(new ApiError(500, error.message || "Error deleting attempt"));
+  }
+};
+

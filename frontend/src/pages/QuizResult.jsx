@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { useEffect, useState } from 'react';
-import { getAttemptResult } from '../utils/quizApi';
+import { getAttemptResult, submitSuggestion } from '../utils/quizApi';
 import { 
   Tag, 
   Calendar, 
@@ -41,6 +41,10 @@ const QuizResult = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resultData, setResultData] = useState(null);
+  const [suggestionText, setSuggestionText] = useState('');
+  const [showSuggestionForm, setShowSuggestionForm] = useState(false);
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
+  const [suggestionMessage, setSuggestionMessage] = useState({ type: '', text: '' });
   
   // Data from navigation state (when coming from TakeQuiz)
   const stateResults = location.state?.results;
@@ -121,6 +125,46 @@ const QuizResult = () => {
   // Accuracy rate should match the score percentage (which includes negative marking)
   // Not just correct/attempted ratio
   const accuracyRate = percentage; // Use the percentage from backend which includes negative marking
+  
+  const handleSuggestionSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!suggestionText.trim()) {
+      setSuggestionMessage({ type: 'error', text: 'Please enter a suggestion' });
+      return;
+    }
+
+    if (suggestionText.length > 2000) {
+      setSuggestionMessage({ type: 'error', text: 'Suggestion must be less than 2000 characters' });
+      return;
+    }
+
+    try {
+      setSuggestionLoading(true);
+      setSuggestionMessage({ type: '', text: '' });
+      
+      await submitSuggestion({
+        quizId: quiz.id,
+        attemptId: results.attemptId || null,
+        suggestionText: suggestionText.trim()
+      });
+
+      setSuggestionMessage({ type: 'success', text: 'Thank you! Your suggestion has been submitted successfully.' });
+      setSuggestionText('');
+      setTimeout(() => {
+        setShowSuggestionForm(false);
+        setSuggestionMessage({ type: '', text: '' });
+      }, 3000);
+    } catch (error) {
+      console.error('Error submitting suggestion:', error);
+      setSuggestionMessage({ 
+        type: 'error', 
+        text: error.message || 'Failed to submit suggestion. Please try again.' 
+      });
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
   
   const formatTime = (seconds) => {
     const hrs = Math.floor(seconds / 3600);
@@ -593,6 +637,118 @@ const QuizResult = () => {
             </motion.div>
           </div>
         </div>
+
+        {/* Suggestion Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="mt-6"
+        >
+          <div className={`p-5 rounded-xl ${showSuggestionForm ? 'max-w-4xl' : 'max-w-xl'} mx-auto transition-all duration-300 ${
+            isDark 
+              ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
+              : 'bg-gradient-to-br from-white to-gray-50 shadow-md border border-gray-200'
+          }`}>
+            {!showSuggestionForm ? (
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600 mb-3">
+                  <ThumbsUp className="w-6 h-6 text-white" />
+                </div>
+                <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                  Have Feedback?
+                </h3>
+                <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Help us improve! Share your thoughts about this quiz.
+                </p>
+                <button
+                  onClick={() => setShowSuggestionForm(true)}
+                  className="px-6 py-2.5 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white transition-all shadow-md text-sm flex items-center justify-center gap-2 mx-auto"
+                >
+                  <ThumbsUp className="w-4 h-4" />
+                  Submit Suggestion
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSuggestionSubmit}>
+                <div className="text-center mb-4">
+                  <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    Share Your Feedback
+                  </h3>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Tell us what you think about this quiz
+                  </p>
+                </div>
+                
+                {suggestionMessage.text && (
+                  <div className={`mb-3 p-3 rounded-lg ${
+                    suggestionMessage.type === 'success'
+                      ? isDark ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : isDark ? 'bg-red-900/30 text-red-400 border border-red-700' : 'bg-red-50 text-red-700 border border-red-200'
+                  }`}>
+                    <p className="text-sm">{suggestionMessage.text}</p>
+                  </div>
+                )}
+                
+                <textarea
+                  value={suggestionText}
+                  onChange={(e) => setSuggestionText(e.target.value)}
+                  placeholder="Share your thoughts, report issues, suggest improvements..."
+                  rows="3"
+                  className={`w-full p-3 rounded-lg border transition-colors mb-2 text-sm ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' 
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500/20`}
+                  disabled={suggestionLoading}
+                />
+                
+                <div className="text-xs text-right mb-3 text-gray-500">
+                  {suggestionText.length}/2000 characters
+                </div>
+                
+                <div className="flex gap-2 justify-center">
+                  <button
+                    type="submit"
+                    disabled={suggestionLoading || !suggestionText.trim()}
+                    className="px-6 py-2.5 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md text-sm"
+                  >
+                    {suggestionLoading ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <ThumbsUp className="w-4 h-4" />
+                        Submit
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSuggestionForm(false);
+                      setSuggestionText('');
+                      setSuggestionMessage({ type: '', text: '' });
+                    }}
+                    disabled={suggestionLoading}
+                    className={`px-6 py-2.5 rounded-lg font-semibold transition-all text-sm ${
+                      isDark 
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    } disabled:opacity-50`}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </motion.div>
 
         {/* Detailed Results Toggle */}
         {results.results && results.results.length > 0 && (

@@ -128,6 +128,28 @@ export const getUserStats = async () => {
   }
 };
 
+// Submit a suggestion for a quiz (requires auth)
+export const submitSuggestion = async (suggestionData) => {
+  try {
+    const response = await api.post('/api/suggestions', suggestionData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Get user's own suggestions (requires auth)
+export const getMySuggestions = async (page = 1, limit = 20) => {
+  try {
+    const response = await api.get('/api/suggestions/my-suggestions', {
+      params: { page, limit }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export default {
   getQuizzes,
   getQuizById,
@@ -139,5 +161,7 @@ export default {
   submitQuizAttempt,
   getUserAttempts,
   getAttemptResult,
-  getUserStats
+  getUserStats,
+  submitSuggestion,
+  getMySuggestions
 };
