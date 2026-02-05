@@ -144,9 +144,9 @@ const TakeQuiz = () => {
   const answeredCount = answers.filter(a => a !== undefined).length;
 
   return (
-    <div className={`min-h-screen pb-20 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen pb-24 sm:pb-28 md:pb-20 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Fixed Timer at Top Right Corner */}
-      <div className="fixed top-20 right-4 md:top-4 md:right-6 z-40 w-auto">
+      <div className="fixed top-16 right-2 sm:top-20 sm:right-4 md:top-4 md:right-6 z-40 w-auto">
         <QuizTimer 
           onTimeUpdate={handleTimeUpdate} 
           isActive={!submitting}
@@ -157,35 +157,42 @@ const TakeQuiz = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 pt-24">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Progress Sidebar */}
-          {!sidebarCollapsed && (
-            <div className="lg:col-span-1">
-              <div className="sticky top-32">
-                <div className="relative">
-                  <button
-                    onClick={() => setSidebarCollapsed(true)}
-                    className={`absolute -right-3 top-4 z-10 p-2 rounded-full shadow-lg transition-colors ${
-                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-white hover:bg-gray-100 text-gray-600'
-                    }`}
-                    title="Hide progress panel"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <QuizProgress
-                    currentQuestion={currentQuestionIndex + 1}
-                    totalQuestions={quiz.questions.length}
-                    answeredCount={answeredCount}
-                  />
-                </div>
+          <motion.div 
+            initial={false}
+            animate={{ 
+              width: sidebarCollapsed ? 0 : 'auto',
+              opacity: sidebarCollapsed ? 0 : 1,
+              marginRight: sidebarCollapsed ? -24 : 0
+            }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className={`lg:col-span-1 overflow-hidden ${sidebarCollapsed ? 'hidden lg:block' : ''}`}
+          >
+            <div className="sticky top-32">
+              <div className="relative">
+                <button
+                  onClick={() => setSidebarCollapsed(true)}
+                  className={`absolute -right-3 top-4 z-10 p-2 rounded-full shadow-lg transition-colors ${
+                    isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-white hover:bg-gray-100 text-gray-600'
+                  }`}
+                  title="Hide progress panel"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <QuizProgress
+                  currentQuestion={currentQuestionIndex + 1}
+                  totalQuestions={quiz.questions.length}
+                  answeredCount={answeredCount}
+                />
               </div>
             </div>
-          )}
+          </motion.div>
 
           {/* Question Area */}
-          <div className={sidebarCollapsed ? 'lg:col-span-3' : 'lg:col-span-2'}>
+          <div className={sidebarCollapsed ? 'lg:col-span-4' : 'lg:col-span-3'}>
             {/* Show/Hide Sidebar Button */}
             {sidebarCollapsed && (
               <button
@@ -201,17 +208,19 @@ const TakeQuiz = () => {
                 <span className="text-sm font-medium">Show Progress</span>
               </button>
             )}
-            <AnimatePresence mode="wait">
-              <QuestionCard
-                key={currentQuestionIndex}
-                question={currentQuestion}
-                questionNumber={currentQuestionIndex + 1}
-                selectedAnswer={answers[currentQuestionIndex]}
-                onAnswerSelect={handleAnswerSelect}
-                isMarkedForReview={reviewMarked[currentQuestionIndex]}
-                onToggleReview={toggleReviewMark}
-              />
-            </AnimatePresence>
+            <div className="relative min-h-[500px]">
+              <AnimatePresence mode="sync" initial={false}>
+                <QuestionCard
+                  key={currentQuestionIndex}
+                  question={currentQuestion}
+                  questionNumber={currentQuestionIndex + 1}
+                  selectedAnswer={answers[currentQuestionIndex]}
+                  onAnswerSelect={handleAnswerSelect}
+                  isMarkedForReview={reviewMarked[currentQuestionIndex]}
+                  onToggleReview={toggleReviewMark}
+                />
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

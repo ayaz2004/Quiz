@@ -89,9 +89,9 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className={`flex items-center gap-3 px-6 py-3 rounded-2xl ${
+      className={`flex items-center gap-1.5 sm:gap-3 px-2 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg sm:rounded-xl md:rounded-2xl ${
         isDark ? 'bg-gray-800' : 'bg-white'
-      } shadow-lg border-2 ${
+      } shadow-lg border sm:border-2 ${
         !timeLimit || getDisplaySeconds() > timeLimit * 60 * 0.5
           ? 'border-green-500/20' 
           : getDisplaySeconds() > timeLimit * 60 * 0.2
@@ -100,7 +100,7 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
       }`}
     >
       <svg 
-        className={`w-6 h-6 ${getTimerColor()}`}
+        className={`w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6 ${getTimerColor()}`}
         fill="none" 
         viewBox="0 0 24 24" 
         stroke="currentColor"
@@ -113,10 +113,10 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
         />
       </svg>
       <div>
-        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'} font-medium`}>
+        <p className={`text-[0.5rem] sm:text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'} font-medium hidden sm:block`}>
           {timeLimit ? 'Time Remaining' : 'Time Elapsed'}
         </p>
-        <p className={`text-2xl font-bold font-mono ${getTimerColor()}`}>
+        <p className={`text-xs sm:text-lg md:text-2xl font-bold font-mono ${getTimerColor()}`}>
           {formatTime(getDisplaySeconds())}
         </p>
       </div>

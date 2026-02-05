@@ -15,11 +15,11 @@ const QuestionCard = ({ question, questionNumber, selectedAnswer, onAnswerSelect
   return (
     <motion.div
       key={question.id}
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
-      transition={{ duration: 0.3 }}
-      className={`p-8 rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-xl`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className={`absolute inset-0 p-4 sm:p-6 md:p-8 rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-xl overflow-y-auto`}
     >
       {/* Question Header */}
       <div className="flex items-start gap-4 mb-6">
