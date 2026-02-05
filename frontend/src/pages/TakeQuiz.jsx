@@ -145,8 +145,8 @@ const TakeQuiz = () => {
 
   return (
     <div className={`min-h-screen pb-20 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* Fixed Timer at Top - Below Header */}
-      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-auto">
+      {/* Fixed Timer at Top Right Corner */}
+      <div className="fixed top-20 right-4 md:top-4 md:right-6 z-40 w-auto">
         <QuizTimer 
           onTimeUpdate={handleTimeUpdate} 
           isActive={!submitting}

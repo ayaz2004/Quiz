@@ -7,34 +7,52 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
   const { isDark } = useTheme();
   const [seconds, setSeconds] = useState(0);
   const timeUpCalledRef = useRef(false);
-
-  // Update timer every second
+  const intervalRef = useRef(null);
+  const onTimeUpdateRef = useRef(onTimeUpdate);
+  const onTimeUpRef = useRef(onTimeUp);
+  
+  // Keep refs updated without restarting timer
   useEffect(() => {
-    let interval = null;
+    onTimeUpdateRef.current = onTimeUpdate;
+  }, [onTimeUpdate]);
+  
+  useEffect(() => {
+    onTimeUpRef.current = onTimeUp;
+  }, [onTimeUp]);
+
+  // Update timer every second - runs continuously
+  useEffect(() => {
     if (isActive) {
-      interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setSeconds(prev => {
           const newSeconds = prev + 1;
+          
+          // Notify parent of time changes using ref
+          if (onTimeUpdateRef.current) {
+            onTimeUpdateRef.current(newSeconds);
+          }
+          
           // Check if time limit is reached
           if (timeLimit && newSeconds >= timeLimit * 60 && !timeUpCalledRef.current) {
             timeUpCalledRef.current = true;
-            if (onTimeUp) {
-              onTimeUp();
+            if (onTimeUpRef.current) {
+              onTimeUpRef.current();
             }
           }
           return newSeconds;
         });
       }, 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     }
-    return () => clearInterval(interval);
-  }, [isActive, timeLimit, onTimeUp]);
-
-  // Notify parent of time changes
-  useEffect(() => {
-    if (onTimeUpdate) {
-      onTimeUpdate(seconds);
-    }
-  }, [seconds, onTimeUpdate]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isActive, timeLimit]);
 
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
