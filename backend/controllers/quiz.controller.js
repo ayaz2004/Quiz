@@ -45,6 +45,12 @@ export const listQuizzes = async (req, res, next) => {
     // Get total count for pagination
     const totalQuizzes = await prisma.quiz.count({ where });
 
+    // Get counts by type for stats
+    const [freeCount, paidCount] = await Promise.all([
+      prisma.quiz.count({ where: { ...where, isPaid: false } }),
+      prisma.quiz.count({ where: { ...where, isPaid: true } })
+    ]);
+
     // Get quizzes with question count
     const quizzes = await prisma.quiz.findMany({
       where,
@@ -99,6 +105,11 @@ export const listQuizzes = async (req, res, next) => {
           totalPages: Math.ceil(totalQuizzes / limitNum),
           totalQuizzes,
           limit: limitNum
+        },
+        stats: {
+          total: totalQuizzes,
+          free: freeCount,
+          paid: paidCount
         }
       }, "Quizzes fetched successfully")
     );

@@ -3,7 +3,7 @@ import QuizCard from './QuizCard';
 import PropTypes from 'prop-types';
 import { useTheme } from '../../context/ThemeContext';
 
-const QuizGrid = ({ quizzes, loading, onQuizClick }) => {
+const QuizGrid = ({ quizzes, loading, onQuizClick, purchasedQuizIds = [] }) => {
   const { isDark } = useTheme();
 
   if (loading) {
@@ -56,7 +56,7 @@ const QuizGrid = ({ quizzes, loading, onQuizClick }) => {
               quiz={quiz}
               index={index}
               onClick={() => onQuizClick(quiz)}
-              showLockIcon={true}
+              hasPurchased={purchasedQuizIds.includes(quiz.id)}
             />
           </motion.div>
         ))}
@@ -69,6 +69,7 @@ QuizGrid.propTypes = {
   quizzes: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,
   onQuizClick: PropTypes.func.isRequired,
+  purchasedQuizIds: PropTypes.arrayOf(PropTypes.number),
 };
 
 export default QuizGrid;

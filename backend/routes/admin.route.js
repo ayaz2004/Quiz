@@ -8,7 +8,8 @@ import {
   getDashboardStats,
   getQuizByIdForAdmin,
   getAllAttempts,
-  deleteAttempt
+  deleteAttempt,
+  grantQuizAccess
 } from "../controllers/admin.controller.js";
 import {
   getAllSuggestions,
@@ -27,6 +28,12 @@ router.post(
   uploadMiddleware.any(),
   validateQuiz,
   addQuiz
+);
+
+router.post(
+  "/grant-access",
+  verifyToken,
+  grantQuizAccess
 );
 
 /////////////////////////////// Admin put Apis //////////////////////////////

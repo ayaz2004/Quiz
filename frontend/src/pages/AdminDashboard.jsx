@@ -10,6 +10,7 @@ import QuizList from '../components/admin/QuizList';
 import UserList from '../components/admin/UserList';
 import SuggestionList from '../components/admin/SuggestionList';
 import AttemptList from '../components/admin/AttemptList';
+import GrantAccess from '../components/admin/GrantAccess';
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -412,6 +413,18 @@ const AdminDashboard = () => {
                 </p>
               </div>
               <AttemptList />
+            </div>
+          </div>
+        )}
+
+        {/* Grant Access Tab */}
+        {tab === 'grantAccess' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-4xl mx-auto">
+              <GrantAccess 
+                onSuccess={(msg) => showMessage('success', msg)}
+                onError={(msg) => showMessage('error', msg)}
+              />
             </div>
           </div>
         )}

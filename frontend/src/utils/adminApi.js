@@ -298,3 +298,22 @@ export const deleteAttempt = async (attemptId) => {
   }
 };
 
+/**
+ * Grant quiz access to a user
+ * @param {number} userId - ID of the user
+ * @param {number} quizId - ID of the quiz
+ * @returns {Promise} API response
+ */
+export const grantQuizAccess = async (userId, quizId) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/admin/grant-access`,
+      { userId, quizId },
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Grant Quiz Access Error:", error.response?.data || error.message);
+    throw error;
+  }
+};

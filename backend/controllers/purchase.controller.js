@@ -20,7 +20,7 @@ export const checkQuizAccess = async (userId, quizId) => {
     return { hasAccess: true, quiz };
   }
 
-  // Check if user has purchased this quiz
+  // Check if user has purchased/been granted access to this quiz
   const purchase = await prisma.purchase.findUnique({
     where: {
       userId_quizId: {

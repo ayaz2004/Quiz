@@ -570,3 +570,103 @@ export const deleteAttempt = async (req, res, next) => {
   }
 };
 
+/**
+ * Grant quiz access to a user (Admin only)
+ * @route POST /api/admin/grant-access
+ * @access Admin only
+ */
+export const grantQuizAccess = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can grant quiz access"));
+    }
+
+    const { userId, quizId } = req.body;
+
+    if (!userId || !quizId) {
+      return next(new ApiError(400, "User ID and Quiz ID are required"));
+    }
+
+    const userIdNum = parseInt(userId);
+    const quizIdNum = parseInt(quizId);
+
+    if (isNaN(userIdNum) || isNaN(quizIdNum)) {
+      return next(new ApiError(400, "Invalid User ID or Quiz ID"));
+    }
+
+    // Check if user exists
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userIdNum }
+    });
+
+    if (!targetUser) {
+      return next(new ApiError(404, "User not found"));
+    }
+
+    // Check if quiz exists
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizIdNum }
+    });
+
+    if (!quiz) {
+      return next(new ApiError(404, "Quiz not found"));
+    }
+
+    // Check if access already granted
+    const existingPurchase = await prisma.purchase.findUnique({
+      where: {
+        userId_quizId: {
+          userId: userIdNum,
+          quizId: quizIdNum
+        }
+      }
+    });
+
+    if (existingPurchase) {
+      return next(new ApiError(400, "User already has access to this quiz"));
+    }
+
+    // Grant access by creating a purchase record with amount 0 (admin granted)
+    const purchase = await prisma.purchase.create({
+      data: {
+        userId: userIdNum,
+        quizId: quizIdNum,
+        amount: 0, // Admin granted access, no payment
+        status: "completed"
+      }
+    });
+
+    // Update user's purchasedExams array
+    const purchasedExams = typeof targetUser.purchasedExams === 'string' 
+      ? JSON.parse(targetUser.purchasedExams) 
+      : targetUser.purchasedExams;
+    
+    if (!purchasedExams.includes(quizIdNum)) {
+      purchasedExams.push(quizIdNum);
+      
+      await prisma.user.update({
+        where: { id: userIdNum },
+        data: {
+          purchasedExams: JSON.stringify(purchasedExams)
+        }
+      });
+    }
+
+    return res.status(201).json(
+      new ApiResponse(201, {
+        purchase: {
+          id: purchase.id,
+          userId: userIdNum,
+          quizId: quizIdNum,
+          quizTitle: quiz.title,
+          grantedBy: user.email
+        }
+      }, "Quiz access granted successfully")
+    );
+  } catch (error) {
+    console.error("Grant Quiz Access Error:", error);
+    return next(new ApiError(500, error.message || "Error granting quiz access"));
+  }
+};

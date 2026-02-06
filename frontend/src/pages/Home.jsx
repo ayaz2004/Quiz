@@ -7,7 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 import { getQuizzes } from '../utils/quizApi';
 import { 
   Users, BookOpen, Award, TrendingUp, Clock, Target, 
-  CheckCircle2, Zap, Brain, GraduationCap, Trophy, Rocket 
+  CheckCircle2, Zap, Brain, GraduationCap, Trophy, Rocket, Timer 
 } from 'lucide-react';
 import QuizCard from '../components/quiz-browser/QuizCard';
 import QuizOverview from '../components/modals/QuizOverview';
@@ -337,7 +337,7 @@ const Home = () => {
               <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg">
                 <BookOpen className="w-6 h-6" />
               </span>
-              School Level Quizzes
+              School Quizzes
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               Practice tests for school students preparing for entrance exams
@@ -382,7 +382,7 @@ const Home = () => {
                 <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg shadow-lg">
                   <GraduationCap className="w-6 h-6" />
                 </span>
-                Undergraduate Level Quizzes
+                Undergraduate Quizzes
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
                 UG entrance preparation for AMU & JMI admissions
@@ -427,7 +427,7 @@ const Home = () => {
                 <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg shadow-lg">
                   <Trophy className="w-6 h-6" />
                 </span>
-                Masters Level Quizzes
+                Masters Quizzes
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
                 PG entrance preparation for advanced programs
@@ -439,7 +439,7 @@ const Home = () => {
               className="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap"
             >
               <span className="hidden sm:inline">View All</span>
-              <span className="sm:hidden">All</span>
+              <span className="sm:hidden">View All</span>
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -646,7 +646,7 @@ const Home = () => {
       </motion.section>
 
       {/* Features Section */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -663,7 +663,7 @@ const Home = () => {
             Complete Subject Coverage
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Physics, Chemistry, Mathematics, Biology, English & GK - all subjects covered as per AMU & JMI syllabus
+            All subjects covered as per AMU & JMI syllabus
           </p>
         </motion.div>
 
@@ -704,6 +704,24 @@ const Home = () => {
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
             Timed tests with negative marking simulation to prepare you for the actual entrance exam day
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+        >
+          <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+            <Timer className="w-7 h-7 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+            Flexible Time Limits
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Customizable time limits for each question to match actual exam durations and improve time management skills
           </p>
         </motion.div>
       </section>

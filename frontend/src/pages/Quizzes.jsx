@@ -14,6 +14,7 @@ const Quizzes = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalQuizzes, setTotalQuizzes] = useState(0);
+  const [quizStats, setQuizStats] = useState({ total: 0, free: 0, paid: 0 });
   
   // Filter states
   const [activeFilter, setActiveFilter] = useState('all');
@@ -56,15 +57,17 @@ const Quizzes = () => {
         setLoading(true);
       }
       setError(null);
-      const response = await getQuizzes({ limit: 20, page });
-      // Backend returns: { success: true, data: { quizzes: [...], pagination: {...} } }
+      const response = await getQuizzes({ limit: 18, page });
+      // Backend returns: { success: true, data: { quizzes: [...], pagination: {...}, stats: {...} } }
       const quizzes = response.data?.quizzes || [];
       const pagination = response.data?.pagination || {};
+      const stats = response.data?.stats || { total: 0, free: 0, paid: 0 };
       
       if (append) {
         setAllQuizzes(prev => [...prev, ...quizzes]);
       } else {
         setAllQuizzes(quizzes);
+        setQuizStats(stats); // Update stats only on initial load or refresh
       }
       
       setTotalQuizzes(pagination.totalQuizzes || 0);
@@ -185,9 +188,9 @@ const Quizzes = () => {
 
   // Calculate stats with safety checks
   const stats = {
-    total: Array.isArray(allQuizzes) ? allQuizzes.length : 0,
-    free: Array.isArray(allQuizzes) ? allQuizzes.filter(q => !q.isPaid).length : 0,
-    paid: Array.isArray(allQuizzes) ? allQuizzes.filter(q => q.isPaid).length : 0,
+    total: quizStats.total,
+    free: quizStats.free,
+    paid: quizStats.paid,
     purchased: Array.isArray(myQuizzes) ? myQuizzes.length : 0,
   };
 
@@ -293,6 +296,7 @@ const Quizzes = () => {
         quizzes={filteredQuizzes}
         loading={loading}
         onQuizClick={handleQuizClick}
+        purchasedQuizIds={myQuizzes.map(q => q.id)}
       />
 
       {/* Load More Button */}
