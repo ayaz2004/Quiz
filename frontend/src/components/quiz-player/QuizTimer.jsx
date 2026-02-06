@@ -20,25 +20,27 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
     onTimeUpRef.current = onTimeUp;
   }, [onTimeUp]);
 
+  // Notify parent of time changes - runs after state update
+  useEffect(() => {
+    if (onTimeUpdateRef.current && seconds > 0) {
+      onTimeUpdateRef.current(seconds);
+    }
+    
+    // Check if time limit is reached
+    if (timeLimit && seconds >= timeLimit * 60 && !timeUpCalledRef.current) {
+      timeUpCalledRef.current = true;
+      if (onTimeUpRef.current) {
+        onTimeUpRef.current();
+      }
+    }
+  }, [seconds, timeLimit]);
+
   // Update timer every second - runs continuously
   useEffect(() => {
     if (isActive) {
       intervalRef.current = setInterval(() => {
         setSeconds(prev => {
           const newSeconds = prev + 1;
-          
-          // Notify parent of time changes using ref
-          if (onTimeUpdateRef.current) {
-            onTimeUpdateRef.current(newSeconds);
-          }
-          
-          // Check if time limit is reached
-          if (timeLimit && newSeconds >= timeLimit * 60 && !timeUpCalledRef.current) {
-            timeUpCalledRef.current = true;
-            if (onTimeUpRef.current) {
-              onTimeUpRef.current();
-            }
-          }
           return newSeconds;
         });
       }, 1000);

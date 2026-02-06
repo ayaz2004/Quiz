@@ -840,11 +840,25 @@ const QuizResult = () => {
                         </div>
 
                         <div className="flex-1">
-                          <div className="flex items-start gap-2 mb-3">
-                            <BookOpen className={`w-5 h-5 flex-shrink-0 mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                            <h3 className={`font-semibold text-base md:text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                              {result.questionText}
-                            </h3>
+                          <div className="flex items-start justify-between gap-2 mb-3">
+                            <div className="flex items-start gap-2 flex-1">
+                              <BookOpen className={`w-5 h-5 flex-shrink-0 mt-1 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                              <h3 className={`font-semibold text-base md:text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                                {result.questionText}
+                              </h3>
+                            </div>
+                            {/* Time Spent Badge */}
+                            {result.timeSpent > 0 && (
+                              <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${
+                                isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                              }`}>
+                                <Clock className="w-3 h-3" />
+                                {Math.floor(result.timeSpent / 60) > 0 
+                                  ? `${Math.floor(result.timeSpent / 60)}m ${result.timeSpent % 60}s`
+                                  : `${result.timeSpent}s`
+                                }
+                              </div>
+                            )}
                           </div>
 
                           {result.imageUrl && (

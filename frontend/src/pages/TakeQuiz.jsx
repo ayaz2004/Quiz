@@ -25,6 +25,8 @@ const TakeQuiz = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [questionTimes, setQuestionTimes] = useState([]); // Time spent on each question
+  const [questionStartTime, setQuestionStartTime] = useState(Date.now()); // When current question was started
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -47,6 +49,8 @@ const TakeQuiz = () => {
       setQuiz(quizData);
       setAnswers(new Array(quizData.questions.length).fill(undefined));
       setReviewMarked(new Array(quizData.questions.length).fill(false));
+      setQuestionTimes(new Array(quizData.questions.length).fill(0));
+      setQuestionStartTime(Date.now());
     } catch (error) {
       console.error('Error fetching quiz:', error);
       alert('Failed to load quiz. ' + (error.message || ''));
@@ -59,6 +63,16 @@ const TakeQuiz = () => {
   const handleTimeUpdate = useCallback((seconds) => {
     setTimeTaken(seconds);
   }, []);
+
+  // Save time spent on current question before switching
+  const saveCurrentQuestionTime = useCallback(() => {
+    const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
+    setQuestionTimes(prev => {
+      const newTimes = [...prev];
+      newTimes[currentQuestionIndex] = (newTimes[currentQuestionIndex] || 0) + timeSpent;
+      return newTimes;
+    });
+  }, [currentQuestionIndex, questionStartTime]);
 
   const handleAnswerSelect = (optionKey) => {
     const newAnswers = [...answers];
@@ -74,18 +88,24 @@ const TakeQuiz = () => {
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
+      saveCurrentQuestionTime();
       setCurrentQuestionIndex(prev => prev - 1);
+      setQuestionStartTime(Date.now());
     }
   };
 
   const handleNext = () => {
     if (currentQuestionIndex < quiz.questions.length - 1) {
+      saveCurrentQuestionTime();
       setCurrentQuestionIndex(prev => prev + 1);
+      setQuestionStartTime(Date.now());
     }
   };
 
   const handleQuestionClick = (questionIndex) => {
+    saveCurrentQuestionTime();
     setCurrentQuestionIndex(questionIndex);
+    setQuestionStartTime(Date.now());
   };
 
   const handleSubmit = () => {
@@ -97,13 +117,20 @@ const TakeQuiz = () => {
       setSubmitting(true);
       setShowReviewModal(false);
 
+      // Save time for current question before submitting
+      saveCurrentQuestionTime();
+      const finalQuestionTimes = [...questionTimes];
+      const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
+      finalQuestionTimes[currentQuestionIndex] = (finalQuestionTimes[currentQuestionIndex] || 0) + timeSpent;
+
       // Format answers for backend - include all answers, even unanswered (as 0)
       const formattedAnswers = answers.map((answer, index) => ({
         questionId: quiz.questions[index].id,
         selectedOption: answer || 0, // 0 for unanswered
+        timeSpent: finalQuestionTimes[index] || 0, // Time spent on this question
       }));
 
-      console.log('Submitting quiz attempt...', { formattedAnswers, timeTaken });
+      console.log('Submitting quiz attempt...', { formattedAnswers, timeTaken, questionTimes: finalQuestionTimes });
       const response = await submitQuizAttempt(quizId, formattedAnswers, timeTaken);
       console.log('Submit response:', response);
       
@@ -144,9 +171,9 @@ const TakeQuiz = () => {
   const answeredCount = answers.filter(a => a !== undefined).length;
 
   return (
-    <div className={`min-h-screen pb-24 sm:pb-28 md:pb-20 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen pb-24 sm:pb-28 md:pb-32 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Fixed Timer at Top Right Corner */}
-      <div className="fixed top-16 right-2 sm:top-20 sm:right-4 md:top-4 md:right-6 z-40 w-auto">
+      <div className="fixed top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-6 z-40">
         <QuizTimer 
           onTimeUpdate={handleTimeUpdate} 
           isActive={!submitting}
@@ -156,7 +183,7 @@ const TakeQuiz = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 pt-24">
+      <div className="container mx-auto px-2 sm:px-4 pt-16 sm:pt-20 md:pt-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Progress Sidebar */}
           <motion.div 
@@ -197,7 +224,7 @@ const TakeQuiz = () => {
             {sidebarCollapsed && (
               <button
                 onClick={() => setSidebarCollapsed(false)}
-                className={`mb-4 px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2 ${
+                className={`mb-4 px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-md transition-all flex items-center gap-2 text-sm ${
                   isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-white hover:bg-gray-50 text-gray-700'
                 }`}
                 title="Show progress panel"
@@ -208,7 +235,7 @@ const TakeQuiz = () => {
                 <span className="text-sm font-medium">Show Progress</span>
               </button>
             )}
-            <div className="relative min-h-[500px]">
+            <div className="relative min-h-[400px] sm:min-h-[500px] md:min-h-[550px]">
               <AnimatePresence mode="sync" initial={false}>
                 <QuestionCard
                   key={currentQuestionIndex}
@@ -218,6 +245,7 @@ const TakeQuiz = () => {
                   onAnswerSelect={handleAnswerSelect}
                   isMarkedForReview={reviewMarked[currentQuestionIndex]}
                   onToggleReview={toggleReviewMark}
+                  timeSpent={questionTimes[currentQuestionIndex] || 0}
                 />
               </AnimatePresence>
             </div>
@@ -227,7 +255,7 @@ const TakeQuiz = () => {
 
       {/* Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-2 sm:px-4">
           <QuizNavigation
             currentQuestion={currentQuestionIndex + 1}
             totalQuestions={quiz.questions.length}
@@ -345,6 +373,7 @@ const TakeQuiz = () => {
                         }`}
                       >
                         {index + 1}
+                        {/* Review marker */}
                         {isReviewed && (
                           <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
                             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">

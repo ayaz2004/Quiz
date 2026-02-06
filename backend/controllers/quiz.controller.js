@@ -318,6 +318,7 @@ export const submitQuizAttempt = async (req, res, next) => {
           userAnswer: userAnswer.selectedOption,
           correctAnswer: question.isCorrect,
           isCorrect,
+          timeSpent: userAnswer.timeSpent || 0, // Time spent on this question
           explanation: question.explanation,
           options: {
             option1: question.option1,
@@ -610,6 +611,7 @@ export const getAttemptResult = async (req, res, next) => {
     const detailedResults = attempt.quiz.questions.map(question => {
       const userAnswer = userAnswers.find(a => a.questionId === question.id);
       const selectedOption = userAnswer?.selectedOption || 0;
+      const timeSpent = userAnswer?.timeSpent || 0; // Get time spent from stored answer
       const isCorrect = question.isCorrect === selectedOption;
       
       // Count actually wrong answers (answered but incorrect, not unanswered)
@@ -630,6 +632,7 @@ export const getAttemptResult = async (req, res, next) => {
         userAnswer: selectedOption,
         correctAnswer: question.isCorrect,
         isCorrect,
+        timeSpent, // Include time spent in the response
         explanation: question.explanation
       };
     });
