@@ -394,7 +394,7 @@ const Home = () => {
               className="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap"
             >
               <span className="hidden sm:inline">View All</span>
-              <span className="sm:hidden">All</span>
+              <span className="sm:hidden">View All</span>
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

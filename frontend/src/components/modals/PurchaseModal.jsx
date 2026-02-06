@@ -78,7 +78,7 @@ const PurchaseModal = ({ quiz, isOpen, onClose, onSuccess }) => {
               <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                 <span className="text-gray-700 dark:text-gray-300 font-medium">Total Price</span>
                 <span className="text-3xl font-bold text-yellow-600 dark:text-yellow-500">
-                  ${quiz.price}
+                  ₹{quiz.price}
                 </span>
               </div>
             </div>
@@ -102,7 +102,7 @@ const PurchaseModal = ({ quiz, isOpen, onClose, onSuccess }) => {
                 <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-gray-600 dark:text-gray-400">Unlimited attempts</span>
+                <span className="text-gray-600 dark:text-gray-400">Maximum 3 attempts allowed</span>
               </div>
               <div className="flex items-start gap-3">
                 <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -160,8 +160,26 @@ const PurchaseModal = ({ quiz, isOpen, onClose, onSuccess }) => {
               </button>
             </div>
 
+            {/* Contact Email */}
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="flex items-center gap-2 justify-center mb-1">
+                <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                  For purchase inquiries, contact:
+                </p>
+              </div>
+              <a 
+                href="mailto:contact@jmiquiz.com" 
+                className="text-sm font-bold text-blue-700 dark:text-blue-300 hover:underline block text-center"
+              >
+                jmi123quiz@gmail.com
+              </a>
+            </div>
+            
             {/* Note */}
-            <p className="mt-4 text-xs text-center text-gray-500 dark:text-gray-400">
+            <p className="mt-3 text-xs text-center text-gray-500 dark:text-gray-400">
               By purchasing, you agree to our terms of service
             </p>
           </div>
