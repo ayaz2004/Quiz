@@ -25,6 +25,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Suppress console errors for expected 403 on /users/me (not logged in)
+    if (error.response?.status === 403 && error.config?.url?.includes('/users/me')) {
+      // Silently handle - user not authenticated, which is expected
+      return Promise.reject(error);
+    }
+    
     if (error.response?.status === 401) {
       // Unauthorized - redirect to login
       // Cookies will be cleared by calling the logout endpoint
