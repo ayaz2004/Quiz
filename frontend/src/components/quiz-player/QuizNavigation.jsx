@@ -1,6 +1,7 @@
 import { useTheme } from '../../context/ThemeContext';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 const QuizNavigation = ({ 
   currentQuestion, 
@@ -16,6 +17,25 @@ const QuizNavigation = ({
   const isFirstQuestion = currentQuestion === 1;
   const isLastQuestion = currentQuestion === totalQuestions;
   const hasAnswer = answers[currentQuestion - 1] !== undefined;
+  const scrollContainerRef = useRef(null);
+  const currentButtonRef = useRef(null);
+
+  // Auto-scroll to current question
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const currentIndex = currentQuestion - 1;
+      // Calculate approximate position (button width + gap)
+      const buttonWidth = 40; // approximate md size
+      const gap = 6;
+      const scrollPosition = currentIndex * (buttonWidth + gap) - container.clientWidth / 2 + buttonWidth / 2;
+      
+      container.scrollTo({
+        left: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
+    }
+  }, [currentQuestion]);
 
   return (
     <div className={`sticky bottom-0 p-2 sm:p-3 md:p-4 rounded-t-lg sm:rounded-t-xl md:rounded-t-2xl ${
@@ -23,7 +43,7 @@ const QuizNavigation = ({
     } shadow-2xl border-t ${
       isDark ? 'border-gray-700' : 'border-gray-200'
     }`}>
-      <div className="flex items-center justify-between gap-1 sm:gap-2">
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
         {/* Previous Button */}
         <motion.button
           whileHover={{ scale: isFirstQuestion ? 1 : 1.05 }}
@@ -47,8 +67,8 @@ const QuizNavigation = ({
         </motion.button>
 
         {/* Question Indicators */}
-        <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
-          <div className="flex items-center gap-1 sm:gap-1.5 min-w-min px-0.5 sm:px-1">
+        <div ref={scrollContainerRef} className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+          <div className="flex items-center justify-center gap-1 sm:gap-1.5 min-w-min px-0.5 sm:px-1">
             {Array.from({ length: totalQuestions }, (_, i) => {
               const questionNum = i + 1;
               const isAnswered = answers[i] !== undefined;
@@ -58,6 +78,7 @@ const QuizNavigation = ({
               return (
                 <motion.button
                   key={i}
+                  ref={isCurrent ? currentButtonRef : null}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: i * 0.02 }}

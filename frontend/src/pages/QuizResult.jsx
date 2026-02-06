@@ -847,12 +847,14 @@ const QuizResult = () => {
                                 {result.questionText}
                               </h3>
                             </div>
-                            {/* Time Spent Badge */}
+                            {/* Time Spent Badge - Enhanced */}
                             {result.timeSpent > 0 && (
-                              <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${
-                                isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap shadow-md ${
+                                isDark 
+                                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white' 
+                                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'
                               }`}>
-                                <Clock className="w-3 h-3" />
+                                <Timer className="w-4 h-4" />
                                 {Math.floor(result.timeSpent / 60) > 0 
                                   ? `${Math.floor(result.timeSpent / 60)}m ${result.timeSpent % 60}s`
                                   : `${result.timeSpent}s`
