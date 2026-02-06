@@ -20,7 +20,7 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
-      className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer"
+      className="relative h-full flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group cursor-pointer"
       onClick={() => onClick(quiz)}
     >
       {/* Gradient overlay on hover */}
@@ -35,7 +35,7 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
         </div>
       )}
 
-      <div className="relative p-6">
+      <div className="relative p-6 flex-1 flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex flex-wrap gap-2">
@@ -62,12 +62,12 @@ const QuizCard = ({ quiz, onClick, index = 0, showLockIcon = false }) => {
         </h3>
         
         {/* Description */}
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed flex-1">
           {description}
         </p>
         
         {/* Footer */}
-        <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-auto">
           <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -44,6 +44,7 @@ model Quiz {
   description String
   subject     String    @db.VarChar(100)
   examYear    Int       @map("exam_year")
+  educationLevel String @default("undergrad") @map("education_level") @db.VarChar(20) // school, undergrad, masters
   createdBy   Int       @map("created_by")
   isActive    Boolean   @default(true) @map("is_active")
   isPaid      Boolean   @default(false) @map("is_paid")

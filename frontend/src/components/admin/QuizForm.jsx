@@ -19,6 +19,7 @@ const QuizForm = ({
       description: '',
       subject: '',
       examYear: new Date().getFullYear(),
+      educationLevel: '',
       createdBy: 1,
       isActive: true,
       isPaid: false,
@@ -76,6 +77,25 @@ const QuizForm = ({
               onChange={(e) => setQuizForm({ ...quizForm, examYear: parseInt(e.target.value) })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Education Level
+            </label>
+            <select
+              value={quizForm.educationLevel}
+              onChange={(e) => setQuizForm({ ...quizForm, educationLevel: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            >
+              <option value="">Select Level (Default: Undergraduate)</option>
+              <option value="school">School Level</option>
+              <option value="undergrad">Undergraduate</option>
+              <option value="masters">Masters</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Leave empty to use default (Undergraduate)
+            </p>
           </div>
 
           <div>

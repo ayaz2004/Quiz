@@ -17,8 +17,9 @@ const Home = () => {
   const { isAuthenticated } = useAuth();
   const { isDark } = useTheme();
   const heroRef = useRef(null);
-  const [freeQuizzes, setFreeQuizzes] = useState([]);
-  const [paidQuizzes, setPaidQuizzes] = useState([]);
+  const [schoolQuizzes, setSchoolQuizzes] = useState([]);
+  const [undergradQuizzes, setUndergradQuizzes] = useState([]);
+  const [mastersQuizzes, setMastersQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
@@ -78,17 +79,19 @@ const Home = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getQuizzes({ limit: 20 });
+      const response = await getQuizzes({ limit: 30 });
       
       if (response.success) {
         const quizzes = response.data.quizzes;
         
-        // Separate free and paid quizzes
-        const free = quizzes.filter(q => !q.isPaid);
-        const paid = quizzes.filter(q => q.isPaid);
+        // Separate quizzes by education level
+        const school = quizzes.filter(q => q.educationLevel === 'school');
+        const undergrad = quizzes.filter(q => q.educationLevel === 'undergrad');
+        const masters = quizzes.filter(q => q.educationLevel === 'masters');
         
-        setFreeQuizzes(free.slice(0, 6)); // Show first 6 free quizzes
-        setPaidQuizzes(paid.slice(0, 6)); // Show first 6 paid quizzes
+        setSchoolQuizzes(school.slice(0, 6)); // Show first 6
+        setUndergradQuizzes(undergrad.slice(0, 6)); // Show first 6
+        setMastersQuizzes(masters.slice(0, 6)); // Show first 6
       }
     } catch (error) {
       console.error('Error fetching quizzes:', error);
@@ -279,40 +282,9 @@ const Home = () => {
         </motion.div>
       </motion.section>
 
-      {/* Free Quizzes Section */}
-      <section>
-        <div className="flex items-center justify-between mb-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-              <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-lg shadow-lg">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </span>
-              Free Practice Tests
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Start your AMU & JMI preparation with our free subject-wise quizzes!
-            </p>
-          </motion.div>
-          
-          <Link 
-            to="/quizzes"
-            className="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap"
-          >
-            <span className="hidden sm:inline">View All</span>
-            <span className="sm:hidden">View All</span>
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </Link>
-        </div>
-
-        {loading ? (
+      {/* Loading State */}
+      {loading && (
+        <section>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg animate-pulse">
@@ -323,7 +295,12 @@ const Home = () => {
               </div>
             ))}
           </div>
-        ) : error ? (
+        </section>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <section>
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-8">
             <div className="flex flex-col items-center text-center gap-4">
               <svg className="w-16 h-16 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,29 +321,56 @@ const Home = () => {
               </button>
             </div>
           </div>
-        ) : freeQuizzes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {freeQuizzes.map((quiz, index) => (
-              <QuizCard 
-                key={quiz.id} 
-                quiz={quiz} 
-                onClick={handleQuizClick}
-                index={index}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-2xl">
-            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-gray-600 dark:text-gray-400">No free quizzes available at the moment</p>
-          </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      {/* Paid Quizzes Section - Only show to logged in users */}
-      {isAuthenticated && paidQuizzes.length > 0 && (
+      {/* School Level Quizzes Section */}
+      {schoolQuizzes.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between mb-6">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+              <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-lg">
+                <BookOpen className="w-6 h-6" />
+              </span>
+              School Level Quizzes
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Practice tests for school students preparing for entrance exams
+            </p>
+          </motion.div>
+          
+          <Link 
+            to="/quizzes"
+            className="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap"
+          >
+            <span className="hidden sm:inline">View All</span>
+            <span className="sm:hidden">View All</span>
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {schoolQuizzes.slice(0, 3).map((quiz, index) => (
+            <QuizCard 
+              key={quiz.id} 
+              quiz={quiz} 
+              onClick={handleQuizClick}
+              index={index}
+            />
+          ))}
+        </div>
+        </section>
+      )}
+
+      {/* Undergraduate Level Quizzes Section */}
+      {undergradQuizzes.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-6">
             <motion.div
@@ -375,15 +379,58 @@ const Home = () => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-                <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg shadow-lg">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+                <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg shadow-lg">
+                  <GraduationCap className="w-6 h-6" />
                 </span>
-                Premium Mock Tests (Coming Soon)
+                Undergraduate Level Quizzes
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Advanced features with detailed solutions and expert guidance launching soon!
+                UG entrance preparation for AMU & JMI admissions
+              </p>
+            </motion.div>
+            
+            <Link 
+              to="/quizzes?level=undergrad"
+              className="flex items-center gap-1 sm:gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm sm:text-base font-semibold transition-colors whitespace-nowrap"
+            >
+              <span className="hidden sm:inline">View All</span>
+              <span className="sm:hidden">All</span>
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {undergradQuizzes.slice(0, 3).map((quiz, index) => (
+              <QuizCard 
+                key={quiz.id} 
+                quiz={quiz} 
+                onClick={handleQuizClick}
+                index={index}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Masters Level Quizzes Section */}
+      {mastersQuizzes.length > 0 && (
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                <span className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg shadow-lg">
+                  <Trophy className="w-6 h-6" />
+                </span>
+                Masters Level Quizzes
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                PG entrance preparation for advanced programs
               </p>
             </motion.div>
             
@@ -400,13 +447,12 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paidQuizzes.map((quiz, index) => (
+            {mastersQuizzes.slice(0, 3).map((quiz, index) => (
               <QuizCard 
                 key={quiz.id} 
                 quiz={quiz} 
                 onClick={handleQuizClick}
                 index={index}
-                showLockIcon={true}
               />
             ))}
           </div>

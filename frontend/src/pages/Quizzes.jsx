@@ -20,6 +20,7 @@ const Quizzes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
+  const [selectedEducationLevel, setSelectedEducationLevel] = useState('');
   
   // Modal states
   const [selectedQuiz, setSelectedQuiz] = useState(null);
@@ -119,7 +120,7 @@ const Quizzes = () => {
   // Apply filters whenever any filter changes
   useEffect(() => {
     applyFilters();
-  }, [activeFilter, searchTerm, selectedSubject, selectedYear, allQuizzes, myQuizzes]);
+  }, [activeFilter, searchTerm, selectedSubject, selectedYear, selectedEducationLevel, allQuizzes, myQuizzes]);
 
   const applyFilters = () => {
     // Safety check: ensure allQuizzes is an array
@@ -156,6 +157,11 @@ const Quizzes = () => {
     // Filter by year
     if (selectedYear) {
       filtered = filtered.filter(q => q.examYear === parseInt(selectedYear));
+    }
+
+    // Filter by education level
+    if (selectedEducationLevel) {
+      filtered = filtered.filter(q => q.educationLevel === selectedEducationLevel);
     }
 
     setFilteredQuizzes(filtered);
@@ -223,6 +229,8 @@ const Quizzes = () => {
         onSubjectChange={setSelectedSubject}
         selectedYear={selectedYear}
         onYearChange={setSelectedYear}
+        selectedEducationLevel={selectedEducationLevel}
+        onEducationLevelChange={setSelectedEducationLevel}
         subjects={subjects}
         years={years}
       />
@@ -236,13 +244,14 @@ const Quizzes = () => {
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Showing <span className="font-semibold text-gray-800 dark:text-gray-200">{filteredQuizzes.length}</span> quiz{filteredQuizzes.length !== 1 ? 'zes' : ''}
         </p>
-        {(searchTerm || selectedSubject || selectedYear || activeFilter !== 'all') && (
+        {(searchTerm || selectedSubject || selectedYear || selectedEducationLevel || activeFilter !== 'all') && (
           <button
             onClick={() => {
               setActiveFilter('all');
               setSearchTerm('');
               setSelectedSubject('');
               setSelectedYear('');
+              setSelectedEducationLevel('');
             }}
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
           >

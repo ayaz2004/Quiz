@@ -24,6 +24,7 @@ export const addQuiz = async (req, res, next) => {
       description,
       subject,
       examYear,
+      educationLevel,
       createdBy,
       isActive,
       isPaid,
@@ -79,6 +80,7 @@ export const addQuiz = async (req, res, next) => {
         description,
         subject,
         examYear: parseInt(examYear),
+        educationLevel: educationLevel || 'undergrad', // Default to undergrad if empty
         createdBy: parseInt(createdBy),
         isActive: isActive !== undefined ? isActive : true,
         isPaid: isPaid || false,
@@ -124,6 +126,7 @@ export const updateQuiz = async (req, res, next) => {
       description,
       subject,
       examYear,
+      educationLevel,
       isActive,
       isPaid,
       price,
@@ -177,6 +180,7 @@ export const updateQuiz = async (req, res, next) => {
           description,
           subject,
           examYear: parseInt(examYear),
+          educationLevel: educationLevel || 'undergrad', // Default to undergrad if empty
           isActive: isActive !== undefined ? isActive : true,
           isPaid: isPaid || false,
           timeLimit: timeLimit ? parseInt(timeLimit) : null,

@@ -146,6 +146,10 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
               <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-semibold rounded-full">
                 Year {quizDetails.examYear}
               </span>
+              <span className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-semibold rounded-full">
+                {quizDetails.educationLevel === 'school' ? 'School' : 
+                 quizDetails.educationLevel === 'masters' ? 'Masters' : 'Undergraduate'}
+              </span>
               {quizDetails.prize && (
                 <span className="px-3 py-1 bg-yellow-400/30 backdrop-blur-sm text-white text-sm font-semibold rounded-full flex items-center gap-1">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

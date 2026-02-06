@@ -35,6 +35,7 @@ const AdminDashboard = () => {
     description: '',
     subject: '',
     examYear: new Date().getFullYear(),
+    educationLevel: '', // Backend will set default to 'undergrad'
     createdBy: 1, // Adjust based on logged-in admin
     isActive: true,
     isPaid: false,
@@ -185,6 +186,7 @@ const AdminDashboard = () => {
         description: '',
         subject: '',
         examYear: new Date().getFullYear(),
+        educationLevel: '',
         createdBy: 1,
         isActive: true,
         isPaid: false,
@@ -248,6 +250,7 @@ const AdminDashboard = () => {
         description: quiz.description || '',
         subject: quiz.subject,
         examYear: quiz.examYear,
+        educationLevel: quiz.educationLevel || '', // Keep existing or empty
         createdBy: 1,
         isActive: quiz.isActive !== undefined ? quiz.isActive : true,
         isPaid: quiz.isPaid,

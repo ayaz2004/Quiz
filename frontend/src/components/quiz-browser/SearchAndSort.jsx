@@ -8,13 +8,15 @@ const SearchAndSort = ({
   onSubjectChange, 
   selectedYear, 
   onYearChange,
+  selectedEducationLevel,
+  onEducationLevelChange,
   subjects = [],
   years = []
 }) => {
   const { isDark } = useTheme();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Search Input */}
       <div className="relative">
         <input
@@ -44,6 +46,22 @@ const SearchAndSort = ({
           />
         </svg>
       </div>
+
+      {/* Education Level Filter */}
+      <select
+        value={selectedEducationLevel}
+        onChange={(e) => onEducationLevelChange(e.target.value)}
+        className={`px-4 py-3 rounded-xl border transition-all duration-200 cursor-pointer ${
+          isDark
+            ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-blue-500'
+            : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
+        } focus:ring-2 focus:ring-blue-500/20 focus:outline-none`}
+      >
+        <option value="">All Levels</option>
+        <option value="school">School Level</option>
+        <option value="undergrad">Undergraduate</option>
+        <option value="masters">Masters</option>
+      </select>
 
       {/* Subject Filter */}
       <select
@@ -91,6 +109,8 @@ SearchAndSort.propTypes = {
   onSubjectChange: PropTypes.func.isRequired,
   selectedYear: PropTypes.string.isRequired,
   onYearChange: PropTypes.func.isRequired,
+  selectedEducationLevel: PropTypes.string.isRequired,
+  onEducationLevelChange: PropTypes.func.isRequired,
   subjects: PropTypes.arrayOf(PropTypes.string),
   years: PropTypes.arrayOf(PropTypes.number),
 };
