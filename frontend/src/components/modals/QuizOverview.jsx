@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getQuizById, checkQuizAccess } from '../../utils/quizApi';
 
-const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
+const QuizOverview = ({ quiz, isOpen, onClose }) => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -63,8 +63,8 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
     }
 
     if (quiz.isPaid && !hasAccess) {
-      // Open purchase modal
-      onPurchase(quiz);
+      // Show message with contact information
+      alert('This is a Premium Quiz!\n\nPurchase to unlock 3 attempts.\nContact us at: jmi123quiz@gmail.com');
       return;
     }
 
@@ -78,7 +78,7 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
       return 'Login to Continue';
     }
     if (quiz.isPaid && !hasAccess) {
-      return `Purchase for $${quiz.price}`;
+      return 'Access Required';
     }
     return 'Start Quiz';
   };
@@ -93,9 +93,8 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
     }
     if (quiz.isPaid && !hasAccess) {
       return (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       );
     }
@@ -192,10 +191,9 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-4 text-center">
                 <div className="flex justify-center mb-2">
                   {quizDetails.isPaid ? (
-                    <svg className="w-8 h-8 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                    </svg>
+                    <div className="w-8 h-8 flex items-center justify-center text-yellow-600 dark:text-yellow-400 font-bold text-2xl">
+                      ₹
+                    </div>
                   ) : (
                     <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -203,7 +201,7 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
                   )}
                 </div>
                 <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                  {quizDetails.isPaid ? `$${quizDetails.price}` : 'Free'}
+                  {quizDetails.isPaid ? `₹${quizDetails.price}` : 'Free'}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {quizDetails.isPaid ? 'Premium' : 'Access'}
@@ -228,25 +226,65 @@ const QuizOverview = ({ quiz, isOpen, onClose, onPurchase }) => {
             </div>
 
             {/* Access Status */}
-            {isAuthenticated && quizDetails.isPaid && accessChecked && (
-              <div className={`mb-6 p-4 rounded-xl ${hasAccess ? 'bg-green-50 dark:bg-green-900/20' : 'bg-yellow-50 dark:bg-yellow-900/20'}`}>
-                <div className="flex items-center gap-3">
-                  {hasAccess ? (
-                    <>
-                      <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      <p className="text-green-800 dark:text-green-200 font-medium">You own this quiz!</p>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                      </svg>
-                      <p className="text-yellow-800 dark:text-yellow-200 font-medium">Purchase required to access this quiz</p>
-                    </>
-                  )}
-                </div>
+            {quizDetails.isPaid && accessChecked && (
+              <div className={`mb-6 rounded-xl overflow-hidden ${hasAccess ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-200 dark:border-yellow-800'}`}>
+                {hasAccess ? (
+                  <div className="p-4 flex items-center gap-3">
+                    <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-green-800 dark:text-green-200 font-medium">You have access to this quiz!</p>
+                      <p className="text-sm text-green-700 dark:text-green-300 mt-1">You can attempt this quiz up to 3 times</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-5">
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="bg-yellow-500 text-white p-2 rounded-lg">
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-yellow-900 dark:text-yellow-100 font-bold text-lg mb-1">Premium Quiz</h4>
+                        <p className="text-yellow-800 dark:text-yellow-200 text-sm">Purchase this quiz to unlock access</p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-700 dark:text-gray-300 font-medium">Price</span>
+                        <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">₹{quizDetails.price}</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <svg className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span><strong>3 Attempts</strong> - Take the quiz up to 3 times</span>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-emerald-50 dark:bg-emerald-900/30 border-l-4 border-emerald-500 p-4 rounded">
+                      <p className="text-sm text-emerald-800 dark:text-emerald-200 mb-2">
+                        <strong>To purchase this quiz:</strong>
+                      </p>
+                      <p className="text-sm text-emerald-700 dark:text-emerald-300 mb-2">
+                        Contact us at:
+                      </p>
+                      <a 
+                        href="mailto:jmi123quiz@gmail.com" 
+                        className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        jmi123quiz@gmail.com
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -306,7 +344,6 @@ QuizOverview.propTypes = {
   quiz: PropTypes.object.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  onPurchase: PropTypes.func.isRequired,
 };
 
 export default QuizOverview;

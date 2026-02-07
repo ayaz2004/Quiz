@@ -9,7 +9,10 @@ import {
   getQuizByIdForAdmin,
   getAllAttempts,
   deleteAttempt,
-  grantQuizAccess
+  grantQuizAccess,
+  toggleQuizVisibility,
+  revokeQuizAccess,
+  getGrantedAccesses
 } from "../controllers/admin.controller.js";
 import {
   getAllSuggestions,
@@ -36,6 +39,12 @@ router.post(
   grantQuizAccess
 );
 
+router.delete(
+  "/revoke-access",
+  verifyToken,
+  revokeQuizAccess
+);
+
 /////////////////////////////// Admin put Apis //////////////////////////////
 router.put(
   "/update-quiz/:id",
@@ -43,6 +52,12 @@ router.put(
   uploadMiddleware.any(),
   validateQuizUpdate,
   updateQuiz
+);
+
+router.put(
+  "/quiz/:quizId/toggle-visibility",
+  verifyToken,
+  toggleQuizVisibility
 );
 
 //////////////////////////////Admin get Apis //////////////////////////////
@@ -75,6 +90,12 @@ router.get(
     "/attempts",
     verifyToken,
     getAllAttempts
+);
+
+router.get(
+    "/granted-accesses",
+    verifyToken,
+    getGrantedAccesses
 );
 
 ///////////////////////////////Admin Delete Apis //////////////////////////////

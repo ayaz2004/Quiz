@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { addQuiz, updateQuiz, getAllUsers, deleteUser, getAllQuizzes, deleteQuiz, getQuizById } from '../utils/adminApi';
+import { addQuiz, updateQuiz, getAllUsers, deleteUser, getAllQuizzes, deleteQuiz, getQuizById, toggleQuizVisibility } from '../utils/adminApi';
 import MessageAlert from '../components/admin/MessageAlert';
 import DashSidebar from '../components/admin/DashSidebar';
 import DashProfile from '../components/admin/DashProfile';
@@ -283,6 +283,19 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleToggleVisibility = async (quizId, currentStatus) => {
+    try {
+      setLoading(true);
+      await toggleQuizVisibility(quizId);
+      showMessage('success', `Quiz ${currentStatus ? 'hidden' : 'shown'} successfully!`);
+      fetchQuizzes();
+    } catch (error) {
+      showMessage('error', error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
@@ -354,6 +367,7 @@ const AdminDashboard = () => {
                 setCurrentPage={setCurrentPage}
                 onEdit={handleEditQuiz}
                 onDelete={handleDeleteQuiz}
+                onToggleVisibility={handleToggleVisibility}
               />
             </div>
           </div>

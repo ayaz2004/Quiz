@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getQuizzes, getMyQuizzes } from '../utils/quizApi';
-import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview, PurchaseModal } from '../components';
+import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview } from '../components';
 
 const Quizzes = () => {
   const { isAuthenticated } = useAuth();
@@ -26,7 +26,6 @@ const Quizzes = () => {
   // Modal states
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   
   // Unique subjects and years
   const [subjects, setSubjects] = useState([]);
@@ -173,17 +172,6 @@ const Quizzes = () => {
   const handleQuizClick = (quiz) => {
     setSelectedQuiz(quiz);
     setShowOverview(true);
-  };
-
-  const handlePurchaseClick = (quiz) => {
-    setSelectedQuiz(quiz);
-    setShowPurchaseModal(true);
-  };
-
-  const handlePurchaseSuccess = () => {
-    setShowPurchaseModal(false);
-    fetchMyQuizzes();
-    fetchQuizzes();
   };
 
   // Calculate stats with safety checks
@@ -335,19 +323,6 @@ const Quizzes = () => {
           quiz={selectedQuiz}
           isOpen={showOverview}
           onClose={() => setShowOverview(false)}
-          onPurchase={() => {
-            setShowOverview(false);
-            handlePurchaseClick(selectedQuiz);
-          }}
-        />
-      )}
-
-      {showPurchaseModal && selectedQuiz && (
-        <PurchaseModal
-          quiz={selectedQuiz}
-          isOpen={showPurchaseModal}
-          onClose={() => setShowPurchaseModal(false)}
-          onSuccess={handlePurchaseSuccess}
         />
       )}
     </div>

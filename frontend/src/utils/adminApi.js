@@ -317,3 +317,72 @@ export const grantQuizAccess = async (userId, quizId) => {
     throw error;
   }
 };
+
+/**
+ * Toggle quiz visibility (isActive field)
+ * @param {number} quizId - ID of the quiz
+ * @returns {Promise} API response
+ */
+export const toggleQuizVisibility = async (quizId) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/admin/quiz/${quizId}/toggle-visibility`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Toggle Quiz Visibility Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Revoke quiz access from a user
+ * @param {number} userId - ID of the user
+ * @param {number} quizId - ID of the quiz
+ * @returns {Promise} API response
+ */
+export const revokeQuizAccess = async (userId, quizId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/admin/revoke-access`,
+      { 
+        data: { userId, quizId },
+        withCredentials: true 
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Revoke Quiz Access Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+/**
+ * Get all granted accesses with pagination
+ * @param {number} page - Page number
+ * @param {number} limit - Items per page
+ * @param {number} userId - Filter by user ID (optional)
+ * @param {number} quizId - Filter by quiz ID (optional)
+ * @returns {Promise} API response with granted accesses
+ */
+export const getGrantedAccesses = async (page = 1, limit = 20, userId = null, quizId = null) => {
+  try {
+    const params = { page, limit };
+    if (userId) params.userId = userId;
+    if (quizId) params.quizId = quizId;
+    
+    const response = await axios.get(
+      `${API_URL}/api/admin/granted-accesses`,
+      { 
+        params,
+        withCredentials: true 
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get Granted Accesses Error:", error.response?.data || error.message);
+    throw error;
+  }
+};

@@ -17,9 +17,9 @@ import { generalLimiter, quizAttemptLimiter } from "../middlewares/rateLimiter.j
 const router = express.Router();
 
 // Public routes - with general rate limiting
-router.get("/list", generalLimiter, listQuizzes);
-router.get("/subjects", generalLimiter, getSubjects);
-router.get("/years", generalLimiter, getYears);
+router.get("/list", optionalAuth, generalLimiter, listQuizzes);
+router.get("/subjects", optionalAuth, generalLimiter, getSubjects);
+router.get("/years", optionalAuth, generalLimiter, getYears);
 router.get("/leaderboard/:quizId", generalLimiter, getQuizLeaderboard);
 
 // Protected routes - require authentication

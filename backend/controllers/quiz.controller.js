@@ -23,9 +23,19 @@ export const listQuizzes = async (req, res, next) => {
     const skip = (pageNum - 1) * limitNum;
 
     // Build filter conditions
-    const where = {
-      isActive: true
-    };
+    // Only filter by isActive for non-admin users
+    const where = {};
+    
+    // If user is not admin, only show active quizzes
+    const isAdmin = req.user && req.user.isAdmin === 1;
+    console.log('listQuizzes - User:', req.user?.email || 'Not authenticated', 'isAdmin:', isAdmin);
+    
+    if (!isAdmin) {
+      where.isActive = true;
+      console.log('Filtering by isActive: true (non-admin user)');
+    } else {
+      console.log('Admin user - showing all quizzes');
+    }
 
     if (subject) {
       where.subject = subject;
@@ -63,6 +73,7 @@ export const listQuizzes = async (req, res, next) => {
         subject: true,
         examYear: true,
         educationLevel: true,
+        isActive: true,
         isPaid: true,
         price: true,
         prize: true,
@@ -87,6 +98,7 @@ export const listQuizzes = async (req, res, next) => {
       subject: quiz.subject,
       examYear: quiz.examYear,
       educationLevel: quiz.educationLevel,
+      isActive: quiz.isActive,
       isPaid: quiz.isPaid,
       price: quiz.price,
       prize: quiz.prize,
@@ -96,6 +108,9 @@ export const listQuizzes = async (req, res, next) => {
       questionCount: quiz._count.questions,
       createdAt: quiz.createdAt
     }));
+    
+    console.log(`Returning ${formattedQuizzes.length} quizzes. Hidden quizzes included:`, 
+      formattedQuizzes.filter(q => !q.isActive).map(q => ({ id: q.id, title: q.title, isActive: q.isActive })));
 
     res.status(200).json(
       new ApiResponse(200, {
@@ -133,11 +148,16 @@ export const getQuizById = async (req, res, next) => {
       return next(new ApiError(400, "Invalid quiz ID"));
     }
 
-    const quiz = await prisma.quiz.findUnique({
-      where: { 
-        id: quizId,
-        isActive: true 
-      },
+    // Build where clause - only filter by isActive for non-admin users
+    const where = { id: quizId };
+    const isAdmin = req.user && req.user.isAdmin === 1;
+    
+    if (!isAdmin) {
+      where.isActive = true;
+    }
+
+    const quiz = await prisma.quiz.findFirst({
+      where,
       include: {
         questions: {
           select: {
@@ -178,6 +198,7 @@ export const getQuizById = async (req, res, next) => {
         subject: quiz.subject,
         examYear: quiz.examYear,
         educationLevel: quiz.educationLevel,
+        isActive: quiz.isActive,
         isPaid: quiz.isPaid,
         price: quiz.price,
         prize: quiz.prize,
@@ -202,8 +223,14 @@ export const getQuizById = async (req, res, next) => {
  */
 export const getSubjects = async (req, res, next) => {
   try {
+    // Build where clause - only filter by isActive for non-admin users
+    const where = {};
+    if (!req.user || req.user.isAdmin !== 1) {
+      where.isActive = true;
+    }
+
     const subjects = await prisma.quiz.findMany({
-      where: { isActive: true },
+      where,
       select: { subject: true },
       distinct: ['subject'],
       orderBy: { subject: 'asc' }
@@ -226,8 +253,14 @@ export const getSubjects = async (req, res, next) => {
  */
 export const getYears = async (req, res, next) => {
   try {
+    // Build where clause - only filter by isActive for non-admin users
+    const where = {};
+    if (!req.user || req.user.isAdmin !== 1) {
+      where.isActive = true;
+    }
+
     const years = await prisma.quiz.findMany({
-      where: { isActive: true },
+      where,
       select: { examYear: true },
       distinct: ['examYear'],
       orderBy: { examYear: 'desc' }
@@ -280,11 +313,14 @@ export const submitQuizAttempt = async (req, res, next) => {
     }
 
     // Fetch quiz with all questions
+    // Build where clause - only filter by isActive for non-admin users
+    const where = { id: quizIdNum };
+    if (!req.user || req.user.isAdmin !== 1) {
+      where.isActive = true;
+    }
+
     const quiz = await prisma.quiz.findUnique({
-      where: { 
-        id: quizIdNum,
-        isActive: true 
-      },
+      where,
       include: {
         questions: true
       }

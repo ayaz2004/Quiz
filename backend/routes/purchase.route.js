@@ -1,6 +1,5 @@
 import express from "express";
 import { 
-  purchaseQuiz,
   getUserPurchases,
   checkUserAccess,
   getMyQuizzes
@@ -11,7 +10,7 @@ import { generalLimiter } from "../middlewares/rateLimiter.js";
 const router = express.Router();
 
 // All purchase routes require authentication
-router.post("/quiz/:quizId", verifyToken, generalLimiter, purchaseQuiz);
+// Note: User purchase route removed - only admin can grant access
 router.get("/my-purchases", verifyToken, generalLimiter, getUserPurchases);
 router.get("/check-access/:quizId", verifyToken, generalLimiter, checkUserAccess);
 router.get("/my-quizzes", verifyToken, generalLimiter, getMyQuizzes);

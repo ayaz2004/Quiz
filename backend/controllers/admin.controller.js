@@ -670,3 +670,228 @@ export const grantQuizAccess = async (req, res, next) => {
     return next(new ApiError(500, error.message || "Error granting quiz access"));
   }
 };
+
+/**
+ * Toggle quiz visibility (isActive)
+ * @route PUT /api/admin/quiz/:quizId/toggle-visibility
+ * @access Admin only
+ */
+export const toggleQuizVisibility = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can toggle quiz visibility"));
+    }
+
+    const { quizId } = req.params;
+    const quizIdNum = parseInt(quizId);
+
+    if (isNaN(quizIdNum)) {
+      return next(new ApiError(400, "Invalid Quiz ID"));
+    }
+
+    // Get current quiz
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizIdNum }
+    });
+
+    if (!quiz) {
+      return next(new ApiError(404, "Quiz not found"));
+    }
+
+    // Toggle isActive
+    const updatedQuiz = await prisma.quiz.update({
+      where: { id: quizIdNum },
+      data: {
+        isActive: !quiz.isActive
+      },
+      select: {
+        id: true,
+        title: true,
+        isActive: true
+      }
+    });
+
+    console.log(`Quiz ${quizIdNum} visibility toggled to isActive: ${updatedQuiz.isActive}`);
+
+    return res.status(200).json(
+      new ApiResponse(200, {
+        quiz: updatedQuiz
+      }, `Quiz ${updatedQuiz.isActive ? 'shown' : 'hidden'} successfully`)
+    );
+  } catch (error) {
+    console.error("Toggle Quiz Visibility Error:", error);
+    return next(new ApiError(500, error.message || "Error toggling quiz visibility"));
+  }
+};
+
+/**
+ * Revoke quiz access from a user
+ * @route DELETE /api/admin/revoke-access
+ * @access Admin only
+ */
+export const revokeQuizAccess = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can revoke quiz access"));
+    }
+
+    const { userId, quizId } = req.body;
+
+    if (!userId || !quizId) {
+      return next(new ApiError(400, "User ID and Quiz ID are required"));
+    }
+
+    const userIdNum = parseInt(userId);
+    const quizIdNum = parseInt(quizId);
+
+    if (isNaN(userIdNum) || isNaN(quizIdNum)) {
+      return next(new ApiError(400, "Invalid User ID or Quiz ID"));
+    }
+
+    // Check if purchase exists
+    const purchase = await prisma.purchase.findUnique({
+      where: {
+        userId_quizId: {
+          userId: userIdNum,
+          quizId: quizIdNum
+        }
+      },
+      include: {
+        user: { select: { email: true } },
+        quiz: { select: { title: true } }
+      }
+    });
+
+    if (!purchase) {
+      return next(new ApiError(404, "Access record not found"));
+    }
+
+    // Delete purchase record
+    await prisma.purchase.delete({
+      where: {
+        userId_quizId: {
+          userId: userIdNum,
+          quizId: quizIdNum
+        }
+      }
+    });
+
+    // Update user's purchasedExams array
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userIdNum }
+    });
+
+    const purchasedExams = typeof targetUser.purchasedExams === 'string' 
+      ? JSON.parse(targetUser.purchasedExams) 
+      : targetUser.purchasedExams;
+    
+    const updatedExams = purchasedExams.filter(id => id !== quizIdNum);
+    
+    await prisma.user.update({
+      where: { id: userIdNum },
+      data: {
+        purchasedExams: JSON.stringify(updatedExams)
+      }
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, {
+        userId: userIdNum,
+        quizId: quizIdNum,
+        userEmail: purchase.user.email,
+        quizTitle: purchase.quiz.title
+      }, "Quiz access revoked successfully")
+    );
+  } catch (error) {
+    console.error("Revoke Quiz Access Error:", error);
+    return next(new ApiError(500, error.message || "Error revoking quiz access"));
+  }
+};
+
+/**
+ * Get all granted accesses with pagination
+ * @route GET /api/admin/granted-accesses
+ * @access Admin only
+ */
+export const getGrantedAccesses = async (req, res, next) => {
+  try {
+    const user = req.user;
+    
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can view granted accesses"));
+    }
+
+    const { page = 1, limit = 20, userId, quizId } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const where = {
+      amount: 0 // Only show admin-granted accesses (amount = 0)
+    };
+
+    if (userId) {
+      where.userId = parseInt(userId);
+    }
+
+    if (quizId) {
+      where.quizId = parseInt(quizId);
+    }
+
+    const [total, accesses] = await Promise.all([
+      prisma.purchase.count({ where }),
+      prisma.purchase.findMany({
+        where,
+        skip,
+        take: limitNum,
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true
+            }
+          },
+          quiz: {
+            select: {
+              id: true,
+              title: true,
+              subject: true,
+              isPaid: true
+            }
+          }
+        },
+        orderBy: {
+          purchasedAt: 'desc'
+        }
+      })
+    ]);
+
+    return res.status(200).json(
+      new ApiResponse(200, {
+        accesses: accesses.map(a => ({
+          id: a.id,
+          userId: a.userId,
+          userEmail: a.user.email,
+          quizId: a.quizId,
+          quizTitle: a.quiz.title,
+          quizSubject: a.quiz.subject,
+          isPaid: a.quiz.isPaid,
+          grantedAt: a.purchasedAt
+        })),
+        pagination: {
+          currentPage: pageNum,
+          totalPages: Math.ceil(total / limitNum),
+          totalItems: total,
+          itemsPerPage: limitNum
+        }
+      }, "Granted accesses retrieved successfully")
+    );
+  } catch (error) {
+    console.error("Get Granted Accesses Error:", error);
+    return next(new ApiError(500, error.message || "Error fetching granted accesses"));
+  }
+};
