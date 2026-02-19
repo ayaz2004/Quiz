@@ -116,6 +116,11 @@ export const updateQuiz = async (req, res, next) => {
     const { id } = req.params;
     const user = req.user;
     
+    // Validate quiz ID
+    if (!id || isNaN(parseInt(id))) {
+      return next(new ApiError(400, "Valid quiz ID is required"));
+    }
+    
     if(!user || user.isAdmin !==1){
         return next(new ApiError(403, "Only admins can update quizzes"));
     }

@@ -169,6 +169,9 @@ export const getQuizById = async (req, res, next) => {
             option4: true,
             imageUrl: true
             // Note: isCorrect and explanation are intentionally excluded for security
+          },
+          orderBy: {
+            id: 'asc'
           }
         }
       }
@@ -322,7 +325,11 @@ export const submitQuizAttempt = async (req, res, next) => {
     const quiz = await prisma.quiz.findUnique({
       where,
       include: {
-        questions: true
+        questions: {
+          orderBy: {
+            id: 'asc'
+          }
+        }
       }
     });
 
