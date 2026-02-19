@@ -61,15 +61,16 @@ export const addQuiz = async (req, res, next) => {
         }
 
         return {
-            questionText: q.questionText,
-            option1: q.option1,
-            option2: q.option2,
-            option3: q.option3,
-            option4: q.option4,
-            isCorrect: parseInt(q.isCorrect),
-            explanation: q.explanation || null,
-            imageUrl: cloudinaryUrl || null,
-          };
+          questionOrder: index + 1,
+          questionText: q.questionText,
+          option1: q.option1,
+          option2: q.option2,
+          option3: q.option3,
+          option4: q.option4,
+          isCorrect: parseInt(q.isCorrect),
+          explanation: q.explanation || null,
+          imageUrl: cloudinaryUrl || null,
+        };
       })
     );
 
@@ -158,6 +159,7 @@ export const updateQuiz = async (req, res, next) => {
         }
 
         return {
+          questionOrder: index + 1,
           questionText: q.questionText,
           option1: q.option1,
           option2: q.option2,
@@ -435,6 +437,7 @@ export const getQuizByIdForAdmin = async (req, res, next) => {
         questions: {
           select: {
             id: true,
+            questionOrder: true,
             questionText: true,
             option1: true,
             option2: true,
@@ -443,6 +446,9 @@ export const getQuizByIdForAdmin = async (req, res, next) => {
             isCorrect: true,
             explanation: true,
             imageUrl: true
+          },
+          orderBy: {
+            questionOrder: 'asc'
           }
         }
       }

@@ -245,6 +245,12 @@ const AdminDashboard = () => {
       const response = await getQuizById(quizId);
       const quiz = response.data;
       
+      const sortedQuestions = [...quiz.questions].sort((a, b) => {
+        const aOrder = a.questionOrder ?? a.id ?? 0;
+        const bOrder = b.questionOrder ?? b.id ?? 0;
+        return aOrder - bOrder;
+      });
+
       // Populate form with quiz data
       setQuizForm({
         title: quiz.title,
@@ -259,7 +265,7 @@ const AdminDashboard = () => {
         timeLimit: quiz.timeLimit || null,
         hasNegativeMarking: quiz.hasNegativeMarking || false,
         negativeMarks: quiz.negativeMarks || null,
-        questions: quiz.questions.map((q, idx) => ({
+        questions: sortedQuestions.map((q, idx) => ({
           id: q.id || Date.now() + idx, // Use existing ID or generate one
           questionText: q.questionText,
           option1: q.option1,

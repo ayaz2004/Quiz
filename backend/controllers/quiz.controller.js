@@ -162,6 +162,7 @@ export const getQuizById = async (req, res, next) => {
         questions: {
           select: {
             id: true,
+            questionOrder: true,
             questionText: true,
             option1: true,
             option2: true,
@@ -171,7 +172,7 @@ export const getQuizById = async (req, res, next) => {
             // Note: isCorrect and explanation are intentionally excluded for security
           },
           orderBy: {
-            id: 'asc'
+            questionOrder: 'asc'
           }
         }
       }
@@ -327,7 +328,7 @@ export const submitQuizAttempt = async (req, res, next) => {
       include: {
         questions: {
           orderBy: {
-            id: 'asc'
+            questionOrder: 'asc'
           }
         }
       }

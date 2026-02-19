@@ -46,10 +46,18 @@ const TakeQuiz = () => {
         throw new Error('Quiz has no questions');
       }
 
-      setQuiz(quizData);
-      setAnswers(new Array(quizData.questions.length).fill(undefined));
-      setReviewMarked(new Array(quizData.questions.length).fill(false));
-      setQuestionTimes(new Array(quizData.questions.length).fill(0));
+      const sortedQuestions = [...quizData.questions].sort((a, b) => {
+        const aOrder = a.questionOrder ?? a.id ?? 0;
+        const bOrder = b.questionOrder ?? b.id ?? 0;
+        return aOrder - bOrder;
+      });
+
+      const normalizedQuiz = { ...quizData, questions: sortedQuestions };
+
+      setQuiz(normalizedQuiz);
+      setAnswers(new Array(normalizedQuiz.questions.length).fill(undefined));
+      setReviewMarked(new Array(normalizedQuiz.questions.length).fill(false));
+      setQuestionTimes(new Array(normalizedQuiz.questions.length).fill(0));
       setQuestionStartTime(Date.now());
     } catch (error) {
       console.error('Error fetching quiz:', error);
