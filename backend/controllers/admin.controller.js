@@ -34,6 +34,14 @@ export const addQuiz = async (req, res, next) => {
       negativeMarks,
       questions,
     } = data;
+
+    const existingQuiz = await prisma.quiz.findUnique({
+      where: { title },
+      select: { id: true },
+    });
+    if (existingQuiz) {
+      return next(new ApiError(409, "A quiz with this title already exists"));
+    }
     // 2. Process Questions and Upload Images
     // We use Promise.all because uploading to Cloudinary is asynchronous
     const questionsWithImages = await Promise.all(
@@ -115,10 +123,11 @@ export const addQuiz = async (req, res, next) => {
 export const updateQuiz = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const quizId = Number(id);
     const user = req.user;
     
     // Validate quiz ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id || !Number.isInteger(quizId)) {
       return next(new ApiError(400, "Valid quiz ID is required"));
     }
     
@@ -141,6 +150,16 @@ export const updateQuiz = async (req, res, next) => {
       negativeMarks,
       questions,
     } = data;
+
+    if (title) {
+      const existingQuiz = await prisma.quiz.findUnique({
+        where: { title },
+        select: { id: true },
+      });
+      if (existingQuiz && existingQuiz.id !== quizId) {
+        return next(new ApiError(409, "A quiz with this title already exists"));
+      }
+    }
 
     // 2. Process Questions and handle new image uploads
     const questionsWithImages = await Promise.all(
@@ -176,12 +195,12 @@ export const updateQuiz = async (req, res, next) => {
     const updatedQuiz = await prisma.$transaction(async (tx) => {
       // Delete old questions first (Replace strategy)
       await tx.question.deleteMany({
-        where: { quizId: parseInt(id) },
+        where: { quizId },
       });
 
       // Update Quiz and recreate all questions
       return await tx.quiz.update({
-        where: { id: parseInt(id) },
+        where: { id: quizId },
         data: {
           title,
           description,
