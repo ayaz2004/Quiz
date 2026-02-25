@@ -49,15 +49,20 @@ const Home = () => {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 3 + 1;
+        this.size = Math.random() * 8 + 4; // Bigger particles (4-12px)
         this.speedX = Math.random() * 0.5 - 0.25;
         this.speedY = Math.random() * 0.5 - 0.25;
         this.opacity = Math.random() * 0.5 + 0.2;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        // Random shape: circle, square, triangle, diamond, hexagon
+        this.shape = Math.floor(Math.random() * 5);
       }
 
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
+        this.rotation += this.rotationSpeed;
 
         if (this.x > canvas.width) this.x = 0;
         if (this.x < 0) this.x = canvas.width;
@@ -66,17 +71,58 @@ const Home = () => {
       }
 
       draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
         ctx.fillStyle = isDark 
           ? `rgba(59, 130, 246, ${this.opacity})` 
           : `rgba(16, 185, 129, ${this.opacity})`;
+        
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        
+        switch(this.shape) {
+          case 0: // Circle
+            ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+            break;
+          
+          case 1: // Square
+            ctx.rect(-this.size, -this.size, this.size * 2, this.size * 2);
+            break;
+          
+          case 2: // Triangle
+            ctx.moveTo(0, -this.size);
+            ctx.lineTo(this.size, this.size);
+            ctx.lineTo(-this.size, this.size);
+            ctx.closePath();
+            break;
+          
+          case 3: // Diamond
+            ctx.moveTo(0, -this.size);
+            ctx.lineTo(this.size, 0);
+            ctx.lineTo(0, this.size);
+            ctx.lineTo(-this.size, 0);
+            ctx.closePath();
+            break;
+          
+          case 4: // Hexagon
+            for (let i = 0; i < 6; i++) {
+              const angle = (Math.PI / 3) * i;
+              const x = this.size * Math.cos(angle);
+              const y = this.size * Math.sin(angle);
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            break;
+        }
+        
         ctx.fill();
+        ctx.restore();
       }
     }
 
     // Create particles
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 60; i++) {
       particles.push(new Particle());
     }
 
@@ -95,11 +141,11 @@ const Home = () => {
           const dy = p1.y - p2.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 120) {
+          if (distance < 150) {
             ctx.strokeStyle = isDark 
-              ? `rgba(59, 130, 246, ${0.15 * (1 - distance / 120)})` 
-              : `rgba(16, 185, 129, ${0.15 * (1 - distance / 120)})`;
-            ctx.lineWidth = 1;
+              ? `rgba(59, 130, 246, ${0.2 * (1 - distance / 150)})` 
+              : `rgba(16, 185, 129, ${0.2 * (1 - distance / 150)})`;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
@@ -214,13 +260,14 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="lg:col-span-8 relative overflow-hidden rounded-3xl lg:rounded-[2.5rem] p-8 lg:p-12 min-h-[500px] lg:min-h-[600px] flex flex-col justify-between"
+            className="lg:col-span-8 relative overflow-hidden rounded-3xl lg:rounded-[2.5rem] p-8 lg:p-12 min-h-[500px] lg:min-h-[600px] flex flex-col justify-between shadow-2xl"
             style={{
               background: isDark 
                 ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)'
-                : 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%)',
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%)',
               backdropFilter: 'blur(20px)',
-              border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
+              border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '2px solid rgba(16, 185, 129, 0.2)',
+              boxShadow: isDark ? 'none' : '0 20px 60px rgba(16, 185, 129, 0.15), 0 10px 30px rgba(59, 130, 246, 0.1)',
             }}
           >
             {/* Morphing gradient orbs */}
@@ -259,12 +306,12 @@ const Home = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full backdrop-blur-xl"
+                className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full backdrop-blur-xl shadow-lg"
                 style={{
                   background: isDark 
                     ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(255, 255, 255, 0.8)',
-                  border: isDark ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(0, 0, 0, 0.1)',
+                    : 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
+                  border: isDark ? '1px solid rgba(255, 255, 255, 0.2)' : '2px solid rgba(16, 185, 129, 0.3)',
                 }}
               >
                 <Sparkles className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
@@ -361,10 +408,11 @@ const Home = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
-                  className="backdrop-blur-xl rounded-2xl p-4 border cursor-pointer group"
+                  className="backdrop-blur-xl rounded-2xl p-4 border cursor-pointer group shadow-lg"
                   style={{
-                    background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                    background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.95)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(16, 185, 129, 0.2)',
+                    boxShadow: isDark ? 'none' : '0 4px 15px rgba(16, 185, 129, 0.1)',
                   }}
                 >
                   <div className={`w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
@@ -386,12 +434,13 @@ const Home = () => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative overflow-hidden rounded-3xl p-6 lg:p-8 backdrop-blur-xl border flex flex-col justify-between group hover:scale-[1.02] transition-transform"
+              className="relative overflow-hidden rounded-3xl p-6 lg:p-8 backdrop-blur-xl border flex flex-col justify-between group hover:scale-[1.02] transition-transform shadow-xl"
               style={{
                 background: isDark 
                   ? 'rgba(59, 130, 246, 0.1)' 
-                  : 'rgba(59, 130, 246, 0.05)',
-                borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)',
+                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(239, 246, 255, 0.98) 100%)',
+                borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)',
+                boxShadow: isDark ? 'none' : '0 10px 40px rgba(59, 130, 246, 0.15)',
               }}
             >
               <div>
@@ -420,12 +469,13 @@ const Home = () => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="relative overflow-hidden rounded-3xl p-6 lg:p-8 backdrop-blur-xl border flex flex-col justify-between group hover:scale-[1.02] transition-transform"
+              className="relative overflow-hidden rounded-3xl p-6 lg:p-8 backdrop-blur-xl border flex flex-col justify-between group hover:scale-[1.02] transition-transform shadow-xl"
               style={{
                 background: isDark 
                   ? 'rgba(245, 158, 11, 0.1)' 
-                  : 'rgba(245, 158, 11, 0.05)',
-                borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.2)',
+                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 251, 235, 0.98) 100%)',
+                borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.4)',
+                boxShadow: isDark ? 'none' : '0 10px 40px rgba(245, 158, 11, 0.15)',
               }}
             >
               <div>
@@ -469,12 +519,13 @@ const Home = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="backdrop-blur-xl rounded-3xl p-8 border"
+          className="backdrop-blur-xl rounded-3xl p-8 border shadow-xl"
           style={{
             background: isDark 
               ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)'
-              : 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+              : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 250, 0.95) 100%)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(16, 185, 129, 0.3)',
+            boxShadow: isDark ? 'none' : '0 10px 40px rgba(16, 185, 129, 0.15)',
           }}
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -493,10 +544,11 @@ const Home = () => {
                 className="flex flex-col items-center text-center gap-3"
               >
                 <div 
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center backdrop-blur-xl border`}
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center backdrop-blur-xl border shadow-lg`}
                   style={{
-                    background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.9)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                    background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.98)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(16, 185, 129, 0.2)',
+                    boxShadow: isDark ? 'none' : '0 4px 15px rgba(0, 0, 0, 0.08)',
                   }}
                 >
                   <benefit.icon className={`w-7 h-7 ${benefit.color}`} />
@@ -517,10 +569,11 @@ const Home = () => {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div 
                 key={i} 
-                className="rounded-2xl p-6 backdrop-blur-xl border animate-pulse"
+                className="rounded-2xl p-6 backdrop-blur-xl border animate-pulse shadow-lg"
                 style={{
-                  background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.9)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                  background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.98)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(203, 213, 225, 0.5)',
+                  boxShadow: isDark ? 'none' : '0 4px 15px rgba(0, 0, 0, 0.05)',
                 }}
               >
                 <div className={`h-6 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} rounded mb-4 w-3/4`}></div>
@@ -539,10 +592,11 @@ const Home = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="backdrop-blur-xl border rounded-3xl p-8"
+            className="backdrop-blur-xl border rounded-3xl p-8 shadow-xl"
             style={{
-              background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
-              borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.2)',
+              background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(254, 242, 242, 0.98)',
+              borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)',
+              boxShadow: isDark ? 'none' : '0 10px 40px rgba(239, 68, 68, 0.15)',
             }}
           >
             <div className="flex flex-col items-center text-center gap-4">
@@ -731,10 +785,11 @@ const Home = () => {
             initial={{ scale: 0.8 }}
             whileInView={{ scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full backdrop-blur-xl border"
+            className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full backdrop-blur-xl border shadow-lg"
             style={{
-              background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.9)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+              background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.98)',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(16, 185, 129, 0.2)',
+              boxShadow: isDark ? 'none' : '0 4px 15px rgba(16, 185, 129, 0.1)',
             }}
           >
             <Rocket className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
@@ -801,10 +856,11 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group relative overflow-hidden rounded-3xl p-8 backdrop-blur-xl border hover:scale-105 transition-all duration-300 cursor-pointer"
+              className="group relative overflow-hidden rounded-3xl p-8 backdrop-blur-xl border hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-2xl"
               style={{
-                background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.8)',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.98)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(203, 213, 225, 0.4)',
+                boxShadow: isDark ? 'none' : '0 4px 20px rgba(0, 0, 0, 0.08)',
               }}
             >
               {/* Gradient overlay on hover */}
@@ -849,13 +905,14 @@ const Home = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 rounded-[3rem] p-12 lg:p-16 overflow-hidden"
+        className="relative z-10 rounded-[3rem] p-12 lg:p-16 overflow-hidden shadow-2xl"
         style={{
           background: isDark 
             ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)'
-            : 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)',
+            : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 250, 0.95) 100%)',
           backdropFilter: 'blur(20px)',
-          border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
+          border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '2px solid rgba(16, 185, 129, 0.2)',
+          boxShadow: isDark ? 'none' : '0 20px 60px rgba(16, 185, 129, 0.15)',
         }}
       >
         {/* Floating orbs */}
