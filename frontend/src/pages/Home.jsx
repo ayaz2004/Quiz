@@ -530,7 +530,7 @@ const Home = () => {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { icon: CheckCircle2, text: 'Completely Free', color: 'text-emerald-500' },
+              { icon: CheckCircle2, text: 'Free to Start', color: 'text-emerald-500' },
               { icon: Clock, text: 'Timed Practice', color: 'text-blue-500' },
               { icon: Target, text: 'Exam Pattern', color: 'text-purple-500' },
               { icon: Zap, text: 'Instant Feedback', color: 'text-orange-500' },
