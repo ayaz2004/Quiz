@@ -1,7 +1,7 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getAttemptResult, submitSuggestion } from '../utils/quizApi';
 import { 
   Tag, 
@@ -37,6 +37,7 @@ const QuizResult = () => {
   const navigate = useNavigate();
   const { quizId } = useParams(); // This is actually attemptId or quizId depending on route
   const { isDark } = useTheme();
+  const canvasRef = useRef(null);
   
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,6 +50,130 @@ const QuizResult = () => {
   // Data from navigation state (when coming from TakeQuiz)
   const stateResults = location.state?.results;
   const stateQuiz = location.state?.quiz;
+
+  // Particle animation effect
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = document.documentElement.scrollHeight;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 8 + 4; // 4-12px
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.opacity = Math.random() * 0.5 + 0.2; // 0.2-0.7
+        this.shape = Math.floor(Math.random() * 5); // 0-4 for 5 shapes
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotation += this.rotationSpeed;
+
+        // Wrap around edges
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = this.opacity;
+        
+        // Blue/Indigo/Purple gradient theme for results page
+        const gradient = ctx.createLinearGradient(-this.size, -this.size, this.size, this.size);
+        gradient.addColorStop(0, isDark ? 'rgba(59, 130, 246, 0.8)' : 'rgba(99, 102, 241, 0.6)');
+        gradient.addColorStop(0.5, isDark ? 'rgba(99, 102, 241, 0.8)' : 'rgba(139, 92, 246, 0.6)');
+        gradient.addColorStop(1, isDark ? 'rgba(168, 85, 247, 0.8)' : 'rgba(168, 85, 247, 0.6)');
+        ctx.fillStyle = gradient;
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 2;
+
+        switch(this.shape) {
+          case 0: // Circle
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+            break;
+          case 1: // Square
+            ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+            break;
+          case 2: // Triangle
+            ctx.beginPath();
+            ctx.moveTo(0, -this.size / 2);
+            ctx.lineTo(this.size / 2, this.size / 2);
+            ctx.lineTo(-this.size / 2, this.size / 2);
+            ctx.closePath();
+            ctx.fill();
+            break;
+          case 3: // Diamond
+            ctx.beginPath();
+            ctx.moveTo(0, -this.size / 2);
+            ctx.lineTo(this.size / 2, 0);
+            ctx.lineTo(0, this.size / 2);
+            ctx.lineTo(-this.size / 2, 0);
+            ctx.closePath();
+            ctx.fill();
+            break;
+          case 4: // Hexagon
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+              const angle = (Math.PI / 3) * i;
+              const x = (this.size / 2) * Math.cos(angle);
+              const y = (this.size / 2) * Math.sin(angle);
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            break;
+        }
+        
+        ctx.restore();
+      }
+    }
+
+    const particles = Array.from({ length: 60 }, () => new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = document.documentElement.scrollHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Update canvas height when content changes
+    const observer = new MutationObserver(() => {
+      canvas.height = document.documentElement.scrollHeight;
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+    };
+  }, [isDark]);
 
   useEffect(() => {
     // If we have data from state, use it
@@ -218,8 +343,14 @@ const QuizResult = () => {
   const performance = getPerformanceLevel(percentage);
 
   return (
-    <div className={`min-h-screen py-8 md:py-12 ${isDark ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-emerald-50 to-teal-50'}`}>
-      <div className="container mx-auto px-4 max-w-6xl">
+    <div className={`min-h-screen py-8 md:py-12 relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'}`}>
+      {/* Particle Canvas Background */}
+      <canvas
+        ref={canvasRef}
+        className="fixed inset-0 pointer-events-none z-0"
+        style={{ width: '100%', height: '100%' }}
+      />
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
         {/* Confetti Background Effect */}
         {percentage >= 75 && (
           <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -248,9 +379,12 @@ const QuizResult = () => {
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mb-6 md:mb-8 p-4 md:p-6 rounded-2xl ${
-            isDark ? 'bg-gray-800/50 backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm shadow-lg'
-          }`}
+          className="mb-6 md:mb-8 p-4 md:p-6 rounded-2xl backdrop-blur-xl border-2"
+          style={{
+            background: isDark ? 'rgba(31, 41, 55, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: isDark ? 'rgba(79, 70, 229, 0.3)' : 'rgba(99, 102, 241, 0.4)',
+            boxShadow: isDark ? '0 8px 32px rgba(79, 70, 229, 0.15)' : '0 8px 32px rgba(99, 102, 241, 0.2)'
+          }}
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
@@ -278,7 +412,7 @@ const QuizResult = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
-              className={`p-4 rounded-2xl bg-gradient-to-r ${performance.color}`}
+              className={`p-4 rounded-2xl bg-gradient-to-r ${performance.color} shadow-lg`}
             >
               {performance.icon && <performance.icon className="w-12 h-12 md:w-16 md:h-16 text-white" />}
             </motion.div>
@@ -293,11 +427,12 @@ const QuizResult = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className={`p-6 md:p-8 rounded-3xl shadow-2xl ${
-                isDark 
-                  ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
-                  : 'bg-gradient-to-br from-white to-gray-50'
-              }`}
+              className="p-6 md:p-8 rounded-3xl shadow-2xl backdrop-blur-xl border-2"
+              style={{
+                background: isDark ? 'rgba(31, 41, 55, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+                borderColor: isDark ? 'rgba(139, 92, 246, 0.3)' : 'rgba(168, 85, 247, 0.4)',
+                boxShadow: isDark ? '0 20px 60px rgba(139, 92, 246, 0.2)' : '0 20px 60px rgba(168, 85, 247, 0.25)'
+              }}
             >
               <div className="text-center">
                 <div className={`inline-block px-6 py-3 rounded-full bg-gradient-to-r ${performance.color} text-white font-bold text-lg md:text-xl mb-4 shadow-lg`}>
@@ -379,11 +514,12 @@ const QuizResult = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
-                  isDark 
-                    ? 'bg-gradient-to-br from-emerald-900/40 to-green-900/40 border border-emerald-700/30' 
-                    : 'bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200'
-                }`}
+                className="p-4 md:p-5 rounded-2xl text-center relative overflow-hidden backdrop-blur-xl border-2"
+                style={{
+                  background: isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(236, 253, 245, 0.98)',
+                  borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.4)',
+                  boxShadow: isDark ? '0 8px 32px rgba(16, 185, 129, 0.15)' : '0 8px 32px rgba(16, 185, 129, 0.2)'
+                }}
               >
                 <motion.div 
                   initial={{ scale: 0 }}
@@ -404,11 +540,12 @@ const QuizResult = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
-                  isDark 
-                    ? 'bg-gradient-to-br from-red-900/40 to-pink-900/40 border border-red-700/30' 
-                    : 'bg-gradient-to-br from-red-50 to-pink-50 border border-red-200'
-                }`}
+                className="p-4 md:p-5 rounded-2xl text-center relative overflow-hidden backdrop-blur-xl border-2"
+                style={{
+                  background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(254, 242, 242, 0.98)',
+                  borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)',
+                  boxShadow: isDark ? '0 8px 32px rgba(239, 68, 68, 0.15)' : '0 8px 32px rgba(239, 68, 68, 0.2)'
+                }}
               >
                 <motion.div 
                   initial={{ scale: 0, rotate: -180 }}
@@ -429,11 +566,12 @@ const QuizResult = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
-                  isDark 
-                    ? 'bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600' 
-                    : 'bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300'
-                }`}
+                className="p-4 md:p-5 rounded-2xl text-center relative overflow-hidden backdrop-blur-xl border-2"
+                style={{
+                  background: isDark ? 'rgba(107, 114, 128, 0.2)' : 'rgba(249, 250, 251, 0.98)',
+                  borderColor: isDark ? 'rgba(107, 114, 128, 0.4)' : 'rgba(107, 114, 128, 0.5)',
+                  boxShadow: isDark ? '0 8px 32px rgba(107, 114, 128, 0.15)' : '0 8px 32px rgba(107, 114, 128, 0.2)'
+                }}
               >
                 <motion.div 
                   initial={{ scale: 0 }}
@@ -454,11 +592,12 @@ const QuizResult = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className={`p-4 md:p-5 rounded-2xl text-center relative overflow-hidden ${
-                  isDark 
-                    ? 'bg-gradient-to-br from-blue-900/40 to-cyan-900/40 border border-blue-700/30' 
-                    : 'bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200'
-                }`}
+                className="p-4 md:p-5 rounded-2xl text-center relative overflow-hidden backdrop-blur-xl border-2"
+                style={{
+                  background: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(239, 246, 255, 0.98)',
+                  borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)',
+                  boxShadow: isDark ? '0 8px 32px rgba(59, 130, 246, 0.15)' : '0 8px 32px rgba(59, 130, 246, 0.2)'
+                }}
               >
                 <motion.div 
                   initial={{ scale: 0 }}
@@ -484,11 +623,12 @@ const QuizResult = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 }}
-              className={`p-5 md:p-6 rounded-2xl ${
-                isDark 
-                  ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
-                  : 'bg-gradient-to-br from-white to-gray-50 shadow-lg'
-              }`}
+              className="p-5 md:p-6 rounded-2xl backdrop-blur-xl border-2"
+              style={{
+                background: isDark ? 'rgba(31, 41, 55, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+                borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)',
+                boxShadow: isDark ? '0 8px 32px rgba(99, 102, 241, 0.15)' : '0 8px 32px rgba(99, 102, 241, 0.2)'
+              }}
             >
               <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                 <TrendingUp className="w-5 h-5 text-emerald-500" />
@@ -605,11 +745,13 @@ const QuizResult = () => {
             >
               <button
                 onClick={() => navigate('/quizzes')}
-                className={`w-full px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                  isDark 
-                    ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700' 
-                    : 'bg-white hover:bg-gray-50 text-gray-800 shadow-lg border border-gray-200'
-                }`}
+                className="w-full px-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 backdrop-blur-xl border-2"
+                style={{
+                  background: isDark ? 'rgba(31, 41, 55, 0.6)' : 'rgba(255, 255, 255, 0.95)',
+                  borderColor: isDark ? 'rgba(107, 114, 128, 0.4)' : 'rgba(209, 213, 219, 0.6)',
+                  boxShadow: isDark ? '0 4px 24px rgba(0, 0, 0, 0.2)' : '0 4px 24px rgba(99, 102, 241, 0.15)',
+                  color: isDark ? 'rgb(243, 244, 246)' : 'rgb(31, 41, 55)'
+                }}
               >
                 <Home className="w-5 h-5" />
                 Back to Quizzes
@@ -645,11 +787,14 @@ const QuizResult = () => {
           transition={{ delay: 0.9 }}
           className="mt-6"
         >
-          <div className={`p-5 rounded-xl ${showSuggestionForm ? 'max-w-4xl' : 'max-w-xl'} mx-auto transition-all duration-300 ${
-            isDark 
-              ? 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700' 
-              : 'bg-gradient-to-br from-white to-gray-50 shadow-md border border-gray-200'
-          }`}>
+          <div 
+            className={`p-5 rounded-xl ${showSuggestionForm ? 'max-w-4xl' : 'max-w-xl'} mx-auto transition-all duration-300 backdrop-blur-xl border-2`}
+            style={{
+              background: isDark ? 'rgba(31, 41, 55, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+              borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)',
+              boxShadow: isDark ? '0 8px 32px rgba(59, 130, 246, 0.15)' : '0 8px 32px rgba(59, 130, 246, 0.2)'
+            }}
+          >
             {!showSuggestionForm ? (
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600 mb-3">
@@ -760,11 +905,13 @@ const QuizResult = () => {
           >
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className={`w-full p-5 md:p-6 rounded-2xl font-semibold transition-all mb-6 ${
-                isDark 
-                  ? 'bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white border border-gray-700' 
-                  : 'bg-gradient-to-r from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-gray-800 shadow-lg'
-              }`}
+              className="w-full p-5 md:p-6 rounded-2xl font-semibold transition-all mb-6 backdrop-blur-xl border-2"
+              style={{
+                background: isDark ? 'rgba(31, 41, 55, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+                borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.4)',
+                boxShadow: isDark ? '0 8px 32px rgba(16, 185, 129, 0.15)' : '0 8px 32px rgba(16, 185, 129, 0.2)',
+                color: isDark ? 'rgb(243, 244, 246)' : 'rgb(31, 41, 55)'
+              }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -805,15 +952,24 @@ const QuizResult = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`p-5 md:p-6 rounded-2xl ${
-                        isDark ? 'bg-gray-800 border-2' : 'bg-white shadow-lg border-2'
-                      } ${
-                        result.isCorrect 
-                          ? isDark ? 'border-emerald-700/50' : 'border-emerald-300' 
+                      className="p-5 md:p-6 rounded-2xl backdrop-blur-xl border-2"
+                      style={{
+                        background: result.isCorrect 
+                          ? isDark ? 'rgba(16, 185, 129, 0.1)' : 'rgba(236, 253, 245, 0.98)'
                           : result.userAnswer === 0 
-                          ? isDark ? 'border-gray-600' : 'border-gray-300'
-                          : isDark ? 'border-red-700/50' : 'border-red-300'
-                      }`}
+                          ? isDark ? 'rgba(55, 65, 81, 0.4)' : 'rgba(249, 250, 251, 0.98)'
+                          : isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(254, 242, 242, 0.98)',
+                        borderColor: result.isCorrect 
+                          ? isDark ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.4)'
+                          : result.userAnswer === 0 
+                          ? isDark ? 'rgba(107, 114, 128, 0.4)' : 'rgba(107, 114, 128, 0.5)'
+                          : isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)',
+                        boxShadow: result.isCorrect
+                          ? isDark ? '0 8px 32px rgba(16, 185, 129, 0.15)' : '0 8px 32px rgba(16, 185, 129, 0.2)'
+                          : result.userAnswer === 0
+                          ? isDark ? '0 4px 24px rgba(0, 0, 0, 0.2)' : '0 4px 24px rgba(107, 114, 128, 0.15)'
+                          : isDark ? '0 8px 32px rgba(239, 68, 68, 0.15)' : '0 8px 32px rgba(239, 68, 68, 0.2)'
+                      }}
                     >
                       <div className="flex flex-col md:flex-row gap-4">
                         {/* Question Number Badge */}
