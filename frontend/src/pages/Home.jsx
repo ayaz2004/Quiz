@@ -400,7 +400,7 @@ const Home = () => {
               {[
                 { label: 'Timed Tests', icon: Clock, color: 'from-blue-500 to-cyan-500' },
                 { label: 'Instant Results', icon: Zap, color: 'from-purple-500 to-pink-500' },
-                { label: 'Free Access', icon: CheckCircle2, color: 'from-emerald-500 to-teal-500' },
+                { label: 'Free Quizzes', icon: CheckCircle2, color: 'from-emerald-500 to-teal-500' },
               ].map((feature, index) => (
                 <motion.div
                   key={feature.label}
