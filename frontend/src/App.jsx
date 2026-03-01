@@ -13,6 +13,8 @@ import SignUp from './pages/SignUp';
 import VerifyEmail from './pages/VerifyEmail';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Terms from './pages/Terms';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -27,6 +29,8 @@ export default function App() {
           <Route path="verify-email/:token" element={<VerifyEmail />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password/:token" element={<ResetPassword />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="privacy" element={<PrivacyPolicy />} />
           <Route path="quizzes" element={<Quizzes />} />
           <Route path="quiz/:quizId" element={
             <ProtectedRoute>
