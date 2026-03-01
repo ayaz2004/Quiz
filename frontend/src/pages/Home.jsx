@@ -690,7 +690,7 @@ const Home = () => {
                   <span className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl shadow-xl">
                     <GraduationCap className="w-6 h-6" />
                   </span>
-                  Undergraduate
+                  Bachelors Level
                 </span>
               </h2>
               <p className={`text-sm lg:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>

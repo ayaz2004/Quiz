@@ -70,15 +70,15 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
   const getTimerColor = () => {
     if (!timeLimit) {
       // No limit - use elapsed time colors
-      if (seconds < 600) return 'text-green-600 dark:text-green-400';
-      if (seconds < 1800) return 'text-yellow-600 dark:text-yellow-400';
+      if (seconds < 600) return 'text-blue-600 dark:text-blue-400';
+      if (seconds < 1800) return 'text-amber-600 dark:text-amber-400';
       return 'text-red-600 dark:text-red-400';
     }
     
     // With limit - use remaining time colors
     const remainingSeconds = (timeLimit * 60) - seconds;
-    if (remainingSeconds > timeLimit * 60 * 0.5) return 'text-green-600 dark:text-green-400';
-    if (remainingSeconds > timeLimit * 60 * 0.2) return 'text-yellow-600 dark:text-yellow-400';
+    if (remainingSeconds > timeLimit * 60 * 0.5) return 'text-blue-600 dark:text-blue-400';
+    if (remainingSeconds > timeLimit * 60 * 0.2) return 'text-amber-600 dark:text-amber-400';
     return 'text-red-600 dark:text-red-400';
   };
 
@@ -91,14 +91,14 @@ const QuizTimer = ({ onTimeUpdate, isActive = true, timeLimit = null, onTimeUp }
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className={`flex items-center gap-1.5 sm:gap-3 px-2 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg sm:rounded-xl md:rounded-2xl ${
-        isDark ? 'bg-gray-800' : 'bg-white'
-      } shadow-lg border sm:border-2 ${
+      className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-xl ${
+        isDark ? 'bg-gray-800/95 backdrop-blur-sm' : 'bg-white/95 backdrop-blur-sm'
+      } shadow-xl border-2 ${
         !timeLimit || getDisplaySeconds() > timeLimit * 60 * 0.5
-          ? 'border-green-500/20' 
+          ? 'border-blue-500/30' 
           : getDisplaySeconds() > timeLimit * 60 * 0.2
-          ? 'border-yellow-500/20' 
-          : 'border-red-500/20'
+          ? 'border-amber-500/30' 
+          : 'border-red-500/30'
       }`}
     >
       <svg 
