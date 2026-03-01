@@ -179,9 +179,9 @@ const TakeQuiz = () => {
   const answeredCount = answers.filter(a => a !== undefined).length;
 
   return (
-    <div className={`min-h-screen pb-24 sm:pb-28 md:pb-32 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen pb-24 sm:pb-28 md:pb-32 ${isDark ? 'bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800' : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'}`}>
       {/* Fixed Timer at Top Right Corner */}
-      <div className="fixed top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-6 z-40">
+      <div className="fixed top-3 right-3 sm:top-4 sm:right-4 md:top-6 md:right-6 z-40">
         <QuizTimer 
           onTimeUpdate={handleTimeUpdate} 
           isActive={!submitting}
@@ -191,60 +191,61 @@ const TakeQuiz = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-2 sm:px-4 pt-16 sm:pt-20 md:pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 pt-20 sm:pt-24 md:pt-8">
+        <div className={`grid grid-cols-1 gap-5 md:gap-6 ${sidebarCollapsed ? '' : 'lg:grid-cols-4'}`}>
           {/* Progress Sidebar */}
-          <motion.div 
-            initial={false}
-            animate={{ 
-              width: sidebarCollapsed ? 0 : 'auto',
-              opacity: sidebarCollapsed ? 0 : 1,
-              marginRight: sidebarCollapsed ? -24 : 0
-            }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className={`lg:col-span-1 overflow-hidden ${sidebarCollapsed ? 'hidden lg:block' : ''}`}
-          >
-            <div className="sticky top-32">
-              <div className="relative">
-                <button
-                  onClick={() => setSidebarCollapsed(true)}
-                  className={`absolute -right-3 top-4 z-10 p-2 rounded-full shadow-lg transition-colors ${
-                    isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-white hover:bg-gray-100 text-gray-600'
-                  }`}
-                  title="Hide progress panel"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <QuizProgress
-                  currentQuestion={currentQuestionIndex + 1}
-                  totalQuestions={quiz.questions.length}
-                  answeredCount={answeredCount}
-                />
+          {!sidebarCollapsed && (
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="lg:col-span-1"
+            >
+              <div className="sticky top-24 md:top-8">
+                <div className="relative">
+                  <button
+                    onClick={() => setSidebarCollapsed(true)}
+                    className={`absolute -right-2 top-3 z-10 p-2 rounded-lg shadow-lg transition-all hover:scale-105 ${
+                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 border border-gray-600' : 'bg-white hover:bg-gray-50 text-gray-600 border border-gray-300'
+                    }`}
+                    title="Hide progress panel"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <QuizProgress
+                    currentQuestion={currentQuestionIndex + 1}
+                    totalQuestions={quiz.questions.length}
+                    answeredCount={answeredCount}
+                  />
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* Question Area */}
-          <div className={sidebarCollapsed ? 'lg:col-span-4' : 'lg:col-span-3'}>
+          <div className={sidebarCollapsed ? '' : 'lg:col-span-3'}>
             {/* Show/Hide Sidebar Button */}
             {sidebarCollapsed && (
-              <button
+              <motion.button
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 onClick={() => setSidebarCollapsed(false)}
-                className={`mb-4 px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-md transition-all flex items-center gap-2 text-sm ${
-                  isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-white hover:bg-gray-50 text-gray-700'
+                className={`mb-5 px-4 py-2.5 rounded-xl shadow-lg transition-all hover:scale-105 flex items-center gap-2 ${
+                  isDark ? 'bg-gray-800/95 hover:bg-gray-700 text-gray-100 border border-gray-700' : 'bg-white hover:bg-gray-50 text-gray-800 border border-gray-300'
                 }`}
                 title="Show progress panel"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <span className="text-sm font-medium">Show Progress</span>
-              </button>
+                <span className="font-semibold">Show Progress</span>
+              </motion.button>
             )}
-            <div className="relative min-h-[400px] sm:min-h-[500px] md:min-h-[550px]">
-              <AnimatePresence mode="sync" initial={false}>
+            <div className="relative min-h-[450px] sm:min-h-[520px] md:min-h-[580px]">
+              <AnimatePresence mode="wait">
                 <QuestionCard
                   key={currentQuestionIndex}
                   question={currentQuestion}
@@ -263,7 +264,7 @@ const TakeQuiz = () => {
 
       {/* Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="container mx-auto px-2 sm:px-4">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <QuizNavigation
             currentQuestion={currentQuestionIndex + 1}
             totalQuestions={quiz.questions.length}
@@ -292,18 +293,23 @@ const TakeQuiz = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className={`max-w-4xl w-full max-h-[90vh] overflow-hidden rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-2xl`}
+              className={`max-w-5xl w-full max-h-[90vh] overflow-hidden rounded-3xl ${isDark ? 'bg-gray-800 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'} shadow-2xl`}
             >
               {/* Header */}
-              <div className={`px-6 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
+              <div className={`px-6 py-5 border-b-2 ${isDark ? 'border-gray-700 bg-gradient-to-r from-gray-800 to-gray-750' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-white'}`}>
                 <div className="flex items-center justify-between">
-                  <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    Quiz Review
-                  </h3>
+                  <div>
+                    <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Review Your Answers
+                    </h3>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Check your responses before final submission
+                    </p>
+                  </div>
                   <button
                     onClick={() => setShowReviewModal(false)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      isDark ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-600'
+                    className={`p-2.5 rounded-xl transition-all hover:scale-105 ${
+                      isDark ? 'hover:bg-gray-700 text-gray-400 bg-gray-700/50' : 'hover:bg-gray-200 text-gray-600 bg-gray-100'
                     }`}
                   >
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -314,134 +320,148 @@ const TakeQuiz = () => {
               </div>
 
               {/* Summary Stats */}
-              <div className={`px-6 py-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+              <div className={`px-6 py-5 border-b-2 ${isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className={`text-center p-4 rounded-xl ${isDark ? 'bg-gray-700/50' : 'bg-white border border-gray-200'}`}>
+                    <div className={`text-3xl font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                       {quiz.questions.length}
                     </div>
-                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Total Questions
+                    <div className={`text-sm mt-1 font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Total
                     </div>
                   </div>
-                  <div className="text-center">
+                  <div className={`text-center p-4 rounded-xl ${isDark ? 'bg-gray-700/50' : 'bg-white border border-gray-200'}`}>
                     <div className="text-3xl font-bold text-green-500">
                       {answers.filter(a => a !== undefined).length}
                     </div>
-                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Attempted
+                    <div className={`text-sm mt-1 font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Answered
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-yellow-500">
+                  <div className={`text-center p-4 rounded-xl ${isDark ? 'bg-gray-700/50' : 'bg-white border border-gray-200'}`}>
+                    <div className="text-3xl font-bold text-amber-500">
                       {reviewMarked.filter(Boolean).length}
                     </div>
-                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      For Review
+                    <div className={`text-sm mt-1 font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Review
                     </div>
                   </div>
-                  <div className="text-center">
+                  <div className={`text-center p-4 rounded-xl ${isDark ? 'bg-gray-700/50' : 'bg-white border border-gray-200'}`}>
                     <div className="text-3xl font-bold text-red-500">
                       {answers.filter(a => a === undefined).length}
                     </div>
-                    <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Not Attempted
+                    <div className={`text-sm mt-1 font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Skipped
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Question Grid */}
-              <div className="px-6 py-4 overflow-y-auto max-h-[50vh]">
-                <div className="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 gap-2">
+              <div className="px-6 py-5 overflow-y-auto max-h-[50vh]">
+                <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-2.5">
                   {quiz.questions.map((_, index) => {
                     const isAnswered = answers[index] !== undefined;
                     const isReviewed = reviewMarked[index];
                     const isCurrent = index === currentQuestionIndex;
 
                     return (
-                      <button
+                      <motion.button
                         key={index}
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => {
                           setCurrentQuestionIndex(index);
                           setShowReviewModal(false);
                         }}
-                        className={`relative aspect-square rounded-lg font-semibold text-sm transition-all transform hover:scale-110 ${
+                        className={`relative aspect-square rounded-xl font-bold text-sm transition-all ${
                           isCurrent
-                            ? 'ring-2 ring-offset-2 ' + (isDark ? 'ring-blue-500 ring-offset-gray-800' : 'ring-blue-500 ring-offset-white')
+                            ? 'ring-3 ring-offset-2 ' + (isDark ? 'ring-blue-400 ring-offset-gray-800' : 'ring-blue-500 ring-offset-white')
                             : ''
                         } ${
                           isReviewed
-                            ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-lg'
+                            ? 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-lg'
                             : isAnswered
-                            ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md'
+                            ? 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md'
                             : isDark
-                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border-2 border-gray-600'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-2 border-gray-300'
                         }`}
                       >
                         {index + 1}
                         {/* Review marker */}
                         {isReviewed && (
-                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                          <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-400 rounded-full flex items-center justify-center shadow-md">
                             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           </span>
                         )}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
 
                 {/* Legend */}
-                <div className="mt-6 flex flex-wrap gap-4 justify-center">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded bg-gradient-to-br from-emerald-500 to-teal-600"></div>
-                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Attempted</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded bg-gradient-to-br from-yellow-400 to-orange-500"></div>
-                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Marked for Review</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}></div>
-                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Not Attempted</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded ring-2 ring-blue-500 bg-emerald-500"></div>
-                    <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Current Question</span>
+                <div className={`mt-6 pt-5 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Legend:</p>
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-green-500 to-green-600 shadow-sm"></div>
+                      <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Answered</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 shadow-sm"></div>
+                      <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>For Review</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-9 h-9 rounded-lg ${isDark ? 'bg-gray-700 border-2 border-gray-600' : 'bg-gray-200 border-2 border-gray-300'}`}></div>
+                      <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Unanswered</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-9 h-9 rounded-lg ring-3 ring-blue-500 bg-green-500 shadow-md"></div>
+                      <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Current</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Footer Actions */}
-              <div className={`px-6 py-4 border-t ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
+              <div className={`px-6 py-5 border-t-2 ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
                 {answers.filter(a => a === undefined).length > 0 ? (
-                  <div className={`mb-4 p-3 rounded-lg ${isDark ? 'bg-yellow-900/20 border border-yellow-800' : 'bg-yellow-50 border border-yellow-200'}`}>
-                    <p className={`text-sm font-medium ${isDark ? 'text-yellow-400' : 'text-yellow-800'}`}>
-                      ⚠️ You have {answers.filter(a => a === undefined).length} unanswered question{answers.filter(a => a === undefined).length !== 1 ? 's' : ''}. 
-                      Review them before submitting.
-                    </p>
+                  <div className={`mb-4 p-4 rounded-xl ${isDark ? 'bg-amber-900/20 border-2 border-amber-800' : 'bg-amber-50 border-2 border-amber-300'}`}>
+                    <div className="flex items-start gap-3">
+                      <svg className={`w-6 h-6 flex-shrink-0 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <p className={`text-sm font-semibold ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
+                        You have {answers.filter(a => a === undefined).length} unanswered question{answers.filter(a => a === undefined).length !== 1 ? 's' : ''}. 
+                        <span className="block mt-1 font-normal">You can still submit, but consider reviewing them first.</span>
+                      </p>
+                    </div>
                   </div>
                 ) : null}
                 
-                <div className="flex gap-3">
-                  <button
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => setShowReviewModal(false)}
-                    className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-colors ${
-                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-200' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                    className={`flex-1 px-6 py-3.5 rounded-xl font-semibold transition-all border-2 ${
+                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600' : 'bg-white hover:bg-gray-50 text-gray-800 border-gray-300'
                     }`}
                   >
                     Continue Quiz
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={submitQuiz}
                     disabled={submitting}
-                    className="flex-1 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition-all disabled:opacity-50"
+                    className="flex-1 px-6 py-3.5 rounded-xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all disabled:opacity-50 shadow-lg"
                   >
                     {submitting ? 'Submitting...' : 'Submit Quiz'}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -452,12 +472,20 @@ const TakeQuiz = () => {
 
       {/* Submitting Overlay */}
       {submitting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="text-center">
-            <div className="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-white text-xl font-semibold">Submitting your quiz...</p>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        >
+          <div className={`text-center p-8 rounded-3xl ${isDark ? 'bg-gray-800 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'} shadow-2xl`}>
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Submitting Quiz</p>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Please wait while we process your answers...</p>
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );

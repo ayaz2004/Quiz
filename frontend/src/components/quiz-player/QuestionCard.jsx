@@ -26,29 +26,29 @@ const QuestionCard = ({ question, questionNumber, selectedAnswer, onAnswerSelect
   return (
     <motion.div
       key={question.id}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className={`absolute inset-0 p-3 sm:p-5 md:p-8 rounded-xl sm:rounded-2xl ${isDark ? 'bg-gray-800' : 'bg-white'} shadow-xl overflow-y-auto`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className={`absolute inset-0 p-4 sm:p-6 md:p-8 rounded-2xl ${isDark ? 'bg-gray-800/95 backdrop-blur-sm border border-gray-700' : 'bg-white border border-gray-200'} shadow-2xl overflow-y-auto`}
     >
       {/* Question Header */}
-      <div className="flex items-start gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
-        <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-md">
+      <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg">
           {questionNumber}
         </div>
         <div className="flex-grow min-w-0">
-          <p className={`text-base sm:text-lg md:text-xl font-semibold leading-relaxed ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>
+          <p className={`text-lg sm:text-xl md:text-2xl font-semibold leading-relaxed ${isDark ? 'text-white' : 'text-gray-900'}`}>
             {question.questionText}
           </p>
           {/* Time spent indicator */}
           {timeSpent > 0 && (
-            <div className="mt-2 flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`mt-3 flex items-center gap-2 px-3 py-1.5 rounded-lg w-fit ${isDark ? 'bg-gray-700/50' : 'bg-gray-100'}`}>
+              <svg className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                Time spent: {formatTime(timeSpent)}
+              <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                {formatTime(timeSpent)}
               </span>
             </div>
           )}
@@ -57,64 +57,60 @@ const QuestionCard = ({ question, questionNumber, selectedAnswer, onAnswerSelect
 
       {/* Question Image */}
       {question.imageUrl && (
-        <div className="mb-6 rounded-xl overflow-hidden">
+        <div className={`mb-6 rounded-2xl overflow-hidden border-2 ${isDark ? 'border-gray-700' : 'border-gray-200'} shadow-md`}>
           <img 
             src={question.imageUrl} 
             alt="Question visual" 
-            className="w-full max-h-96 object-contain bg-gray-100 dark:bg-gray-700"
+            className="w-full max-h-96 object-contain bg-gray-100 dark:bg-gray-900"
           />
         </div>
       )}
 
       {/* Answer Options */}
-      <div className="space-y-2 sm:space-y-3">
+      <div className="space-y-3">
         {options.map((option) => {
           const isSelected = selectedAnswer === option.key;
           return (
             <motion.button
               key={option.key}
               onClick={() => onAnswerSelect(option.key)}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className={`w-full p-3 sm:p-4 rounded-lg sm:rounded-xl text-left transition-all duration-200 flex items-center gap-2 sm:gap-3 md:gap-4 ${
+              whileHover={{ scale: 1.005 }}
+              whileTap={{ scale: 0.995 }}
+              className={`w-full p-4 sm:p-5 rounded-xl text-left transition-all duration-200 flex items-center gap-3 sm:gap-4 ${
                 isSelected
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg border-2 border-transparent'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg border-2 border-blue-400'
                   : isDark
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border-2 border-gray-600'
-                  : 'bg-gray-50 hover:bg-gray-100 text-gray-800 border-2 border-gray-200'
+                  ? 'bg-gray-700/50 hover:bg-gray-700 text-gray-100 border-2 border-gray-600 hover:border-gray-500'
+                  : 'bg-gray-50 hover:bg-gray-100 text-gray-900 border-2 border-gray-200 hover:border-gray-300'
               }`}
             >
               {/* Option Letter */}
-              <div className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-md sm:rounded-lg flex items-center justify-center font-bold text-sm sm:text-base ${
+              <div className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center font-bold text-base sm:text-lg ${
                 isSelected
-                  ? 'bg-white/20 text-white'
+                  ? 'bg-white/25 text-white'
                   : isDark
-                  ? 'bg-gray-600 text-gray-300'
-                  : 'bg-gray-200 text-gray-700'
+                  ? 'bg-gray-600 text-gray-200'
+                  : 'bg-white text-gray-700 shadow-sm'
               }`}>
                 {String.fromCharCode(64 + option.key)}
               </div>
               
               {/* Option Text */}
-              <span className="flex-grow font-medium text-sm sm:text-base break-words">
+              <span className="flex-grow font-medium text-base sm:text-lg break-words">
                 {option.text}
               </span>
 
               {/* Selected Indicator */}
               {isSelected && (
-                <motion.svg
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-white flex-shrink-0"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-white rounded-full flex items-center justify-center"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </motion.svg>
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </motion.div>
               )}
             </motion.button>
           );
@@ -122,32 +118,32 @@ const QuestionCard = ({ question, questionNumber, selectedAnswer, onAnswerSelect
       </div>
 
       {/* Mark for Review Button */}
-      <div className="mt-4 sm:mt-6 flex justify-end">
+      <div className="mt-6 sm:mt-8 flex justify-end">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onToggleReview}
-          className={`px-3 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-base font-semibold transition-all duration-200 flex items-center gap-1.5 sm:gap-2 ${
+          className={`px-5 py-3 sm:px-6 sm:py-3 rounded-xl text-sm sm:text-base font-semibold transition-all duration-200 flex items-center gap-2 ${
             isMarkedForReview
-              ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg'
+              ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg border-2 border-amber-400'
               : isDark
-              ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-2 border-gray-600'
-              : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-2 border-gray-300'
+              ? 'bg-gray-700/50 hover:bg-gray-700 text-gray-200 border-2 border-gray-600'
+              : 'bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 shadow-sm'
           }`}
         >
           {isMarkedForReview ? (
             <>
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
-              <span className="hidden sm:inline">Marked</span>
+              <span>Marked for Review</span>
             </>
           ) : (
             <>
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
               </svg>
-              <span className="hidden sm:inline">Review</span>
+              <span>Mark for Review</span>
             </>
           )}
         </motion.button>
