@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,6 +11,7 @@ const SignIn = () => {
   const location = useLocation();
   const { login } = useAuth();
   const { isDark } = useTheme();
+  const canvasRef = useRef(null);
   
   const [formData, setFormData] = useState({
     email: location.state?.email || '',
@@ -32,6 +33,116 @@ const SignIn = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  // Particle Animation Effect
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let particles = [];
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 8 + 4;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+        this.opacity = Math.random() * 0.5 + 0.2;
+        this.shape = Math.floor(Math.random() * 5);
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotation += this.rotationSpeed;
+
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = isDark ? '#3b82f6' : '#6366f1';
+
+        ctx.beginPath();
+        
+        switch(this.shape) {
+          case 0: // Circle
+            ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+            break;
+          
+          case 1: // Square
+            ctx.rect(-this.size, -this.size, this.size * 2, this.size * 2);
+            break;
+          
+          case 2: // Triangle
+            ctx.moveTo(0, -this.size);
+            ctx.lineTo(this.size, this.size);
+            ctx.lineTo(-this.size, this.size);
+            ctx.closePath();
+            break;
+          
+          case 3: // Diamond
+            ctx.moveTo(0, -this.size);
+            ctx.lineTo(this.size, 0);
+            ctx.lineTo(0, this.size);
+            ctx.lineTo(-this.size, 0);
+            ctx.closePath();
+            break;
+          
+          case 4: // Hexagon
+            for (let i = 0; i < 6; i++) {
+              const angle = (Math.PI / 3) * i;
+              const x = this.size * Math.cos(angle);
+              const y = this.size * Math.sin(angle);
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            break;
+        }
+        
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 60; i++) {
+      particles.push(new Particle());
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isDark]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -130,45 +241,48 @@ const SignIn = () => {
 
   return (
     <div className="min-h-[calc(100vh-300px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20 ${
-          isDark ? 'bg-blue-600' : 'bg-purple-300'
-        }`} />
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl opacity-20 ${
-          isDark ? 'bg-purple-600' : 'bg-blue-300'
-        }`} />
-      </div>
+      {/* Particle Canvas Background */}
+      <canvas 
+        ref={canvasRef}
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+        style={{ opacity: 0.4 }}
+      />
 
       {/* Sign-in card */}
-      <div className={`max-w-md w-full space-y-8 relative ${
-        isDark 
-          ? 'bg-gray-800/50 backdrop-blur-xl border border-gray-700' 
-          : 'bg-white/70 backdrop-blur-xl border border-white'
-      } rounded-2xl shadow-2xl p-8 sm:p-10`}>
+      <div className="max-w-md w-full space-y-8 relative z-10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 border"
+        style={{
+          background: isDark 
+            ? 'rgba(31, 41, 55, 0.8)'
+            : 'rgba(255, 255, 255, 0.95)',
+          borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(99, 102, 241, 0.4)',
+          boxShadow: isDark ? '0 25px 60px rgba(0, 0, 0, 0.5)' : '0 25px 60px rgba(99, 102, 241, 0.2)',
+        }}
+      >
         
         {/* Header */}
         <div className="text-center">
-          <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg mb-4`}>
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-2xl mb-6 transform hover:scale-105 transition-transform duration-300">
+            <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
           </div>
-          <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className="text-4xl font-black mb-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Welcome Back
           </h2>
-          <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
             Sign in to your account to continue
           </p>
         </div>
 
         {/* Info message from signup */}
         {infoMessage && (
-          <div className={`rounded-xl p-4 ${
-            isDark 
-              ? 'bg-blue-900/20 border border-blue-800' 
-              : 'bg-blue-50 border border-blue-200'
-          }`}>
+          <div className="rounded-2xl p-4 border backdrop-blur-sm"
+            style={{
+              background: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(239, 246, 255, 0.95)',
+              borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)',
+              boxShadow: isDark ? 'none' : '0 4px 15px rgba(59, 130, 246, 0.15)',
+            }}
+          >
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} viewBox="0 0 20 20" fill="currentColor">
@@ -184,11 +298,13 @@ const SignIn = () => {
 
         {/* Server error message */}
         {serverError && !unverifiedEmail && (
-          <div className={`rounded-xl p-4 ${
-            isDark 
-              ? 'bg-red-900/20 border border-red-800' 
-              : 'bg-red-50 border border-red-200'
-          }`}>
+          <div className="rounded-2xl p-4 border backdrop-blur-sm"
+            style={{
+              background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(254, 242, 242, 0.95)',
+              borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)',
+              boxShadow: isDark ? 'none' : '0 4px 15px rgba(239, 68, 68, 0.15)',
+            }}
+          >
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className={`h-5 w-5 ${isDark ? 'text-red-400' : 'text-red-500'}`} viewBox="0 0 20 20" fill="currentColor">
@@ -204,11 +320,13 @@ const SignIn = () => {
 
         {/* Resend verification success message */}
         {resendMessage && (
-          <div className={`rounded-xl p-4 ${
-            isDark 
-              ? 'bg-green-900/20 border border-green-800' 
-              : 'bg-green-50 border border-green-200'
-          }`}>
+          <div className="rounded-2xl p-4 border backdrop-blur-sm"
+            style={{
+              background: isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(240, 253, 244, 0.95)',
+              borderColor: isDark ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.4)',
+              boxShadow: isDark ? 'none' : '0 4px 15px rgba(34, 197, 94, 0.15)',
+            }}
+          >
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className={`h-5 w-5 ${isDark ? 'text-green-400' : 'text-green-500'}`} viewBox="0 0 20 20" fill="currentColor">
@@ -224,11 +342,13 @@ const SignIn = () => {
 
         {/* Unverified email warning with resend button */}
         {unverifiedEmail && (
-          <div className={`rounded-xl p-4 ${
-            isDark 
-              ? 'bg-yellow-900/20 border border-yellow-800' 
-              : 'bg-yellow-50 border border-yellow-200'
-          }`}>
+          <div className="rounded-2xl p-4 border backdrop-blur-sm"
+            style={{
+              background: isDark ? 'rgba(234, 179, 8, 0.1)' : 'rgba(254, 252, 232, 0.95)',
+              borderColor: isDark ? 'rgba(234, 179, 8, 0.3)' : 'rgba(234, 179, 8, 0.4)',
+              boxShadow: isDark ? 'none' : '0 4px 15px rgba(234, 179, 8, 0.15)',
+            }}
+          >
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 <svg className={`h-5 w-5 ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`} viewBox="0 0 20 20" fill="currentColor">

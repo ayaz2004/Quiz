@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { getQuizzes, getMyQuizzes } from '../utils/quizApi';
 import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview } from '../components';
 
 const Quizzes = () => {
   const { isAuthenticated } = useAuth();
+  const { isDark } = useTheme();
+  const canvasRef = useRef(null);
   const [allQuizzes, setAllQuizzes] = useState([]);
   const [filteredQuizzes, setFilteredQuizzes] = useState([]);
   const [myQuizzes, setMyQuizzes] = useState([]);
@@ -33,6 +36,118 @@ const Quizzes = () => {
   
   // Error state
   const [error, setError] = useState(null);
+
+  // Interactive particle canvas background
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let particles = [];
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 8 + 4;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+        this.opacity = Math.random() * 0.5 + 0.2;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+        this.shape = Math.floor(Math.random() * 5); // circle, square, triangle, diamond, hexagon
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.rotation += this.rotationSpeed;
+
+        if (this.x > canvas.width) this.x = 0;
+        if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        if (this.y < 0) this.y = canvas.height;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.fillStyle = isDark 
+          ? `rgba(59, 130, 246, ${this.opacity})` 
+          : `rgba(16, 185, 129, ${this.opacity})`;
+        
+        ctx.beginPath();
+        
+        switch(this.shape) {
+          case 0: // Circle
+            ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+            break;
+          
+          case 1: // Square
+            ctx.rect(-this.size, -this.size, this.size * 2, this.size * 2);
+            break;
+          
+          case 2: // Triangle
+            ctx.moveTo(0, -this.size);
+            ctx.lineTo(this.size, this.size);
+            ctx.lineTo(-this.size, this.size);
+            ctx.closePath();
+            break;
+          
+          case 3: // Diamond
+            ctx.moveTo(0, -this.size);
+            ctx.lineTo(this.size, 0);
+            ctx.lineTo(0, this.size);
+            ctx.lineTo(-this.size, 0);
+            ctx.closePath();
+            break;
+          
+          case 4: // Hexagon
+            for (let i = 0; i < 6; i++) {
+              const angle = (Math.PI / 3) * i;
+              const x = this.size * Math.cos(angle);
+              const y = this.size * Math.sin(angle);
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            break;
+        }
+        
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 60; i++) {
+      particles.push(new Particle());
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isDark]);
 
   // Fetch quizzes on mount
   useEffect(() => {
@@ -183,57 +298,81 @@ const Quizzes = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6 pb-12">
+      {/* Particle Canvas Background */}
+      <canvas 
+        ref={canvasRef}
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+        style={{ opacity: 0.3 }}
+      />
+
       {/* Page Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
+        className="relative z-10 text-center backdrop-blur-xl rounded-3xl p-8 lg:p-12 border shadow-xl"
+        style={{
+          background: isDark 
+            ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)'
+            : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 253, 250, 0.95) 100%)',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(16, 185, 129, 0.2)',
+          boxShadow: isDark ? 'none' : '0 20px 60px rgba(16, 185, 129, 0.15)',
+        }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mb-3">
           Explore Quizzes
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Test your knowledge with our comprehensive quiz collection
+        <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+          Test your knowledge with our comprehensive quiz collection designed for AMU & JMI
         </p>
       </motion.div>
 
       {/* Stats Bar */}
-      <StatsBar
-        totalQuizzes={stats.total}
-        freeCount={stats.free}
-        paidCount={stats.paid}
-        purchasedCount={stats.purchased}
-      />
+      <div className="relative z-10">
+        <StatsBar
+          totalQuizzes={stats.total}
+          freeCount={stats.free}
+          paidCount={stats.paid}
+          purchasedCount={stats.purchased}
+        />
+      </div>
 
       {/* Filter Bar */}
-      <FilterBar
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-      />
+      <div className="relative z-10">
+        <FilterBar
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
+      </div>
 
       {/* Search and Sort */}
-      <SearchAndSort
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedSubject={selectedSubject}
-        onSubjectChange={setSelectedSubject}
-        selectedYear={selectedYear}
-        onYearChange={setSelectedYear}
-        selectedEducationLevel={selectedEducationLevel}
-        onEducationLevelChange={setSelectedEducationLevel}
-        subjects={subjects}
-        years={years}
-      />
+      <div className="relative z-10">
+        <SearchAndSort
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          selectedSubject={selectedSubject}
+          onSubjectChange={setSelectedSubject}
+          selectedYear={selectedYear}
+          onYearChange={setSelectedYear}
+          selectedEducationLevel={selectedEducationLevel}
+          onEducationLevelChange={setSelectedEducationLevel}
+          subjects={subjects}
+          years={years}
+        />
+      </div>
 
       {/* Results Count */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex items-center justify-between"
+        className="relative z-10 flex items-center justify-between backdrop-blur-xl rounded-xl p-4 border shadow-lg"
+        style={{
+          background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(203, 213, 225, 0.4)',
+        }}
       >
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span className="font-semibold text-gray-800 dark:text-gray-200">{filteredQuizzes.length}</span> quiz{filteredQuizzes.length !== 1 ? 'zes' : ''}
+        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          Showing <span className={`font-semibold ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{filteredQuizzes.length}</span> quiz{filteredQuizzes.length !== 1 ? 'zes' : ''}
         </p>
         {(searchTerm || selectedSubject || selectedYear || selectedEducationLevel || activeFilter !== 'all') && (
           <button
@@ -244,7 +383,7 @@ const Quizzes = () => {
               setSelectedYear('');
               setSelectedEducationLevel('');
             }}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
             Clear all filters
           </button>
@@ -256,7 +395,12 @@ const Quizzes = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6"
+          className="relative z-10 backdrop-blur-xl border rounded-3xl p-8 shadow-xl"
+          style={{
+            background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(254, 242, 242, 0.98)',
+            borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)',
+            boxShadow: isDark ? 'none' : '0 10px 40px rgba(239, 68, 68, 0.15)',
+          }}
         >
           <div className="flex items-start gap-3">
             <svg className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,27 +424,33 @@ const Quizzes = () => {
       )}
 
       {/* Quiz Grid */}
-      <QuizGrid
-        quizzes={filteredQuizzes}
-        loading={loading}
-        onQuizClick={handleQuizClick}
-        purchasedQuizIds={myQuizzes.map(q => q.id)}
-      />
+      <div className="relative z-10">
+        <QuizGrid
+          quizzes={filteredQuizzes}
+          loading={loading}
+          onQuizClick={handleQuizClick}
+          purchasedQuizIds={myQuizzes.map(q => q.id)}
+        />
+      </div>
 
       {/* Load More Button */}
       {!loading && hasMore && filteredQuizzes.length > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-3 py-6"
+          className="relative z-10 flex flex-col items-center gap-4 py-8 backdrop-blur-xl rounded-3xl border shadow-lg"
+          style={{
+            background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(203, 213, 225, 0.4)',
+          }}
         >
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {allQuizzes.length} of {totalQuizzes} quizzes
+          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            Showing <span className="font-bold">{allQuizzes.length}</span> of <span className="font-bold">{totalQuizzes}</span> quizzes
           </p>
           <button
             onClick={loadMoreQuizzes}
             disabled={loadingMore}
-            className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-medium hover:shadow-lg transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             {loadingMore ? (
               <span className="flex items-center gap-2">
