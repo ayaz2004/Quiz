@@ -66,39 +66,52 @@ const ForgotPassword = () => {
       </div>
 
       {/* Content card */}
-      <div className={`max-w-md w-full space-y-8 relative ${
-        isDark 
-          ? 'bg-gray-800/50 backdrop-blur-xl border border-gray-700' 
-          : 'bg-white/70 backdrop-blur-xl border border-white'
-      } rounded-2xl shadow-2xl p-8 sm:p-10`}>
+      <div className="max-w-md w-full space-y-8 relative backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 border"
+        style={{
+          background: isDark 
+            ? 'rgba(31, 41, 55, 0.8)'
+            : 'rgba(255, 255, 255, 0.95)',
+          borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(99, 102, 241, 0.4)',
+          boxShadow: isDark ? '0 25px 60px rgba(0, 0, 0, 0.5)' : '0 25px 60px rgba(99, 102, 241, 0.2)',
+        }}
+      >
         
         {!success ? (
           <>
             {/* Header */}
             <div className="text-center">
-              <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg mb-4`}>
-                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              <div className="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-2xl mb-6 transform hover:scale-105 transition-transform duration-300">
+                <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
               </div>
-              <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <h2 className="text-4xl font-black mb-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Forgot Password?
               </h2>
-              <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 Enter your email and we'll send you a link to reset your password
               </p>
             </div>
 
             {/* Error message */}
             {error && (
-              <div className={`rounded-xl p-4 ${
-                isDark 
-                  ? 'bg-red-900/20 border border-red-800' 
-                  : 'bg-red-50 border border-red-200'
-              }`}>
-                <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-                  {error}
-                </p>
+              <div className="rounded-2xl p-4 border backdrop-blur-sm"
+                style={{
+                  background: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(254, 242, 242, 0.95)',
+                  borderColor: isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)',
+                  boxShadow: isDark ? 'none' : '0 4px 15px rgba(239, 68, 68, 0.15)',
+                }}
+              >
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className={`h-5 w-5 ${isDark ? 'text-red-400' : 'text-red-500'}`} viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-700'}`}>{error}</p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -112,7 +125,7 @@ const ForgotPassword = () => {
                   value={email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  icon={<MailIcon />}
+                  icon={MailIcon}
                   error={error}
                   required
                 />
@@ -160,12 +173,12 @@ const ForgotPassword = () => {
         ) : (
           /* Success state */
           <div className="text-center">
-            <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg mb-4`}>
-              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <div className="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-2xl mb-6 transform hover:scale-105 transition-transform duration-300">
+              <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className="text-4xl font-black mb-3 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Check Your Email
             </h2>
             <p className={`mt-4 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
