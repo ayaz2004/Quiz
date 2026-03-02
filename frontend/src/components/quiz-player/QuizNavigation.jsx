@@ -2,6 +2,7 @@ import { useTheme } from '../../context/ThemeContext';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { CheckCircle2, Flag, Send } from 'lucide-react';
 
 const QuizNavigation = ({ 
   currentQuestion, 
@@ -9,6 +10,7 @@ const QuizNavigation = ({
   onPrevious, 
   onNext, 
   onSubmit,
+  onMarkForReviewAndNext,
   answers,
   reviewMarked,
   onQuestionClick
@@ -41,7 +43,8 @@ const QuizNavigation = ({
     <div className={`sticky bottom-0 p-3 sm:p-4 rounded-t-2xl ${
       isDark ? 'bg-gray-800/95 backdrop-blur-sm border-t-2 border-gray-700' : 'bg-white/95 backdrop-blur-sm border-t-2 border-gray-200'
     } shadow-2xl`}>
-      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+      {/* Navigation Row - Previous, Question Indicators, and Next/Skip */}
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-3">
         {/* Previous Button */}
         <motion.button
           whileHover={{ scale: isFirstQuestion ? 1 : 1.02 }}
@@ -109,38 +112,52 @@ const QuizNavigation = ({
           </div>
         </div>
 
-        {/* Next/Submit Button */}
-        {isLastQuestion ? (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onSubmit}
-            className="px-4 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-3 rounded-xl text-sm sm:text-base font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-200 flex items-center gap-2 flex-shrink-0"
-          >
-            <span>Submit Quiz</span>
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </motion.button>
-        ) : (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onNext}
-            className={`px-4 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-3 rounded-xl text-sm sm:text-base font-semibold transition-all duration-200 flex items-center gap-2 flex-shrink-0 ${
-              hasAnswer
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg'
-                : isDark
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
-                : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
-            }`}
-          >
-            <span>{hasAnswer ? 'Next' : 'Skip'}</span>
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </motion.button>
-        )}
+        {/* Skip/Next Button */}
+        <motion.button
+          whileHover={{ scale: isLastQuestion ? 1 : 1.02 }}
+          whileTap={{ scale: isLastQuestion ? 1 : 0.98 }}
+          onClick={onNext}
+          disabled={isLastQuestion}
+          className={`px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3 rounded-xl text-sm sm:text-base font-semibold transition-all duration-200 flex items-center gap-2 flex-shrink-0 ${
+            isLastQuestion
+              ? isDark
+                ? 'bg-gray-700/50 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : hasAnswer
+              ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg'
+              : isDark
+              ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
+              : 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-300'
+          }`}
+        >
+          <span className="hidden sm:inline">{hasAnswer ? 'Next' : 'Skip'}</span>
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </motion.button>
+      </div>
+
+      {/* Action Buttons Row - Mark for Review + Submit */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onMarkForReviewAndNext}
+          className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl text-sm sm:text-base font-bold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          <Flag className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="hidden sm:inline">Mark for</span>
+          <span>Review</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onSubmit}
+          className="flex-1 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl text-sm sm:text-base font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          <span>Submit Quiz</span>
+          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+        </motion.button>
       </div>
     </div>
   );
@@ -152,6 +169,7 @@ QuizNavigation.propTypes = {
   onPrevious: PropTypes.func.isRequired,
   onNext: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  onMarkForReviewAndNext: PropTypes.func.isRequired,
   answers: PropTypes.array.isRequired,
   reviewMarked: PropTypes.array.isRequired,
   onQuestionClick: PropTypes.func.isRequired,

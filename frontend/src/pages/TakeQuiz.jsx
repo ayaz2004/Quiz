@@ -110,6 +110,15 @@ const TakeQuiz = () => {
     }
   };
 
+  const markForReviewAndNext = () => {
+    toggleReviewMark();
+    if (currentQuestionIndex < quiz.questions.length - 1) {
+      saveCurrentQuestionTime();
+      setCurrentQuestionIndex(prev => prev + 1);
+      setQuestionStartTime(Date.now());
+    }
+  };
+
   const handleQuestionClick = (questionIndex) => {
     saveCurrentQuestionTime();
     setCurrentQuestionIndex(questionIndex);
@@ -253,7 +262,6 @@ const TakeQuiz = () => {
                   selectedAnswer={answers[currentQuestionIndex]}
                   onAnswerSelect={handleAnswerSelect}
                   isMarkedForReview={reviewMarked[currentQuestionIndex]}
-                  onToggleReview={toggleReviewMark}
                   timeSpent={questionTimes[currentQuestionIndex] || 0}
                 />
               </AnimatePresence>
@@ -271,6 +279,7 @@ const TakeQuiz = () => {
             onPrevious={handlePrevious}
             onNext={handleNext}
             onSubmit={handleSubmit}
+            onMarkForReviewAndNext={markForReviewAndNext}
             answers={answers}
             reviewMarked={reviewMarked}
             onQuestionClick={handleQuestionClick}
@@ -293,10 +302,10 @@ const TakeQuiz = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className={`max-w-5xl w-full max-h-[90vh] overflow-hidden rounded-3xl ${isDark ? 'bg-gray-800 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'} shadow-2xl`}
+              className={`max-w-5xl w-full max-h-[90vh] flex flex-col rounded-3xl ${isDark ? 'bg-gray-800 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'} shadow-2xl`}
             >
               {/* Header */}
-              <div className={`px-6 py-5 border-b-2 ${isDark ? 'border-gray-700 bg-gradient-to-r from-gray-800 to-gray-750' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-white'}`}>
+              <div className={`px-6 py-5 border-b-2 flex-shrink-0 ${isDark ? 'border-gray-700 bg-gradient-to-r from-gray-800 to-gray-750' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-white'}`}>
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -320,7 +329,7 @@ const TakeQuiz = () => {
               </div>
 
               {/* Summary Stats */}
-              <div className={`px-6 py-5 border-b-2 ${isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+              <div className={`px-6 py-5 border-b-2 flex-shrink-0 ${isDark ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className={`text-center p-4 rounded-xl ${isDark ? 'bg-gray-700/50' : 'bg-white border border-gray-200'}`}>
                     <div className={`text-3xl font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
@@ -358,7 +367,7 @@ const TakeQuiz = () => {
               </div>
 
               {/* Question Grid */}
-              <div className="px-6 py-5 overflow-y-auto max-h-[50vh]">
+              <div className="px-6 py-5 overflow-y-auto flex-1">
                 <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-2.5">
                   {quiz.questions.map((_, index) => {
                     const isAnswered = answers[index] !== undefined;
@@ -420,14 +429,14 @@ const TakeQuiz = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-9 h-9 rounded-lg ring-3 ring-blue-500 bg-green-500 shadow-md"></div>
-                      <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Current</span>
+                      <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Currently Viewing</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Footer Actions */}
-              <div className={`px-6 py-5 border-t-2 ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
+              <div className={`px-6 py-5 border-t-2 flex-shrink-0 ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
                 {answers.filter(a => a === undefined).length > 0 ? (
                   <div className={`mb-4 p-4 rounded-xl ${isDark ? 'bg-amber-900/20 border-2 border-amber-800' : 'bg-amber-50 border-2 border-amber-300'}`}>
                     <div className="flex items-start gap-3">
@@ -442,25 +451,90 @@ const TakeQuiz = () => {
                   </div>
                 ) : null}
                 
-                <div className="flex flex-col sm:flex-row gap-3">
+                {/* Navigation Row */}
+                <div className="flex gap-3 mb-3">
+                  <motion.button
+                    whileHover={{ scale: currentQuestionIndex === 0 ? 1 : 1.02 }}
+                    whileTap={{ scale: currentQuestionIndex === 0 ? 1 : 0.98 }}
+                    onClick={() => {
+                      if (currentQuestionIndex > 0) {
+                        setCurrentQuestionIndex(prev => prev - 1);
+                      }
+                    }}
+                    disabled={currentQuestionIndex === 0}
+                    className={`flex-1 px-4 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                      currentQuestionIndex === 0
+                        ? isDark
+                          ? 'bg-gray-700/50 text-gray-500 cursor-not-allowed border-2 border-gray-700'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed border-2 border-gray-300'
+                        : isDark
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-2 border-gray-600'
+                        : 'bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Previous</span>
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: currentQuestionIndex === quiz.questions.length - 1 ? 1 : 1.02 }}
+                    whileTap={{ scale: currentQuestionIndex === quiz.questions.length - 1 ? 1 : 0.98 }}
+                    onClick={() => {
+                      if (currentQuestionIndex < quiz.questions.length - 1) {
+                        setCurrentQuestionIndex(prev => prev + 1);
+                      }
+                    }}
+                    disabled={currentQuestionIndex === quiz.questions.length - 1}
+                    className={`flex-1 px-4 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                      currentQuestionIndex === quiz.questions.length - 1
+                        ? isDark
+                          ? 'bg-gray-700/50 text-gray-500 cursor-not-allowed border-2 border-gray-700'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed border-2 border-gray-300'
+                        : isDark
+                        ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-2 border-gray-600'
+                        : 'bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300'
+                    }`}
+                  >
+                    <span>Next</span>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </motion.button>
+                </div>
+
+                {/* Action Buttons Row */}
+                <div className="flex gap-3">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setShowReviewModal(false)}
-                    className={`flex-1 px-6 py-3.5 rounded-xl font-semibold transition-all border-2 ${
-                      isDark ? 'bg-gray-700 hover:bg-gray-600 text-gray-100 border-gray-600' : 'bg-white hover:bg-gray-50 text-gray-800 border-gray-300'
+                    onClick={() => {
+                      const newReviewMarked = [...reviewMarked];
+                      newReviewMarked[currentQuestionIndex] = !newReviewMarked[currentQuestionIndex];
+                      setReviewMarked(newReviewMarked);
+                    }}
+                    className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-lg ${
+                      reviewMarked[currentQuestionIndex]
+                        ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white'
+                        : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white'
                     }`}
                   >
-                    Continue Quiz
+                    <svg className="w-5 h-5" fill={reviewMarked[currentQuestionIndex] ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                    <span>{reviewMarked[currentQuestionIndex] ? 'Marked' : 'Mark'} for Review</span>
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={submitQuiz}
                     disabled={submitting}
-                    className="flex-1 px-6 py-3.5 rounded-xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all disabled:opacity-50 shadow-lg"
+                    className="flex-1 px-4 py-3 rounded-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all disabled:opacity-50 shadow-lg flex items-center justify-center gap-2"
                   >
-                    {submitting ? 'Submitting...' : 'Submit Quiz'}
+                    <span>{submitting ? 'Submitting...' : 'Submit Quiz'}</span>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </motion.button>
                 </div>
               </div>
