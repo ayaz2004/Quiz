@@ -149,10 +149,10 @@ const Quizzes = () => {
     };
   }, [isDark]);
 
-  // Fetch quizzes on mount
+  // Fetch quizzes on mount and when education level changes
   useEffect(() => {
     fetchQuizzes();
-  }, []);
+  }, [selectedEducationLevel]);
 
   // Fetch my quizzes when authenticated
   useEffect(() => {
@@ -171,7 +171,11 @@ const Quizzes = () => {
         setLoading(true);
       }
       setError(null);
-      const response = await getQuizzes({ limit: 18, page });
+      const response = await getQuizzes({ 
+        limit: 18, 
+        page,
+        educationLevel: selectedEducationLevel || undefined 
+      });
       // Backend returns: { success: true, data: { quizzes: [...], pagination: {...}, stats: {...} } }
       const quizzes = response.data?.quizzes || [];
       const pagination = response.data?.pagination || {};

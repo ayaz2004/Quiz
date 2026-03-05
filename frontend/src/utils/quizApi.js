@@ -14,6 +14,7 @@ export const getQuizzes = async (params = {}) => {
     if (params.subject) queryParams.append('subject', params.subject);
     if (params.year) queryParams.append('year', params.year);
     if (params.search) queryParams.append('search', params.search);
+    if (params.educationLevel) queryParams.append('educationLevel', params.educationLevel);
     
     const response = await api.get(`/api/quiz/list?${queryParams.toString()}`);
     return response.data;

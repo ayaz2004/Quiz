@@ -15,7 +15,8 @@ export const listQuizzes = async (req, res, next) => {
       limit = 10, 
       subject, 
       year, 
-      search 
+      search,
+      educationLevel 
     } = req.query;
 
     const pageNum = parseInt(page);
@@ -43,6 +44,10 @@ export const listQuizzes = async (req, res, next) => {
 
     if (year) {
       where.examYear = parseInt(year);
+    }
+
+    if (educationLevel) {
+      where.educationLevel = educationLevel;
     }
 
     if (search) {
