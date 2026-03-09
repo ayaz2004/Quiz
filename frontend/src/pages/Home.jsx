@@ -353,7 +353,7 @@ const Home = () => {
                   isDark ? 'text-gray-300' : 'text-gray-700'
                 }`}
               >
-                Ace your entrance exams with comprehensive subject-wise quizzes, timed mock tests, 
+                Ace your entrance exams with comprehensive previous year question papers (PYQs), timed mock tests, 
                 performance analytics, and instant feedback designed specifically for AMU & JMI.
               </motion.p>
 
@@ -463,9 +463,12 @@ const Home = () => {
                 </p>
               </div>
               
-              <div className="mt-4 flex items-center gap-2 text-blue-500 font-semibold text-sm group-hover:gap-3 transition-all">
-                Learn More <ArrowRight className="w-4 h-4" />
-              </div>
+              <Link 
+                to="/attempts"
+                className="mt-4 flex items-center gap-2 text-blue-500 font-semibold text-sm group-hover:gap-3 transition-all"
+              >
+                View Analytics <ArrowRight className="w-4 h-4" />
+              </Link>
             </motion.div>
 
             {/* Bottom card - Achievements */}
@@ -827,8 +830,8 @@ const Home = () => {
             },
             {
               icon: Target,
-              title: 'Topic-Wise Quizzes',
-              description: 'Practice specific subjects like Physics, Chemistry, Math, Biology, English & GK',
+              title: 'Previous Year Questions',
+              description: 'Practice with authentic PYQs from AMU & JMI entrance exams across all subjects',
               gradient: 'from-orange-500 to-red-500',
               color: isDark ? 'text-orange-400' : 'text-orange-600',
             },
@@ -955,7 +958,7 @@ const Home = () => {
               {
                 step: '02',
                 title: 'Take Quizzes',
-                description: 'Practice with comprehensive subject-wise tests',
+                description: 'Practice with authentic previous year question papers',
                 gradient: 'from-blue-500 to-cyan-500',
               },
               {

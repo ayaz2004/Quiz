@@ -154,8 +154,8 @@ const About = () => {
     },
     {
       icon: <Target className="w-6 h-6" />,
-      title: "Subject-wise Practice",
-      description: "Comprehensive coverage of all subjects including Physics, Chemistry, Mathematics, Biology, and General Knowledge."
+      title: "Previous Year Questions",
+      description: "Practice with authentic PYQs from AMU and JMI entrance exams covering all subjects including Physics, Chemistry, Mathematics, Biology, and General Knowledge."
     },
     {
       icon: <Clock className="w-6 h-6" />,
@@ -234,6 +234,22 @@ const About = () => {
             comprehensive quizzes, mock tests, and practice materials designed specifically 
             for aspirants aiming to crack these prestigious university entrance exams.
           </p>
+          
+          <div className={`mt-8 inline-flex items-center gap-3 px-6 py-4 rounded-2xl border-2 ${
+            isDark 
+              ? 'bg-emerald-900/20 border-emerald-700/40' 
+              : 'bg-white/60 border-emerald-400/60'
+          }`}>
+            <Users className={`w-6 h-6 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+            <div className="text-left">
+              <p className={`text-sm font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                Built by Students, For Students
+              </p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Developed by students of Jamia Millia Islamia
+              </p>
+            </div>
+          </div>
         </div>
       </motion.div>
 
