@@ -192,18 +192,22 @@ const Home = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await getQuizzes({ limit: 30 });
       
-      if (response.success) {
-        const quizzes = response.data.quizzes;
-        
-        const school = quizzes.filter(q => q.educationLevel === 'school');
-        const undergrad = quizzes.filter(q => q.educationLevel === 'undergrad');
-        const masters = quizzes.filter(q => q.educationLevel === 'masters');
-        
-        setSchoolQuizzes(school.slice(0, 6));
-        setUndergradQuizzes(undergrad.slice(0, 6));
-        setMastersQuizzes(masters.slice(0, 6));
+      // Fetch quizzes for each education level separately to ensure balanced display
+      const [schoolResponse, undergradResponse, mastersResponse] = await Promise.all([
+        getQuizzes({ limit: 6, educationLevel: 'school' }),
+        getQuizzes({ limit: 6, educationLevel: 'undergrad' }),
+        getQuizzes({ limit: 6, educationLevel: 'masters' })
+      ]);
+      
+      if (schoolResponse.success) {
+        setSchoolQuizzes(schoolResponse.data.quizzes);
+      }
+      if (undergradResponse.success) {
+        setUndergradQuizzes(undergradResponse.data.quizzes);
+      }
+      if (mastersResponse.success) {
+        setMastersQuizzes(mastersResponse.data.quizzes);
       }
     } catch (error) {
       console.error('Error fetching quizzes:', error);
