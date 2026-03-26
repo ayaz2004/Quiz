@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { configDotenv } from 'dotenv';
 import { ApiResponse } from './utils/apiResponse.js';

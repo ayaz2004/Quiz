@@ -569,6 +569,110 @@ const Home = () => {
         </motion.div>
       </section>
 
+      {/* Community & Support Section (Moved Upfront) */}
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 rounded-[3rem] p-8 lg:p-12 overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 my-10"
+        style={{
+          background: isDark 
+            ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)' 
+            : 'linear-gradient(135deg, rgba(220, 252, 231, 0.95) 0%, rgba(240, 253, 250, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          border: isDark ? '1px solid rgba(34, 197, 94, 0.2)' : '2px solid rgba(34, 197, 94, 0.3)',
+          boxShadow: isDark ? 'none' : '0 20px 60px rgba(34, 197, 94, 0.15)',
+        }}
+      >
+        {/* Floating background shape */}
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: [0, 90, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-20 -right-20 w-80 h-80 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full blur-3xl opacity-20"
+        />
+
+        <div className="relative z-10 flex-1 md:pr-8 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full backdrop-blur-xl border shadow-md mx-auto md:mx-0"
+            style={{
+              background: isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255, 255, 255, 0.9)',
+              borderColor: isDark ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.4)'
+            }}
+          >
+            <Users className="w-5 h-5 text-green-500" />
+            <span className={`text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+              Community & Support
+            </span>
+          </div>
+          
+          <h2 className={`text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Have Queries or Need Papers?
+          </h2>
+          <p className={`text-lg mb-8 max-w-2xl mx-auto md:mx-0 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            Join our dedicated WhatsApp group to discuss AMU & JMI entrance exam strategies, clear your doubts, or request specific previous year question papers to be added to the platform.
+          </p>
+          
+          <a
+            href="https://chat.whatsapp.com/GmEU3AT97AtAwzwg0NIzjr?mode=gi_t"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl focus:ring-4 focus:ring-green-300"
+            style={{
+              background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+            }}
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.422-.272.347-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+              </svg>
+              Join Group
+            </span>
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </a>
+        </div>
+        
+        {/* Floating 3D Graphic element */}
+        <div className="relative w-full md:w-1/3 flex justify-center mt-12 md:mt-0">
+          <motion.div
+            animate={{ y: [-10, 10, -10] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="w-48 h-48 rounded-[2rem] flex items-center justify-center shadow-2xl relative"
+            style={{
+              background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 1)',
+              border: isDark ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid rgba(226, 232, 240, 1)',
+            }}
+          >
+            {/* Inner Green glow */}
+            <div className="absolute inset-0 bg-green-500 blur-3xl opacity-20 rounded-[2rem]"></div>
+            
+            <div className="relative z-10 flex flex-col items-center gap-3">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white shadow-xl">
+                 <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.422-.272.347-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
+                </svg>
+              </div>
+              <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Official Group</p>
+            </div>
+            
+            {/* Small floating chat bubble */}
+            <motion.div 
+               animate={{ y: [0, -10, 0] }}
+               transition={{ duration: 3, delay: 1, repeat: Infinity }}
+               className="absolute -top-4 -right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border"
+               style={{ 
+                 background: isDark ? '#1f2937' : 'white', 
+                 borderColor: isDark ? 'rgba(55, 65, 81, 0.5)' : 'rgba(226, 232, 240, 1)' 
+               }}
+            >
+              <Users className="w-5 h-5 text-green-500" />
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.section>
+
       {/* Loading State */}
       {loading && (
         <section className="relative z-10">
@@ -1006,42 +1110,118 @@ const Home = () => {
         </div>
       </motion.section>
 
-      {/* CTA Section */}
+      {/* Join Our Mission / Contributors Section */}
       <motion.section
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 text-center rounded-[3rem] p-12 lg:p-20 overflow-hidden"
+        className="relative z-10 rounded-[3rem] p-8 lg:p-12 overflow-hidden shadow-2xl mb-16"
         style={{
-          background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
+          background: isDark 
+            ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)' 
+            : 'linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(250, 245, 255, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          border: isDark ? '1px solid rgba(59, 130, 246, 0.2)' : '2px solid rgba(59, 130, 246, 0.3)',
+          boxShadow: isDark ? 'none' : '0 20px 60px rgba(59, 130, 246, 0.15)',
         }}
       >
-        <div className="relative z-10">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="w-20 h-20 mx-auto mb-8 rounded-3xl bg-white/20 backdrop-blur-xl flex items-center justify-center"
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full backdrop-blur-xl border shadow-md mx-auto"
+            style={{
+              background: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.9)',
+              borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)'
+            }}
           >
-            <Rocket className="w-10 h-10 text-white" />
-          </motion.div>
-
-          <h2 className="text-4xl lg:text-6xl font-black text-white mb-6">
-            Start Your Preparation Today
-          </h2>
-          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            Get free access to comprehensive quizzes designed for AMU & JMI entrance exams
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              to={isAuthenticated ? "/quizzes" : "/signup"}
-              className="group inline-flex items-center gap-3 bg-white text-emerald-600 px-10 py-5 rounded-2xl font-black text-lg hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-2xl"
-            >
-              {isAuthenticated ? "Start Practicing" : "Get Started Free"}
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <Sparkles className="w-5 h-5 text-blue-500" />
+            <span className={`text-sm font-bold ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
+              Gain Real-Life Experience
+            </span>
           </div>
+          <h2 className={`text-3xl lg:text-4xl font-black mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Join Our Mission to Grow
+          </h2>
+          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            Want to help us build something great and learn along the way? We are looking for passionate people to join the team and make an impact.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {[
+            {
+              title: "UI/UX Designer",
+              skills: ["Comfortable with Figma / Canva", "Improve user experience & design flow"],
+              icon: Sparkles,
+              color: "text-pink-500",
+              bgDark: "bg-pink-900/20",
+              bgLight: "bg-pink-100",
+            },
+            {
+              title: "Quiz Content Creator",
+              skills: ["Comfortable using LLMs (ChatGPT, Claude)", "Basic knowledge of APIs/Postman is a plus"],
+              icon: BookOpen,
+              color: "text-amber-500",
+              bgDark: "bg-amber-900/20",
+              bgLight: "bg-amber-100",
+            },
+            {
+              title: "Full Stack Developer",
+              skills: ["Familiar with JS, React, Node.js", "Interest in AI tools (Copilot, Claude)"],
+              icon: Zap,
+              color: "text-blue-500",
+              bgDark: "bg-blue-900/20",
+              bgLight: "bg-blue-100",
+            },
+            {
+              title: "Marketing / Content",
+              skills: ["Create engaging content (Posts, threads)", "Grow reach among JMI & AMU students"],
+              icon: TrendingUp,
+              color: "text-emerald-500",
+              bgDark: "bg-emerald-900/20",
+              bgLight: "bg-emerald-100",
+            },
+          ].map((role, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.05 }}
+              className="p-6 rounded-3xl border backdrop-blur-xl shadow-lg relative group transition-all"
+              style={{
+                background: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.7)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+              }}
+            >
+              <div className={`w-14 h-14 rounded-2xl mb-5 flex items-center justify-center ${isDark ? role.bgDark : role.bgLight}`}>
+                <role.icon className={`w-7 h-7 ${role.color}`} />
+              </div>
+              <h3 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>{role.title}</h3>
+              <ul className="space-y-3">
+                {role.skills.map((skill, index) => (
+                  <li key={index} className={`text-sm flex items-start gap-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <span className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                    <span>{skill}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex justify-center">
+          <a
+            href="https://chat.whatsapp.com/CI4ZQ1HsZKTJ0N4DnuFFk5?mode=gi_t"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl focus:ring-4 focus:ring-blue-300 mx-auto"
+            style={{
+              background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
+            }}
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Join Group
+            </span>
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </a>
         </div>
       </motion.section>
 
