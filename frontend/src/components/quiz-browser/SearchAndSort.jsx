@@ -11,7 +11,8 @@ const SearchAndSort = ({
   selectedEducationLevel,
   onEducationLevelChange,
   subjects = [],
-  years = []
+  years = [],
+  filtersLoading = false
 }) => {
   const { isDark } = useTheme();
 
@@ -72,8 +73,9 @@ const SearchAndSort = ({
             ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-blue-500'
             : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
         } focus:ring-2 focus:ring-blue-500/20 focus:outline-none`}
+        disabled={filtersLoading}
       >
-        <option value="">All Subjects</option>
+        <option value="">{filtersLoading ? 'Loading Subjects...' : 'All Subjects'}</option>
         {subjects.map((subject) => (
           <option key={subject} value={subject}>
             {subject}
@@ -90,8 +92,9 @@ const SearchAndSort = ({
             ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-blue-500'
             : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
         } focus:ring-2 focus:ring-blue-500/20 focus:outline-none`}
+        disabled={filtersLoading}
       >
-        <option value="">All Years</option>
+        <option value="">{filtersLoading ? 'Loading Years...' : 'All Years'}</option>
         {years.map((year) => (
           <option key={year} value={year}>
             {year}
@@ -113,6 +116,7 @@ SearchAndSort.propTypes = {
   onEducationLevelChange: PropTypes.func.isRequired,
   subjects: PropTypes.arrayOf(PropTypes.string),
   years: PropTypes.arrayOf(PropTypes.number),
+  filtersLoading: PropTypes.bool,
 };
 
 export default SearchAndSort;

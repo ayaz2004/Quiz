@@ -33,7 +33,8 @@ const Quizzes = () => {
   // Unique subjects and years
   const [subjects, setSubjects] = useState([]);
   const [years, setYears] = useState([]);
-  
+  const [filtersLoading, setFiltersLoading] = useState(true);
+
   // Error state
   const [error, setError] = useState(null);
 
@@ -180,9 +181,11 @@ const Quizzes = () => {
         }
       } catch (err) {
         console.error('Error fetching filter data:', err);
+      } finally {
+        setFiltersLoading(false);
       }
     };
-    
+
     fetchDropdownData();
   }, []);
 
@@ -194,7 +197,7 @@ const Quizzes = () => {
         setLoading(true);
       }
       setError(null);
-      const response = await getQuizzes({ 
+      const response = await getQuizzes({
         limit: 18, 
         page,
         educationLevel: selectedEducationLevel || undefined,
@@ -380,6 +383,7 @@ const Quizzes = () => {
           onEducationLevelChange={setSelectedEducationLevel}
           subjects={subjects}
           years={years}
+          filtersLoading={filtersLoading}
         />
       </div>
 
