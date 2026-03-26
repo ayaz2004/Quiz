@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { getQuizzes, getMyQuizzes } from '../utils/quizApi';
+import { getQuizzes, getMyQuizzes, getSubjects, getYears } from '../utils/quizApi';
 import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview } from '../components';
 
 const Quizzes = () => {
@@ -149,10 +149,10 @@ const Quizzes = () => {
     };
   }, [isDark]);
 
-  // Fetch quizzes on mount and when education level changes
+  // Fetch quizzes when filters change
   useEffect(() => {
-    fetchQuizzes();
-  }, [selectedEducationLevel]);
+    fetchQuizzes(1, false);
+  }, [selectedEducationLevel, selectedSubject, selectedYear, searchTerm]);
 
   // Fetch my quizzes when authenticated
   useEffect(() => {
@@ -162,6 +162,29 @@ const Quizzes = () => {
       setMyQuizzes([]);
     }
   }, [isAuthenticated]);
+
+  // Fetch all unique subjects and years
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const [subjectsRes, yearsRes] = await Promise.all([
+          getSubjects(),
+          getYears()
+        ]);
+        
+        if (subjectsRes.data?.subjects) {
+          setSubjects(subjectsRes.data.subjects);
+        }
+        if (yearsRes.data?.years) {
+          setYears(yearsRes.data.years.sort((a, b) => b - a));
+        }
+      } catch (err) {
+        console.error('Error fetching filter data:', err);
+      }
+    };
+    
+    fetchDropdownData();
+  }, []);
 
   const fetchQuizzes = async (page = 1, append = false) => {
     try {
@@ -174,7 +197,10 @@ const Quizzes = () => {
       const response = await getQuizzes({ 
         limit: 18, 
         page,
-        educationLevel: selectedEducationLevel || undefined 
+        educationLevel: selectedEducationLevel || undefined,
+        subject: selectedSubject || undefined,
+        year: selectedYear || undefined,
+        search: searchTerm || undefined
       });
       // Backend returns: { success: true, data: { quizzes: [...], pagination: {...}, stats: {...} } }
       const quizzes = response.data?.quizzes || [];
@@ -191,14 +217,6 @@ const Quizzes = () => {
       setTotalQuizzes(pagination.totalQuizzes || 0);
       setHasMore(pagination.currentPage < pagination.totalPages);
       setCurrentPage(pagination.currentPage || 1);
-      
-      // Extract unique subjects and years from all loaded quizzes
-      if (!append) {
-        const uniqueSubjects = [...new Set(quizzes.map(q => q.subject))].filter(Boolean);
-        const uniqueYears = [...new Set(quizzes.map(q => q.examYear))].filter(Boolean).sort((a, b) => b - a);
-        setSubjects(uniqueSubjects);
-        setYears(uniqueYears);
-      }
     } catch (error) {
       console.error('Error fetching quizzes:', error);
       
@@ -277,7 +295,7 @@ const Quizzes = () => {
 
     // Filter by year
     if (selectedYear) {
-      filtered = filtered.filter(q => q.examYear === parseInt(selectedYear));
+      filtered = filtered.filter(q => String(q.examYear) === String(selectedYear));
     }
 
     // Filter by education level
