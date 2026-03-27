@@ -5,8 +5,19 @@ import {
   GraduationCap, BookOpen, Target, Award, Users, TrendingUp, 
   CheckCircle2, Clock, Sparkles, Mail, MapPin, Phone 
 } from 'lucide-react';
+import usePageSeo from '../hooks/usePageSeo';
 
 const About = () => {
+  usePageSeo({
+    title: 'About JMI Quiz | JMI & AMU PYQ Platform',
+    description: 'Learn about JMI Quiz, a platform built for JMI and AMU admission preparation with PYQs and mock tests.',
+    path: '/about',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'About', path: '/about' },
+    ],
+  });
+
   const { isDark } = useTheme();
   const canvasRef = useRef(null);
 

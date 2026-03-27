@@ -4,10 +4,21 @@ import { useTheme } from '../context/ThemeContext';
 import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import usePageSeo from '../hooks/usePageSeo';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const SignUp = () => {
+  usePageSeo({
+    title: 'Sign Up | JMI Quiz',
+    description: 'Create your account to start practicing JMI PYQ and AMU PYQ quizzes with full mock tests.',
+    path: '/signup',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Sign Up', path: '/signup' },
+    ],
+  });
+
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const canvasRef = useRef(null);

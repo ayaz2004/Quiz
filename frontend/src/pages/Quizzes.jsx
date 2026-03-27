@@ -4,8 +4,19 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getQuizzes, getMyQuizzes, getSubjects, getYears } from '../utils/quizApi';
 import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview } from '../components';
+import usePageSeo from '../hooks/usePageSeo';
 
 const Quizzes = () => {
+  usePageSeo({
+    title: 'JMI PYQ & AMU PYQ Quizzes | JMI Quiz',
+    description: 'Browse subject-wise JMI PYQ and AMU PYQ quizzes, mock tests, and previous year questions.',
+    path: '/quizzes',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Quizzes', path: '/quizzes' },
+    ],
+  });
+
   const { isAuthenticated } = useAuth();
   const { isDark } = useTheme();
   const canvasRef = useRef(null);

@@ -13,8 +13,18 @@ import {
 import QuizCard from '../components/quiz-browser/QuizCard';
 import QuizOverview from '../components/modals/QuizOverview';
 import PurchaseModal from '../components/modals/PurchaseModal';
+import usePageSeo from '../hooks/usePageSeo';
 
 const Home = () => {
+  usePageSeo({
+    title: 'JMI PYQ & AMU PYQ Quiz Platform | Home',
+    description: 'Practice JMI PYQ and AMU PYQ quizzes with mock tests and previous year questions for entrance exam preparation.',
+    path: '/',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+    ],
+  });
+
   const { isAuthenticated } = useAuth();
   const { isDark } = useTheme();
   const canvasRef = useRef(null);

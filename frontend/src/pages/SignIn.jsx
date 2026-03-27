@@ -5,8 +5,19 @@ import { useTheme } from '../context/ThemeContext';
 import { resendVerification } from '../utils/api';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import usePageSeo from '../hooks/usePageSeo';
 
 const SignIn = () => {
+  usePageSeo({
+    title: 'Sign In | JMI Quiz',
+    description: 'Sign in to access JMI PYQ and AMU PYQ quizzes, mock tests, and your exam progress.',
+    path: '/signin',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Sign In', path: '/signin' },
+    ],
+  });
+
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
