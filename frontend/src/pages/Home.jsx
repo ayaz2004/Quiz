@@ -242,6 +242,8 @@ const Home = () => {
 
   return (
     <div className="relative space-y-16 pb-20">
+      {/* SEO H1 Heading for Quiz */}
+      <h1 className="sr-only">Quiz Platform - JMI and AMU PYQ, mock tests, and previous year questions</h1>
       {/* Particle Canvas Background */}
       <canvas 
         ref={canvasRef}
