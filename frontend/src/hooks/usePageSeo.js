@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 
 const SITE_URL = 'https://jmiquiz.live';
 
-const ensureMetaTag = (name) => {
-  let tag = document.querySelector(`meta[name="${name}"]`);
+const ensureMetaTag = (attr, value) => {
+  let tag = document.querySelector(`meta[${attr}="${value}"]`);
   if (!tag) {
     tag = document.createElement('meta');
-    tag.setAttribute('name', name);
+    tag.setAttribute(attr, value);
     document.head.appendChild(tag);
   }
   return tag;
@@ -35,20 +35,46 @@ const upsertJsonLdScript = (id, jsonData) => {
 
 const usePageSeo = ({ title, description, path, breadcrumbs = [] }) => {
   useEffect(() => {
+    // Update document title
     if (title) {
       document.title = title;
     }
 
+    // Update meta description
     if (description) {
-      const descriptionTag = ensureMetaTag('description');
+      const descriptionTag = ensureMetaTag('name', 'description');
       descriptionTag.setAttribute('content', description);
     }
 
+    // Update canonical URL
     if (path) {
       const canonicalTag = ensureCanonicalTag();
       canonicalTag.setAttribute('href', `${SITE_URL}${path}`);
     }
 
+    // Update Open Graph tags
+    if (title) {
+      const ogTitle = ensureMetaTag('property', 'og:title');
+      ogTitle.setAttribute('content', title);
+
+      const twitterTitle = ensureMetaTag('name', 'twitter:title');
+      twitterTitle.setAttribute('content', title);
+    }
+
+    if (description) {
+      const ogDesc = ensureMetaTag('property', 'og:description');
+      ogDesc.setAttribute('content', description);
+
+      const twitterDesc = ensureMetaTag('name', 'twitter:description');
+      twitterDesc.setAttribute('content', description);
+    }
+
+    if (path) {
+      const ogUrl = ensureMetaTag('property', 'og:url');
+      ogUrl.setAttribute('content', `${SITE_URL}${path}`);
+    }
+
+    // Update breadcrumb structured data
     if (breadcrumbs.length > 0) {
       const breadcrumbJsonLd = {
         '@context': 'https://schema.org',

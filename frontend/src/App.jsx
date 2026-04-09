@@ -15,6 +15,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Terms from './pages/Terms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import JmiPyq from './pages/JmiPyq';
+import AmuPyq from './pages/AmuPyq';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -32,6 +34,8 @@ export default function App() {
           <Route path="terms" element={<Terms />} />
           <Route path="privacy" element={<PrivacyPolicy />} />
           <Route path="quizzes" element={<Quizzes />} />
+          <Route path="jmi-pyq" element={<JmiPyq />} />
+          <Route path="amu-pyq" element={<AmuPyq />} />
           <Route path="quiz/:quizId" element={
             <ProtectedRoute>
               <TakeQuiz />
