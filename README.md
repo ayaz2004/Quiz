@@ -102,3 +102,4 @@ The app will be running at `http://localhost:5173`.
 
 - **Ayaz Nazir**
 - **Mohd Hammad Qadir**
+- **Ayaan Ahmad Siddiqui**
