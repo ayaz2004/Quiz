@@ -1220,7 +1220,7 @@ const Home = () => {
 
         <div className="flex justify-center">
           <a
-            href="https://chat.whatsapp.com/CI4ZQ1HsZKTJ0N4DnuFFk5?mode=gi_t"
+            href="https://chat.whatsapp.com/Fmy37lQACbHAGpcjsfiMow"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl focus:ring-4 focus:ring-blue-300 mx-auto"
