@@ -82,52 +82,56 @@ const TakeQuiz = () => {
     });
   }, [currentQuestionIndex, questionStartTime]);
 
-  const handleAnswerSelect = (optionKey) => {
+  const handleAnswerSelect = useCallback((optionKey) => {
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = optionKey;
     setAnswers(newAnswers);
-  };
+  }, [currentQuestionIndex, answers]);
 
-  const toggleReviewMark = () => {
+  const toggleReviewMark = useCallback(() => {
     const newReviewMarked = [...reviewMarked];
     newReviewMarked[currentQuestionIndex] = !newReviewMarked[currentQuestionIndex];
     setReviewMarked(newReviewMarked);
-  };
+  }, [currentQuestionIndex, reviewMarked]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentQuestionIndex > 0) {
       saveCurrentQuestionTime();
       setCurrentQuestionIndex(prev => prev - 1);
       setQuestionStartTime(Date.now());
     }
-  };
+  }, [currentQuestionIndex, saveCurrentQuestionTime]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentQuestionIndex < quiz.questions.length - 1) {
       saveCurrentQuestionTime();
       setCurrentQuestionIndex(prev => prev + 1);
       setQuestionStartTime(Date.now());
     }
-  };
+  }, [currentQuestionIndex, quiz, saveCurrentQuestionTime]);
 
-  const markForReviewAndNext = () => {
-    toggleReviewMark();
+  const markForReviewAndNext = useCallback(() => {
+    setReviewMarked(prev => {
+      const newReviewMarked = [...prev];
+      newReviewMarked[currentQuestionIndex] = !newReviewMarked[currentQuestionIndex];
+      return newReviewMarked;
+    });
     if (currentQuestionIndex < quiz.questions.length - 1) {
       saveCurrentQuestionTime();
       setCurrentQuestionIndex(prev => prev + 1);
       setQuestionStartTime(Date.now());
     }
-  };
+  }, [currentQuestionIndex, quiz, saveCurrentQuestionTime]);
 
-  const handleQuestionClick = (questionIndex) => {
+  const handleQuestionClick = useCallback((questionIndex) => {
     saveCurrentQuestionTime();
     setCurrentQuestionIndex(questionIndex);
     setQuestionStartTime(Date.now());
-  };
+  }, [saveCurrentQuestionTime]);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     setShowReviewModal(true);
-  };
+  }, []);
 
   const submitQuiz = async () => {
     try {
