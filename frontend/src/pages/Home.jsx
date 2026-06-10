@@ -599,7 +599,7 @@ const Home = () => {
         </motion.div>
       </section>
 
-      {/* JMI Result Search Teaser */}
+      {/* JMI Syllabus & Result Search Teaser */}
       <motion.section
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -624,21 +624,21 @@ const Home = () => {
               style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.95)', borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(16,185,129,0.2)' }}
             >
               <FileText className={`h-4 w-4 ${isDark ? 'text-cyan-300' : 'text-emerald-600'}`} />
-              <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>JMI Result Lookup</span>
+              <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>JMI Syllabus & Result Lookup</span>
             </div>
 
             <h2 className={`mt-5 text-3xl font-black leading-tight md:text-4xl ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Search JMI entrance results in a clean web view.
+              Search JMI syllabus and result entries in a clean web view.
             </h2>
 
             <p className={`mt-4 max-w-2xl text-base leading-7 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Choose a program type, pick the course, and open the result list instantly. The page is designed for quick filtering, readable cards, and easy access to the source.
+              Choose a program type, pick the course, and open the official syllabus/result list instantly. The page is designed for quick filtering, readable cards, and easy access to the source.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
               {[
                 { icon: Clock, label: 'Quick filters' },
-                { icon: Target, label: 'Clean result cards' },
+                { icon: Target, label: 'Syllabus / result cards' },
                 { icon: CheckCircle2, label: 'Responsive layout' },
               ].map((item) => (
                 <div key={item.label} className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-lg" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.95)', borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(148,163,184,0.18)' }}>
@@ -653,7 +653,7 @@ const Home = () => {
               className="mt-8 inline-flex items-center gap-3 rounded-2xl px-7 py-4 text-base font-bold text-white transition-transform hover:scale-105"
               style={{ background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)' }}
             >
-              Open JMI Result Search
+              Open JMI Syllabus & Result Search
               <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
@@ -664,8 +664,8 @@ const Home = () => {
             <div className="space-y-4">
               {[
                 { step: '01', title: 'Select type', desc: 'Choose a program type to filter available courses.' },
-                { step: '02', title: 'Pick course', desc: 'Select the course to view matching result rows.' },
-                { step: '03', title: 'Read result', desc: 'View matching course details, date, remark and source link.' },
+                { step: '02', title: 'Pick course', desc: 'Select the course to view matching syllabus/result rows.' },
+                { step: '03', title: 'Read entries', desc: 'View matching course details, date, remark and source link.' },
               ].map((item) => (
                 <div key={item.step} className={`rounded-[1.5rem] border p-4 ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-100 bg-white'}`}>
                   <div className="flex items-start gap-4">
