@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import gsap from 'gsap';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getQuizzes } from '../utils/quizApi';
 import { 
   Users, BookOpen, Award, TrendingUp, Clock, Target, 
   CheckCircle2, Zap, Brain, GraduationCap, Trophy, Rocket, Timer,
-  Sparkles, ArrowRight, Star, BarChart3, Shield
+  Sparkles, ArrowRight, Star, BarChart3, Shield, FileText
 } from 'lucide-react';
 import QuizCard from '../components/quiz-browser/QuizCard';
 import QuizOverview from '../components/modals/QuizOverview';
@@ -177,21 +176,40 @@ const Home = () => {
 
   // GSAP animations for floating elements
   useEffect(() => {
-    if (!heroRef.current) return;
+    let isActive = true;
+    const tweens = [];
 
-    const floatingElements = heroRef.current.querySelectorAll('[data-float]');
-    
-    floatingElements.forEach((el, index) => {
-      gsap.to(el, {
-        y: Math.sin(index) * 20,
-        x: Math.cos(index) * 15,
-        rotation: Math.sin(index) * 5,
-        duration: 3 + index * 0.5,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
+    const animateFloatingElements = async () => {
+      if (!heroRef.current) return;
+
+      const [{ default: gsap }, floatingElements] = await Promise.all([
+        import('gsap'),
+        Promise.resolve(heroRef.current.querySelectorAll('[data-float]')),
+      ]);
+
+      if (!isActive || !heroRef.current) return;
+
+      floatingElements.forEach((el, index) => {
+        tweens.push(
+          gsap.to(el, {
+            y: Math.sin(index) * 20,
+            x: Math.cos(index) * 15,
+            rotation: Math.sin(index) * 5,
+            duration: 3 + index * 0.5,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+          })
+        );
       });
-    });
+    };
+
+    animateFloatingElements();
+
+    return () => {
+      isActive = false;
+      tweens.forEach((tween) => tween.kill());
+    };
   }, []);
 
   useEffect(() => {
@@ -580,6 +598,89 @@ const Home = () => {
           </div>
         </motion.div>
       </section>
+
+      {/* JMI Result Search Teaser */}
+      <motion.section
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 overflow-hidden rounded-[3rem] p-8 shadow-2xl lg:p-12"
+        style={{
+          background: isDark
+            ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.1) 100%)'
+            : 'linear-gradient(135deg, rgba(240, 253, 250, 0.98) 0%, rgba(239, 246, 255, 0.98) 100%)',
+          backdropFilter: 'blur(18px)',
+          border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '2px solid rgba(16, 185, 129, 0.18)',
+          boxShadow: isDark ? 'none' : '0 18px 60px rgba(16, 185, 129, 0.12)',
+        }}
+      >
+        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 blur-3xl opacity-25" />
+        <div className="absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-gradient-to-br from-blue-400 to-teal-500 blur-3xl opacity-20" />
+
+        <div className="relative z-10 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 shadow-lg"
+              style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.95)', borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(16,185,129,0.2)' }}
+            >
+              <FileText className={`h-4 w-4 ${isDark ? 'text-cyan-300' : 'text-emerald-600'}`} />
+              <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>JMI Result Lookup</span>
+            </div>
+
+            <h2 className={`mt-5 text-3xl font-black leading-tight md:text-4xl ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Search JMI entrance results in a clean web view.
+            </h2>
+
+            <p className={`mt-4 max-w-2xl text-base leading-7 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Choose a program type, pick the course, and open the result list instantly. The page is designed for quick filtering, readable cards, and easy access to the source.
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              {[
+                { icon: Clock, label: 'Quick filters' },
+                { icon: Target, label: 'Clean result cards' },
+                { icon: CheckCircle2, label: 'Responsive layout' },
+              ].map((item) => (
+                <div key={item.label} className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-lg" style={{ background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.95)', borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(148,163,184,0.18)' }}>
+                  <item.icon className={`h-4 w-4 ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`} />
+                  <span className={isDark ? 'text-white' : 'text-gray-900'}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              to="/jmi-result"
+              className="mt-8 inline-flex items-center gap-3 rounded-2xl px-7 py-4 text-base font-bold text-white transition-transform hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)' }}
+            >
+              Open JMI Result Search
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+
+          <div className="relative rounded-[2rem] border p-6 shadow-2xl"
+            style={{ background: isDark ? 'rgba(15, 23, 42, 0.72)' : 'rgba(255,255,255,0.98)', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(16,185,129,0.16)' }}
+          >
+            <div className="space-y-4">
+              {[
+                { step: '01', title: 'Select type', desc: 'Choose a program type to filter available courses.' },
+                { step: '02', title: 'Pick course', desc: 'Select the course to view matching result rows.' },
+                { step: '03', title: 'Read result', desc: 'View matching course details, date, remark and source link.' },
+              ].map((item) => (
+                <div key={item.step} className={`rounded-[1.5rem] border p-4 ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-100 bg-white'}`}>
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-sm font-black text-white">{item.step}</div>
+                    <div>
+                      <h3 className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.title}</h3>
+                      <p className={`mt-1 text-sm leading-6 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{item.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.section>
 
       {/* Community & Support Section (Moved Upfront) */}
       <motion.section

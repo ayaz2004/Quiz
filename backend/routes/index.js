@@ -4,6 +4,7 @@ import quizRoutes from './quiz.route.js';
 import purchaseRoutes from './purchase.route.js';
 import adminRoutes from './admin.route.js';
 import suggestionRoutes from './suggestion.route.js';
+import jmiResultRoutes from './jmiResult.route.js';
 const router = express.Router();
 
 // Mount all route modules
@@ -12,5 +13,6 @@ router.use('/quiz', quizRoutes);
 router.use('/purchase', purchaseRoutes);
 router.use('/admin', adminRoutes);
 router.use('/suggestions', suggestionRoutes);
+router.use('/jmi-result', jmiResultRoutes);
 
 export default router;

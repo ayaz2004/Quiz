@@ -14,8 +14,7 @@ const Header = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Quizzes', path: '/quizzes' },
-    { name: 'JMI PYQ', path: '/jmi-pyq' },
-    { name: 'AMU PYQ', path: '/amu-pyq' },
+    { name: 'JMI Result', path: '/jmi-result' },
     { name: 'My Attempts', path: '/attempts', protected: true },
     { name: 'About', path: '/about' },
   ];
