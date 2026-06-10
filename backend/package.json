@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "start": "prisma generate && node index.js"
+    "start": "prisma generate && prisma migrate deploy && node index.js",
+    "migrate:data": "node scripts/copy-production-data.js"
   },
   "author": "\"Ayaz Nazir\" \"Mohd Hammad Qadir\"",
   "license": "ISC",

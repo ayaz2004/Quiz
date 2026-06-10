@@ -1,10 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { configDotenv } from 'dotenv';
+import './config/env.js';
 import { ApiResponse } from './utils/apiResponse.js';
-
-configDotenv();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
