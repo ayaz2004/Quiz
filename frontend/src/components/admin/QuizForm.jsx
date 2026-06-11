@@ -1,4 +1,34 @@
+import { useState, useEffect } from 'react';
 import QuestionItem from './QuestionItem';
+
+const cutoffFields = [
+  { key: 'general', label: 'General' },
+  { key: 'muslim', label: 'Muslim' },
+  { key: 'muslimObcSt', label: 'Muslim OBC/ST' },
+  { key: 'muslimWomen', label: 'Muslim Women' },
+  { key: 'jk', label: 'JK' },
+  { key: 'km', label: 'KM' },
+  { key: 'pwd', label: 'PWD' },
+  { key: 'pwdLocomoter', label: 'PWD - Locomotor' },
+  { key: 'pwdBlindVision', label: 'PWD - Blind/Vision' },
+  { key: 'pwdHearing', label: 'PWD - Hearing' },
+  { key: 'jamiaInternal', label: 'Jamia Internal' },
+];
+
+const createCutoffRow = () => ({
+  year: new Date().getFullYear(),
+  general: '',
+  muslim: '',
+  muslimObcSt: '',
+  muslimWomen: '',
+  jk: '',
+  km: '',
+  pwd: '',
+  pwdLocomoter: '',
+  pwdBlindVision: '',
+  pwdHearing: '',
+  jamiaInternal: '',
+});
 
 const QuizForm = ({ 
   quizForm, 
@@ -12,6 +42,22 @@ const QuizForm = ({
   onImageUpload,
   onRemoveQuestion
 }) => {
+  const [hasCutoffs, setHasCutoffs] = useState(false);
+
+  useEffect(() => {
+    setHasCutoffs((quizForm.cutoffs || []).length > 0);
+  }, [quizForm.cutoffs]);
+
+  useEffect(() => {
+    if (quizForm.cutoffs && quizForm.cutoffs.length > 0) {
+      const updated = [...quizForm.cutoffs];
+      if (updated[0].year !== quizForm.examYear) {
+        updated[0].year = quizForm.examYear;
+        setQuizForm(prev => ({ ...prev, cutoffs: updated }));
+      }
+    }
+  }, [quizForm.examYear, quizForm.cutoffs, setQuizForm]);
+
   const handleCancel = () => {
     setEditingQuizId(null);
     setQuizForm({
@@ -25,8 +71,18 @@ const QuizForm = ({
       isPaid: false,
       price: 0,
       timeLimit: null,
+      cutoffs: [],
       questions: []
     });
+  };
+
+  const handleCutoffChange = (index, field, value) => {
+    const nextCutoffs = [...(quizForm.cutoffs || [])];
+    nextCutoffs[index] = {
+      ...nextCutoffs[index],
+      [field]: value,
+    };
+    setQuizForm({ ...quizForm, cutoffs: nextCutoffs });
   };
 
   return (
@@ -174,6 +230,62 @@ const QuizForm = ({
             </p>
           </div>
         </div>
+
+        {editingQuizId && (
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div className="flex items-center space-x-2 mb-4">
+              <input
+                type="checkbox"
+                id="enableCutoffs"
+                checked={hasCutoffs}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setHasCutoffs(checked);
+                  if (checked) {
+                    setQuizForm({
+                      ...quizForm,
+                      cutoffs: [{
+                        ...createCutoffRow(),
+                        year: quizForm.examYear
+                      }]
+                    });
+                  } else {
+                    setQuizForm({ ...quizForm, cutoffs: [] });
+                  }
+                }}
+                className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+              />
+              <label htmlFor="enableCutoffs" className="text-sm font-semibold text-gray-750 dark:text-gray-300">
+                Enable Cutoff Scores for this Quiz (Year {quizForm.examYear})
+              </label>
+            </div>
+
+            {hasCutoffs && quizForm.cutoffs && quizForm.cutoffs.length > 0 && (
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900/30">
+                <div className="font-medium text-gray-800 dark:text-gray-200 mb-4">
+                  Cutoff Scores (Exam Year: {quizForm.examYear})
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {cutoffFields.map((field) => (
+                    <div key={field.key}>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {field.label}
+                      </label>
+                      <input
+                        type="number"
+                        step="0.25"
+                        value={quizForm.cutoffs[0][field.key] ?? ''}
+                        onChange={(e) => handleCutoffChange(0, field.key, e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        placeholder="N/A"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

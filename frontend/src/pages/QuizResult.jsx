@@ -32,6 +32,20 @@ import {
   Dumbbell
 } from 'lucide-react';
 
+const cutoffFields = [
+  { key: 'general', label: 'General' },
+  { key: 'muslim', label: 'Muslim' },
+  { key: 'muslimObcSt', label: 'Muslim OBC/ST' },
+  { key: 'muslimWomen', label: 'Muslim Women' },
+  { key: 'jk', label: 'JK' },
+  { key: 'km', label: 'KM' },
+  { key: 'pwd', label: 'PWD' },
+  { key: 'pwdLocomoter', label: 'PWD - Locomotor' },
+  { key: 'pwdBlindVision', label: 'PWD - Blind/Vision' },
+  { key: 'pwdHearing', label: 'PWD - Hearing' },
+  { key: 'jamiaInternal', label: 'Jamia Internal' },
+];
+
 const QuizResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -247,9 +261,8 @@ const QuizResult = () => {
   // Calculate attempted questions (total - unanswered)
   const attemptedQuestions = totalQuestions - unanswered;
   
-  // Accuracy rate should match the score percentage (which includes negative marking)
-  // Not just correct/attempted ratio
-  const accuracyRate = percentage; // Use the percentage from backend which includes negative marking
+  // Accuracy rate is the percentage of correct answers out of the attempted questions
+  const accuracyRate = attemptedQuestions > 0 ? (correctAnswers / attemptedQuestions) * 100 : 0;
   
   const handleSuggestionSubmit = async (e) => {
     e.preventDefault();
@@ -459,7 +472,7 @@ const QuizResult = () => {
                       fill="transparent"
                       strokeLinecap="round"
                       initial={{ strokeDashoffset: 440 }}
-                      animate={{ strokeDashoffset: 440 - (440 * percentage) / 100 }}
+                      animate={{ strokeDashoffset: 440 - (440 * Math.max(0, percentage)) / 100 }}
                       transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
                       style={{ strokeDasharray: 440 }}
                     />
@@ -779,6 +792,99 @@ const QuizResult = () => {
             </motion.div>
           </div>
         </div>
+
+        {/* Cutoffs Section */}
+        {quiz.cutoffs && quiz.cutoffs.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="mt-8"
+          >
+            <div 
+              className="p-6 md:p-8 rounded-3xl backdrop-blur-xl border-2"
+              style={{
+                background: isDark ? 'rgba(31, 41, 55, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+                borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)',
+                boxShadow: isDark ? '0 8px 32px rgba(99, 102, 241, 0.15)' : '0 8px 32px rgba(99, 102, 241, 0.2)'
+              }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg text-white">
+                  <Award className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                    Year-Wise Cutoffs
+                  </h3>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Compare your score of <span className="font-bold text-emerald-500">{score}</span> against the official cutoffs to check qualification.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {quiz.cutoffs.map((cutoff) => (
+                  <div 
+                    key={cutoff.id} 
+                    className={`rounded-2xl border ${
+                      isDark ? 'bg-gray-800/40 border-gray-700' : 'bg-gray-50/50 border-gray-200'
+                    } overflow-hidden`}
+                  >
+                    <div className={`px-5 py-3 ${isDark ? 'bg-gray-700/50' : 'bg-gray-100/70'} flex items-center justify-between`}>
+                      <h4 className={`font-bold text-base ${isDark ? 'text-white' : 'text-gray-805'}`}>
+                        Exam Year {cutoff.year}
+                      </h4>
+                      <span className={`text-xs px-2.5 py-1 rounded-full ${
+                        isDark ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500 border border-gray-200'
+                      }`}>
+                        Official Minimum Scores
+                      </span>
+                    </div>
+                    
+                    <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {cutoffFields
+                        .filter((field) => {
+                          const val = cutoff[field.key];
+                          return val !== null && val !== undefined && val !== '';
+                        })
+                        .map((field) => {
+                          const val = cutoff[field.key];
+
+                          return (
+                            <div 
+                              key={field.key} 
+                              className="p-4 rounded-xl border flex flex-col justify-between transition-all duration-300 bg-white dark:bg-gray-800/40 border-gray-200 dark:border-gray-700 hover:scale-[1.02]"
+                            >
+                              <div>
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className={`text-xs font-semibold uppercase tracking-wider ${
+                                    isDark ? 'text-gray-400' : 'text-gray-500'
+                                  }`}>
+                                    {field.label}
+                                  </span>
+                                </div>
+                                <div className="flex items-baseline gap-2 mt-2">
+                                  <span className={`text-2xl font-bold ${
+                                    isDark ? 'text-white' : 'text-gray-800'
+                                  }`}>
+                                    {val}
+                                  </span>
+                                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    cutoff
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Suggestion Section */}
         <motion.div

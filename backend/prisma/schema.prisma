@@ -54,9 +54,35 @@ model Quiz {
   negativeMarks      Float?  @map("negative_marks") // Negative marks per wrong answer (e.g., 0.25, 0.5, 1)
   createdAt   DateTime  @default(now()) @map("created_at")
   questions   Question[]
+  cutoffs     QuizCutoff[]
   quizAttempts QuizAttempt[]
   suggestions Suggestion[]
   purchases   Purchase[]
+}
+
+model QuizCutoff {
+  id             Int      @id @default(autoincrement()) @map("cutoff_id")
+  quizId         Int      @map("quiz_id")
+  year           Int
+  general        Float?
+  muslim         Float?
+  muslimObcSt    Float?   @map("muslim_obc_st")
+  muslimWomen    Float?   @map("muslim_women")
+  jk             Float?
+  km             Float?
+  pwd            Float?
+  pwdLocomoter   Float?   @map("pwd_locomoter")
+  pwdBlindVision Float?   @map("pwd_blind_vision")
+  pwdHearing     Float?   @map("pwd_hearing")
+  jamiaInternal  Float?   @map("jamia_internal")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  quiz           Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@unique([quizId, year])
+  @@index([quizId])
+  @@index([year])
+  @@map("quiz_cutoffs")
 }
 
 model Question {
@@ -78,7 +104,7 @@ model QuizAttempt {
   id             Int      @id @default(autoincrement()) @map("attempt_id")
   userId         Int      @map("user_id")
   quizId         Int      @map("quiz_id")
-  score          Int
+  score          Float
   totalQuestions Int      @map("total_questions")
   correctAnswers Int      @map("correct_answers")
   wrongAnswers   Int      @map("wrong_answers")

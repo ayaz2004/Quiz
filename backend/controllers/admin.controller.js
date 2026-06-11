@@ -3,6 +3,43 @@ import { ApiError } from "../utils/error.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { uploadImage } from "../utils/cloudinary.js";
 import fs from "fs";
+
+const CUTOFF_FIELDS = [
+  "general",
+  "muslim",
+  "muslimObcSt",
+  "muslimWomen",
+  "jk",
+  "km",
+  "pwd",
+  "pwdLocomoter",
+  "pwdBlindVision",
+  "pwdHearing",
+  "jamiaInternal",
+];
+
+const parseCutoffValue = (value) => {
+  if (value === null || value === undefined) return null;
+  if (value === "" || value === "-") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const normalizeCutoffRow = (row = {}) => {
+  const year = parseInt(row.year);
+
+  if (!Number.isInteger(year)) {
+    return null;
+  }
+
+  const normalized = { year };
+
+  for (const field of CUTOFF_FIELDS) {
+    normalized[field] = parseCutoffValue(row[field]);
+  }
+
+  return normalized;
+};
 /**
  * Add a new quiz with questions
  * @route POST /api/admin/quiz
@@ -33,6 +70,7 @@ export const addQuiz = async (req, res, next) => {
       hasNegativeMarking,
       negativeMarks,
       questions,
+      cutoffs = [],
     } = data;
 
     const existingQuiz = await prisma.quiz.findUnique({
@@ -82,6 +120,10 @@ export const addQuiz = async (req, res, next) => {
       })
     );
 
+    const cutoffRows = Array.isArray(cutoffs)
+      ? cutoffs.map(normalizeCutoffRow).filter(Boolean)
+      : [];
+
     // 3. Save to Database
     const newQuiz = await prisma.quiz.create({
       data: {
@@ -100,9 +142,17 @@ export const addQuiz = async (req, res, next) => {
         questions: {
           create: questionsWithImages,
         },
+        cutoffs: cutoffRows.length
+          ? {
+              create: cutoffRows,
+            }
+          : undefined,
       },
       include: {
         questions: true,
+        cutoffs: {
+          orderBy: { year: 'desc' },
+        },
       },
     });
 
@@ -149,6 +199,7 @@ export const updateQuiz = async (req, res, next) => {
       hasNegativeMarking,
       negativeMarks,
       questions,
+      cutoffs = [],
     } = data;
 
     if (title) {
@@ -191,10 +242,18 @@ export const updateQuiz = async (req, res, next) => {
       })
     );
 
+    const cutoffRows = Array.isArray(cutoffs)
+      ? cutoffs.map(normalizeCutoffRow).filter(Boolean)
+      : [];
+
     // 3. Database Transaction
     const updatedQuiz = await prisma.$transaction(async (tx) => {
       // Delete old questions first (Replace strategy)
       await tx.question.deleteMany({
+        where: { quizId },
+      });
+
+      await tx.quizCutoff.deleteMany({
         where: { quizId },
       });
 
@@ -216,8 +275,18 @@ export const updateQuiz = async (req, res, next) => {
           questions: {
             create: questionsWithImages,
           },
+          cutoffs: cutoffRows.length
+            ? {
+                create: cutoffRows,
+              }
+            : undefined,
         },
-        include: { questions: true },
+        include: {
+          questions: true,
+          cutoffs: {
+            orderBy: { year: 'desc' },
+          },
+        },
       });
     });
 
@@ -453,6 +522,11 @@ export const getQuizByIdForAdmin = async (req, res, next) => {
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },
       include: {
+        cutoffs: {
+          orderBy: {
+            year: 'desc'
+          }
+        },
         questions: {
           select: {
             id: true,
@@ -483,6 +557,164 @@ export const getQuizByIdForAdmin = async (req, res, next) => {
   } catch (error) {
     console.error("Get Quiz By ID Error:", error);
     return next(new ApiError(500, error.message || "Error retrieving quiz"));
+  }
+};
+
+export const getAllCutoffs = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can access this endpoint"));
+    }
+
+    const { quizId } = req.query;
+    const where = {};
+
+    if (quizId) {
+      where.quizId = parseInt(quizId);
+    }
+
+    const cutoffs = await prisma.quizCutoff.findMany({
+      where,
+      include: {
+        quiz: {
+          select: {
+            id: true,
+            title: true,
+            subject: true,
+            examYear: true,
+            educationLevel: true,
+          },
+        },
+      },
+      orderBy: [
+        { quizId: 'asc' },
+        { year: 'desc' },
+      ],
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, { cutoffs }, "Cutoffs retrieved successfully")
+    );
+  } catch (error) {
+    console.error("Get All Cutoffs Error:", error);
+    return next(new ApiError(500, error.message || "Error retrieving cutoffs"));
+  }
+};
+
+export const addCutoff = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can access this endpoint"));
+    }
+
+    const {
+      quizId,
+      year,
+      ...rest
+    } = req.body || {};
+
+    const quizIdNum = parseInt(quizId);
+    const yearNum = parseInt(year);
+
+    if (!Number.isInteger(quizIdNum) || !Number.isInteger(yearNum)) {
+      return next(new ApiError(400, "quizId and year are required"));
+    }
+
+    const quiz = await prisma.quiz.findUnique({ where: { id: quizIdNum }, select: { id: true } });
+    if (!quiz) {
+      return next(new ApiError(404, "Quiz not found"));
+    }
+
+    const data = { quizId: quizIdNum, year: yearNum };
+    for (const field of CUTOFF_FIELDS) {
+      data[field] = parseCutoffValue(rest[field]);
+    }
+
+    const created = await prisma.quizCutoff.create({ data });
+
+    return res.status(201).json(
+      new ApiResponse(201, created, "Cutoff added successfully")
+    );
+  } catch (error) {
+    console.error("Add Cutoff Error:", error);
+    return next(new ApiError(500, error.message || "Error adding cutoff"));
+  }
+};
+
+export const updateCutoff = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can access this endpoint"));
+    }
+
+    const cutoffId = parseInt(req.params.id);
+    if (!Number.isInteger(cutoffId)) {
+      return next(new ApiError(400, "Valid cutoff ID is required"));
+    }
+
+    const existing = await prisma.quizCutoff.findUnique({ where: { id: cutoffId } });
+    if (!existing) {
+      return next(new ApiError(404, "Cutoff not found"));
+    }
+
+    const { year, ...rest } = req.body || {};
+    const data = {};
+
+    if (year !== undefined) {
+      const yearNum = parseInt(year);
+      if (!Number.isInteger(yearNum)) {
+        return next(new ApiError(400, "Valid year is required"));
+      }
+      data.year = yearNum;
+    }
+
+    for (const field of CUTOFF_FIELDS) {
+      if (rest[field] !== undefined) {
+        data[field] = parseCutoffValue(rest[field]);
+      }
+    }
+
+    const updated = await prisma.quizCutoff.update({
+      where: { id: cutoffId },
+      data,
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, updated, "Cutoff updated successfully")
+    );
+  } catch (error) {
+    console.error("Update Cutoff Error:", error);
+    return next(new ApiError(500, error.message || "Error updating cutoff"));
+  }
+};
+
+export const deleteCutoff = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    if (!user || user.isAdmin !== 1) {
+      return next(new ApiError(403, "Only admins can access this endpoint"));
+    }
+
+    const cutoffId = parseInt(req.params.id);
+    if (!Number.isInteger(cutoffId)) {
+      return next(new ApiError(400, "Valid cutoff ID is required"));
+    }
+
+    await prisma.quizCutoff.delete({ where: { id: cutoffId } });
+
+    return res.status(200).json(
+      new ApiResponse(200, null, "Cutoff deleted successfully")
+    );
+  } catch (error) {
+    console.error("Delete Cutoff Error:", error);
+    return next(new ApiError(500, error.message || "Error deleting cutoff"));
   }
 };
 

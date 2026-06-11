@@ -5,6 +5,22 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getQuizById, checkQuizAccess } from '../../utils/quizApi';
 
+const cutoffFields = [
+  { key: 'general', label: 'General' },
+  { key: 'muslim', label: 'Muslim' },
+  { key: 'muslimObcSt', label: 'Muslim OBC/ST' },
+  { key: 'muslimWomen', label: 'Muslim Women' },
+  { key: 'jk', label: 'JK' },
+  { key: 'km', label: 'KM' },
+  { key: 'pwd', label: 'PWD' },
+  { key: 'pwdLocomoter', label: 'PWD - Locomotor' },
+  { key: 'pwdBlindVision', label: 'PWD - Blind/Vision' },
+  { key: 'pwdHearing', label: 'PWD - Hearing' },
+  { key: 'jamiaInternal', label: 'Jamia Internal' },
+];
+
+const formatCutoffValue = (value) => (value === null || value === undefined || value === '' ? 'Not available' : value);
+
 const QuizOverview = ({ quiz, isOpen, onClose }) => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();

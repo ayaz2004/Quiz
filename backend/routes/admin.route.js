@@ -12,7 +12,11 @@ import {
   grantQuizAccess,
   toggleQuizVisibility,
   revokeQuizAccess,
-  getGrantedAccesses
+  getGrantedAccesses,
+  getAllCutoffs,
+  addCutoff,
+  updateCutoff,
+  deleteCutoff
 } from "../controllers/admin.controller.js";
 import {
   getAllSuggestions,
@@ -98,6 +102,24 @@ router.get(
     getGrantedAccesses
 );
 
+router.get(
+  "/cutoffs",
+  verifyToken,
+  getAllCutoffs
+);
+
+router.post(
+  "/cutoffs",
+  verifyToken,
+  addCutoff
+);
+
+router.put(
+  "/cutoffs/:id",
+  verifyToken,
+  updateCutoff
+);
+
 ///////////////////////////////Admin Delete Apis //////////////////////////////
 
 router.delete(
@@ -122,6 +144,12 @@ router.delete(
     "/attempts/:id",
     verifyToken,
     deleteAttempt
+);
+
+router.delete(
+  "/cutoffs/:id",
+  verifyToken,
+  deleteCutoff
 );
 
 /////////////////////////////// Admin Patch Apis //////////////////////////////

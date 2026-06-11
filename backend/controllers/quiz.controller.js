@@ -87,7 +87,7 @@ export const listQuizzes = async (req, res, next) => {
         negativeMarks: true,
         createdAt: true,
         _count: {
-          select: { questions: true }
+          select: { questions: true, cutoffs: true }
         }
       },
       orderBy: {
@@ -111,6 +111,7 @@ export const listQuizzes = async (req, res, next) => {
       hasNegativeMarking: quiz.hasNegativeMarking,
       negativeMarks: quiz.negativeMarks,
       questionCount: quiz._count.questions,
+      cutoffCount: quiz._count.cutoffs,
       createdAt: quiz.createdAt
     }));
     
@@ -164,6 +165,11 @@ export const getQuizById = async (req, res, next) => {
     const quiz = await prisma.quiz.findFirst({
       where,
       include: {
+        cutoffs: {
+          orderBy: {
+            year: 'desc'
+          }
+        },
         questions: {
           select: {
             id: true,
@@ -215,6 +221,8 @@ export const getQuizById = async (req, res, next) => {
         hasNegativeMarking: quiz.hasNegativeMarking,
         negativeMarks: quiz.negativeMarks,
         questionCount: quiz.questions.length,
+        cutoffCount: quiz.cutoffs.length,
+        cutoffs: quiz.cutoffs,
         hasAccess,
         accessMessage,
         questions: hasAccess ? quiz.questions : []
@@ -394,16 +402,19 @@ export const submitQuizAttempt = async (req, res, next) => {
     });
 
     const totalQuestions = quiz.questions.length;
-    const unanswered = totalQuestions - answers.length;
-    const actualWrongAnswers = wrongAnswers; // Store actual wrong answers before adding unanswered
-    wrongAnswers += unanswered; // Count unanswered as wrong for percentage calculation
+    // Calculate unanswered correctly: questions that were not answered or had selectedOption === 0
+    const unanswered = quiz.questions.filter(q => {
+      const userAnswer = answers.find(a => a.questionId === q.id);
+      return !userAnswer || userAnswer.selectedOption === 0;
+    }).length;
+    const actualWrongAnswers = wrongAnswers;
     
     // Calculate score with negative marking if enabled
     let score = correctAnswers; // 1 point per correct answer
     if (quiz.hasNegativeMarking && quiz.negativeMarks) {
       // Only apply negative marking to actually wrong answers, not unanswered questions
       const deduction = actualWrongAnswers * quiz.negativeMarks;
-      score = Math.max(0, correctAnswers - deduction); // Ensure score doesn't go below 0
+      score = correctAnswers - deduction;
     }
     
     // Calculate percentage based on final score (after negative marking)
@@ -417,7 +428,7 @@ export const submitQuizAttempt = async (req, res, next) => {
         score,
         totalQuestions,
         correctAnswers,
-        wrongAnswers,
+        wrongAnswers: actualWrongAnswers, // Save only actual wrong answers in the database
         percentage,
         timeTaken: timeTaken || null,
         answers: JSON.stringify(answers)
@@ -430,7 +441,7 @@ export const submitQuizAttempt = async (req, res, next) => {
         quizTitle: quiz.title,
         totalQuestions,
         correctAnswers,
-        wrongAnswers,
+        wrongAnswers: actualWrongAnswers,
         actualWrongAnswers, // Actual wrong answers (excluding unanswered)
         unanswered,
         score,
@@ -645,13 +656,18 @@ export const getAttemptResult = async (req, res, next) => {
       return next(new ApiError(400, "Invalid attempt ID"));
     }
 
-    // Fetch attempt with quiz and questions
+    // Fetch attempt with quiz, questions, and cutoffs
     const attempt = await prisma.quizAttempt.findUnique({
       where: { id: attemptIdNum },
       include: {
         quiz: {
           include: {
-            questions: true
+            questions: true,
+            cutoffs: {
+              orderBy: {
+                year: 'desc'
+              }
+            }
           }
         }
       }
@@ -669,10 +685,21 @@ export const getAttemptResult = async (req, res, next) => {
     // Parse user's answers
     const userAnswers = JSON.parse(attempt.answers);
 
+    // Check if there is a question ID mismatch (e.g. if the quiz was re-seeded/re-created and IDs changed)
+    const hasIdMismatch = !userAnswers.some(a => attempt.quiz.questions.some(q => q.id === a.questionId));
+
     // Build detailed results and calculate actual wrong answers
     let actualWrongCount = 0;
-    const detailedResults = attempt.quiz.questions.map(question => {
-      const userAnswer = userAnswers.find(a => a.questionId === question.id);
+    const detailedResults = attempt.quiz.questions.map((question, index) => {
+      let userAnswer = null;
+      if (hasIdMismatch) {
+        // Fallback: match by sequential index if IDs mismatch completely
+        userAnswer = userAnswers[index];
+      } else {
+        // Standard: match by questionId
+        userAnswer = userAnswers.find(a => a.questionId === question.id);
+      }
+      
       const selectedOption = userAnswer?.selectedOption || 0;
       const timeSpent = userAnswer?.timeSpent || 0; // Get time spent from stored answer
       const isCorrect = question.isCorrect === selectedOption;
@@ -710,7 +737,8 @@ export const getAttemptResult = async (req, res, next) => {
           examYear: attempt.quiz.examYear,
           description: attempt.quiz.description,
           hasNegativeMarking: attempt.quiz.hasNegativeMarking,
-          negativeMarks: attempt.quiz.negativeMarks
+          negativeMarks: attempt.quiz.negativeMarks,
+          cutoffs: attempt.quiz.cutoffs
         },
         score: attempt.score,
         totalQuestions: attempt.totalQuestions,

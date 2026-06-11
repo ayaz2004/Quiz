@@ -44,27 +44,31 @@ const AdminDashboard = () => {
     timeLimit: null, // Time limit in minutes
     hasNegativeMarking: false,
     negativeMarks: null,
+    cutoffs: [],
     questions: []
   });
 
   const [editingQuizId, setEditingQuizId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
 
   useEffect(() => {
     if (tab === 'users') {
       fetchUsers();
     } else if (tab === 'viewQuizzes') {
-      fetchQuizzes();
+      fetchQuizzes(activeSearch);
     }
-  }, [tab, currentPage]);
+  }, [tab, currentPage, activeSearch]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
 
       const response = await getAllUsers(currentPage, 10);
+      const payload = response.data || {};
 
-      setUsers(response.data.users);
-      setTotalPages(response.data.pagination.totalPages);
+      setUsers(payload.users || []);
+      setTotalPages(payload.pagination?.totalPages || 1);
 
     } catch (error) {
       showMessage('error', error.message);
@@ -73,23 +77,35 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = async (search = '') => {
     try {
       setLoading(true);
-      const response = await getAllQuizzes(currentPage, 10);
-      setQuizzes(response.data.quizzes);
-      setTotalPages(response.data.pagination.totalPages);
+      const response = await getAllQuizzes(currentPage, 10, '', '', search);
+      const payload = response.data || {};
+      setQuizzes(payload.quizzes || []);
+      setTotalPages(payload.pagination?.totalPages || 1);
     } catch (error) {
       showMessage('error', error.message);
     } finally {
       setLoading(false);
     }
   };
-
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
     setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    setActiveSearch(searchQuery);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setCurrentPage(1);
+    setActiveSearch('');
   };
 
   const handleAddQuestion = useCallback(() => {
@@ -152,6 +168,20 @@ const AdminDashboard = () => {
       // Add quiz data as JSON
       const quizData = {
         ...quizForm,
+        cutoffs: (quizForm.cutoffs || []).map((cutoff) => ({
+          year: cutoff.year,
+          general: cutoff.general,
+          muslim: cutoff.muslim,
+          muslimObcSt: cutoff.muslimObcSt,
+          muslimWomen: cutoff.muslimWomen,
+          jk: cutoff.jk,
+          km: cutoff.km,
+          pwd: cutoff.pwd,
+          pwdLocomoter: cutoff.pwdLocomoter,
+          pwdBlindVision: cutoff.pwdBlindVision,
+          pwdHearing: cutoff.pwdHearing,
+          jamiaInternal: cutoff.jamiaInternal
+        })),
         questions: quizForm.questions.map(q => ({
           questionText: q.questionText,
           option1: q.option1,
@@ -195,6 +225,7 @@ const AdminDashboard = () => {
         timeLimit: null,
         hasNegativeMarking: false,
         negativeMarks: null,
+        cutoffs: [],
         questions: []
       });
       setEditingQuizId(null);
@@ -265,6 +296,21 @@ const AdminDashboard = () => {
         timeLimit: quiz.timeLimit || null,
         hasNegativeMarking: quiz.hasNegativeMarking || false,
         negativeMarks: quiz.negativeMarks || null,
+        cutoffs: (quiz.cutoffs || []).map((cutoff) => ({
+          id: cutoff.id || `${cutoff.quizId}-${cutoff.year}`,
+          year: cutoff.year,
+          general: cutoff.general ?? '',
+          muslim: cutoff.muslim ?? '',
+          muslimObcSt: cutoff.muslimObcSt ?? '',
+          muslimWomen: cutoff.muslimWomen ?? '',
+          jk: cutoff.jk ?? '',
+          km: cutoff.km ?? '',
+          pwd: cutoff.pwd ?? '',
+          pwdLocomoter: cutoff.pwdLocomoter ?? '',
+          pwdBlindVision: cutoff.pwdBlindVision ?? '',
+          pwdHearing: cutoff.pwdHearing ?? '',
+          jamiaInternal: cutoff.jamiaInternal ?? ''
+        })),
         questions: sortedQuestions.map((q, idx) => ({
           id: q.id || Date.now() + idx, // Use existing ID or generate one
           questionText: q.questionText,
@@ -353,18 +399,41 @@ const AdminDashboard = () => {
           </div>
         )}
 
+
+
         {/* View All Quizzes Tab */}
         {tab === 'viewQuizzes' && (
           <div className="flex-1 p-4 md:p-6 overflow-y-auto">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                  All Quizzes
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  View and manage all quizzes in the platform
-                </p>
+
+              {/* Quiz Search Bar */}
+              <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 flex flex-col sm:flex-row items-center gap-3">
+                <form onSubmit={handleSearch} className="flex-1 w-full flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Search quizzes by title or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-lg text-sm transition-all shadow-sm"
+                  >
+                    Search
+                  </button>
+                  {activeSearch && (
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      className="px-4 py-2 border border-gray-300 text-gray-700 dark:text-gray-300 dark:border-gray-600 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </form>
               </div>
+
               <QuizList
                 quizzes={quizzes}
                 loading={loading}

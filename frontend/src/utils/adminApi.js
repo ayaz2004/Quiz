@@ -386,3 +386,63 @@ export const getGrantedAccesses = async (page = 1, limit = 20, userId = null, qu
     throw error;
   }
 };
+
+export const getAllCutoffs = async (quizId = null) => {
+  try {
+    const params = {};
+    if (quizId) params.quizId = quizId;
+
+    const response = await axios.get(
+      `${API_URL}/api/admin/cutoffs`,
+      {
+        params,
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get All Cutoffs Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const addCutoff = async (cutoffData) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/admin/cutoffs`,
+      cutoffData,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Add Cutoff Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const updateCutoff = async (cutoffId, cutoffData) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/admin/cutoffs/${cutoffId}`,
+      cutoffData,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Update Cutoff Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const deleteCutoff = async (cutoffId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/admin/cutoffs/${cutoffId}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Delete Cutoff Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
