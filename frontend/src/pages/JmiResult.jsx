@@ -9,12 +9,12 @@ const emptySelection = { id: '', name: '' };
 
 const JmiResult = () => {
   usePageSeo({
-    title: 'JMI Syllabus & Result Search | Jamia Millia Islamia',
-    description: 'Search JMI syllabus and result entries using the same program type and course flow',
+    title: 'JMI Results & Syllabus | Jamia Millia Islamia',
+    description: 'Find JMI entrance exam results and course syllabi easily',
     path: '/jmi-result',
     breadcrumbs: [
       { name: 'Home', path: '/' },
-      { name: 'JMI Syllabus & Result', path: '/jmi-result' },
+      { name: 'Results & Syllabus', path: '/jmi-result' },
     ],
   });
 
@@ -166,22 +166,22 @@ const JmiResult = () => {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 shadow-lg" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.9)', borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(16,185,129,0.22)' }}>
               <Sparkles className={`h-4 w-4 ${isDark ? 'text-emerald-300' : 'text-emerald-600'}`} />
-              <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>JMI Syllabus & Result Search</span>
+              <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>JMI Portal</span>
             </div>
 
             <h1 className={`mt-6 text-4xl font-black leading-tight md:text-5xl lg:text-6xl ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Search JMI syllabus and result entries with ease.
+              Find JMI Results & Syllabus
             </h1>
 
             <p className={`mt-5 max-w-2xl text-sm leading-7 sm:text-base md:text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-              Choose a program type and program name, then search. The official JMI portal can return both syllabus-related entries and final result rows in the same response, so we show the raw official entries with their source link.
+              Select your course and program to view official JMI entrance results and syllabus information.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2 sm:gap-3">
               {[
-                { icon: BookOpen, label: 'Program type' },
-                { icon: Target, label: 'Program name' },
-                { icon: ShieldCheck, label: 'Syllabus / result' },
+                { icon: BookOpen, label: 'Course Type' },
+                { icon: Target, label: 'Program' },
+                { icon: ShieldCheck, label: 'Results & Syllabus' },
               ].map((item) => (
                 <div
                   key={item.label}
@@ -208,7 +208,7 @@ const JmiResult = () => {
           >
             <div className="space-y-3 sm:space-y-4">
               <label className="block">
-                <span className={`mb-2 block text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Program type</span>
+                <span className={`mb-2 block text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Select Course Type</span>
                 <select
                   value={selectedType.id}
                   onChange={(e) => {
@@ -229,7 +229,7 @@ const JmiResult = () => {
               </label>
 
               <label className="block">
-                <span className={`mb-2 block text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Program name</span>
+                <span className={`mb-2 block text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Select Program</span>
                 <div className="relative" ref={programDropdownRef}>
                   <input
                     value={selectedProgram.name}
@@ -276,15 +276,14 @@ const JmiResult = () => {
 
               {isPhdFlow && (
                 <label className="block">
-                  <span className={`mb-2 block text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>PhD discipline code</span>
+                  <span className={`mb-2 block text-sm font-semibold ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Discipline Code (if applicable)</span>
                   <input
                     value={phdDisciplineId}
                     onChange={(e) => setPhdDisciplineId(e.target.value)}
-                    placeholder="Enter discipline code if required"
+                    placeholder="Enter code for PhD programs"
                     className="w-full rounded-2xl border px-3 py-3 text-sm outline-none transition focus:border-emerald-500 sm:px-4 sm:text-base"
                     style={{ background: isDark ? '#0f172a' : '#fff', color: isDark ? '#fff' : '#111827', borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(148,163,184,0.28)' }}
                   />
-                  <p className={`mt-2 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Shown only for PhD program types.</p>
                 </label>
               )}
 
@@ -294,15 +293,11 @@ const JmiResult = () => {
                 className="group inline-flex w-full items-center justify-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70 sm:px-5 sm:py-4 sm:text-base"
                 style={{ background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)' }}
               >
-                {searching ? 'Searching...' : 'Search syllabus / result'}
+                {searching ? 'Searching...' : 'Search'}
                 <Search className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
 
-            <div className="mt-5 flex items-center gap-2 text-xs font-medium">
-              <Clock className={isDark ? 'text-gray-400' : 'text-gray-500'} size={14} />
-              <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Shows raw official syllabus/result rows with course name, date, remark, and a source link.</span>
-            </div>
           </motion.form>
         </div>
       </motion.section>
@@ -318,42 +313,22 @@ const JmiResult = () => {
           <div className="border-b px-4 py-4 sm:px-6 sm:py-5" style={{ borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(148,163,184,0.18)' }}>
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h2 className={`text-xl font-black sm:text-2xl ${isDark ? 'text-white' : 'text-gray-900'}`}>Syllabus / result preview</h2>
-                <p className={`mt-1 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Clean summary of the latest official rows.</p>
+                <h2 className={`text-xl font-black sm:text-2xl ${isDark ? 'text-white' : 'text-gray-900'}`}>Search Results</h2>
+                <p className={`mt-1 text-xs sm:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Official information from JMI portal</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
                 <div className={`rounded-2xl border px-3 py-3 sm:px-4 ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}>
-                  <p className={`text-[11px] uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Rows</p>
+                  <p className={`text-[11px] uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Total Entries</p>
                   <p className={`mt-1 text-xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{results.length}</p>
                 </div>
-                <div className={`rounded-2xl border px-3 py-3 sm:px-4 ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}>
-                  <p className={`text-[11px] uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Syllabus / result</p>
-                  <p className={`mt-1 text-xl font-black ${isDark ? 'text-white' : 'text-gray-900'}`}>{results.length}</p>
-                </div>
-                <div className={`hidden rounded-2xl border px-4 py-3 sm:block ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}>
+                <div className={`rounded-2xl border px-4 py-3 sm:block ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}>
                   <p className={`text-[11px] uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Status</p>
                   <p className={`mt-1 text-sm font-semibold ${searching ? 'text-emerald-400' : isDark ? 'text-white' : 'text-gray-900'}`}>{searching ? 'Searching' : 'Ready'}</p>
                 </div>
               </div>
             </div>
 
-            <div
-              className={`mt-4 rounded-2xl border px-4 py-3 text-sm leading-6 ${isDark ? 'border-cyan-400/20 bg-cyan-400/10 text-cyan-100' : 'border-cyan-200 bg-cyan-50 text-cyan-900'}`}
-            >
-              <div className="flex flex-wrap items-center gap-2 font-semibold">
-                <span>Source note:</span>
-                <span className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em]" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)' }}>
-                  Syllabus entries
-                </span>
-                <span className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em]" style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.8)' }}>
-                  Result rows
-                </span>
-              </div>
-              <p className="mt-2 text-sm opacity-90">
-                The official portal can mix syllabus-related notices and result rows together. This page keeps them in one view so nothing is hidden, and the source button takes you back to the original JMI page.
-              </p>
-            </div>
           </div>
 
           <div className="px-4 py-4 sm:px-6 sm:py-5">
@@ -374,7 +349,7 @@ const JmiResult = () => {
               {results.length === 0 ? (
                 <div className={`mt-4 rounded-[1.5rem] border border-dashed p-6 text-center sm:p-8 ${isDark ? 'border-white/10 text-gray-300' : 'border-gray-200 text-gray-600'}`}>
                   <FileText className="mx-auto mb-3 h-10 w-10 opacity-70" />
-                  No syllabus/result rows loaded yet. Search using the form above to see the official list.
+                  No results found. Try searching with different criteria.
                 </div>
               ) : (
                 <div className="mt-4 space-y-3">

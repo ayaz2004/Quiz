@@ -1,15 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getQuizzes, getMyQuizzes, getSubjects, getYears } from '../utils/quizApi';
-import { FilterBar, SearchAndSort, QuizGrid, StatsBar, QuizOverview } from '../components';
+import { SearchAndSort, QuizGrid, StatsBar, QuizOverview } from '../components';
+import { School, GraduationCap, BookOpen, Building2 } from 'lucide-react';
 import usePageSeo from '../hooks/usePageSeo';
 
 const Quizzes = () => {
+  const [searchParams] = useSearchParams();
+  const universityParam = searchParams.get('university');
+  
+  // Dynamic SEO based on university filter
+  const getSeoTitle = () => {
+    if (universityParam === 'JMI') return 'JMI PYQ | Jamia Millia Islamia Previous Year Questions';
+    if (universityParam === 'AMU') return 'AMU PYQ | Aligarh Muslim University Previous Year Questions';
+    return 'JMI PYQ & AMU PYQ Quizzes | JMI Quiz';
+  };
+  
+  const getSeoDescription = () => {
+    if (universityParam === 'JMI') return 'Practice JMI PYQ (Jamia Millia Islamia Previous Year Questions) with subject-wise quizzes and mock tests. Prepare for JMI entrance exams.';
+    if (universityParam === 'AMU') return 'Practice AMU PYQ (Aligarh Muslim University Previous Year Questions) with subject-wise quizzes and mock tests. Prepare for AMU entrance exams.';
+    return 'Browse subject-wise JMI PYQ and AMU PYQ quizzes, mock tests, and previous year questions.';
+  };
+
   usePageSeo({
-    title: 'JMI PYQ & AMU PYQ Quizzes | JMI Quiz',
-    description: 'Browse subject-wise JMI PYQ and AMU PYQ quizzes, mock tests, and previous year questions.',
+    title: getSeoTitle(),
+    description: getSeoDescription(),
     path: '/quizzes',
     breadcrumbs: [
       { name: 'Home', path: '/' },
@@ -31,11 +49,11 @@ const Quizzes = () => {
   const [quizStats, setQuizStats] = useState({ total: 0, free: 0, paid: 0 });
   
   // Filter states
-  const [activeFilter, setActiveFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedEducationLevel, setSelectedEducationLevel] = useState('');
+  const [selectedUniversity, setSelectedUniversity] = useState(universityParam || 'all'); // all, JMI, AMU
   
   // Modal states
   const [selectedQuiz, setSelectedQuiz] = useState(null);
@@ -161,10 +179,26 @@ const Quizzes = () => {
     };
   }, [isDark]);
 
+  // Sync university filter with URL parameter
+  useEffect(() => {
+    const newUniversity = universityParam || 'all';
+    if (newUniversity !== selectedUniversity) {
+      setSelectedUniversity(newUniversity);
+    }
+  }, [universityParam]);
+
   // Fetch quizzes when filters change
   useEffect(() => {
     fetchQuizzes(1, false);
   }, [selectedEducationLevel, selectedSubject, selectedYear, searchTerm]);
+
+  // When university filter changes alone, ensure we have all data by re-fetching
+  useEffect(() => {
+    // Only re-fetch if we're not already filtering by education level (which triggers its own fetch)
+    if (!selectedEducationLevel && !selectedSubject && !selectedYear && !searchTerm) {
+      fetchQuizzes(1, false);
+    }
+  }, [selectedUniversity]);
 
   // Fetch my quizzes when authenticated
   useEffect(() => {
@@ -208,8 +242,16 @@ const Quizzes = () => {
         setLoading(true);
       }
       setError(null);
+      
+      // If only university filter is selected without other filters, fetch more to ensure we get all
+      const isOnlyUniversityFilter = selectedUniversity !== 'all' && 
+        !selectedEducationLevel && 
+        !selectedSubject && 
+        !selectedYear && 
+        !searchTerm;
+      
       const response = await getQuizzes({
-        limit: 18, 
+        limit: isOnlyUniversityFilter && page === 1 ? 100 : 18, 
         page,
         educationLevel: selectedEducationLevel || undefined,
         subject: selectedSubject || undefined,
@@ -273,7 +315,7 @@ const Quizzes = () => {
   // Apply filters whenever any filter changes
   useEffect(() => {
     applyFilters();
-  }, [activeFilter, searchTerm, selectedSubject, selectedYear, selectedEducationLevel, allQuizzes, myQuizzes]);
+  }, [searchTerm, selectedSubject, selectedYear, selectedEducationLevel, selectedUniversity, allQuizzes, myQuizzes]);
 
   const applyFilters = () => {
     // Safety check: ensure allQuizzes is an array
@@ -284,14 +326,16 @@ const Quizzes = () => {
     
     let filtered = [...allQuizzes];
 
-    // Filter by type (all/free/paid/purchased)
-    if (activeFilter === 'free') {
-      filtered = filtered.filter(q => !q.isPaid);
-    } else if (activeFilter === 'paid') {
-      filtered = filtered.filter(q => q.isPaid);
-    } else if (activeFilter === 'purchased') {
-      const purchasedIds = myQuizzes.map(q => q.id);
-      filtered = filtered.filter(q => purchasedIds.includes(q.id));
+    // Filter by university - check title, subject, and description for JMI/AMU keywords
+    if (selectedUniversity !== 'all') {
+      const universityKeywords = selectedUniversity === 'JMI' 
+        ? ['jmi', 'jamia', 'millia', 'islamia']
+        : ['amu', 'aligarh', 'muslim', 'university'];
+      
+      filtered = filtered.filter(q => {
+        const textToSearch = `${q.title || ''} ${q.subject || ''} ${q.description || ''}`.toLowerCase();
+        return universityKeywords.some(keyword => textToSearch.includes(keyword));
+      });
     }
 
     // Filter by search term
@@ -312,8 +356,8 @@ const Quizzes = () => {
       filtered = filtered.filter(q => String(q.examYear) === String(selectedYear));
     }
 
-    // Filter by education level
-    if (selectedEducationLevel) {
+    // Filter by education level - only if explicitly selected
+    if (selectedEducationLevel && selectedEducationLevel !== '') {
       filtered = filtered.filter(q => q.educationLevel === selectedEducationLevel);
     }
 
@@ -342,7 +386,7 @@ const Quizzes = () => {
         style={{ opacity: 0.3 }}
       />
 
-      {/* Page Header */}
+      {/* Page Header with University Tabs */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -356,11 +400,111 @@ const Quizzes = () => {
         }}
       >
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mb-3">
-          Explore Quizzes
+          JMI & AMU PYQ Quizzes
         </h1>
         <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-          Test your knowledge with our comprehensive quiz collection designed for AMU & JMI
+          Practice Previous Year Questions for Jamia Millia Islamia and Aligarh Muslim University
         </p>
+        
+        {/* University Tabs */}
+        <div className="flex justify-center mt-6">
+          <div className={`inline-flex rounded-2xl p-1.5 border ${isDark ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-gray-200'}`}>
+            {[
+              { id: 'all', label: 'All Quizzes', icon: Building2 },
+              { id: 'JMI', label: 'JMI PYQ', icon: GraduationCap },
+              { id: 'AMU', label: 'AMU PYQ', icon: BookOpen },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedUniversity(tab.id)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                  selectedUniversity === tab.id
+                    ? isDark
+                      ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 text-white shadow-lg'
+                      : 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg'
+                    : isDark
+                      ? 'text-gray-300 hover:text-white hover:bg-white/10'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Education Level Cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="relative z-10"
+      >
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { 
+              level: 'school', 
+              title: 'School Level', 
+              icon: School,
+              gradient: 'from-blue-500 to-cyan-500',
+              bgGradient: isDark ? 'from-blue-900/20 to-cyan-900/20' : 'from-blue-50 to-cyan-50',
+              borderColor: isDark ? 'border-blue-500/30' : 'border-blue-200',
+              iconBg: 'bg-blue-500'
+            },
+            { 
+              level: 'undergrad', 
+              title: 'Undergraduate', 
+              icon: GraduationCap,
+              gradient: 'from-emerald-500 to-teal-500',
+              bgGradient: isDark ? 'from-emerald-900/20 to-teal-900/20' : 'from-emerald-50 to-teal-50',
+              borderColor: isDark ? 'border-emerald-500/30' : 'border-emerald-200',
+              iconBg: 'bg-emerald-500'
+            },
+            { 
+              level: 'masters', 
+              title: 'Masters', 
+              icon: BookOpen,
+              gradient: 'from-violet-500 to-purple-500',
+              bgGradient: isDark ? 'from-violet-900/20 to-purple-900/20' : 'from-violet-50 to-purple-50',
+              borderColor: isDark ? 'border-violet-500/30' : 'border-violet-200',
+              iconBg: 'bg-violet-500'
+            },
+          ].map((card) => (
+            <motion.button
+              key={card.level}
+              onClick={() => setSelectedEducationLevel(selectedEducationLevel === card.level ? '' : card.level)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`relative overflow-hidden rounded-2xl p-5 border transition-all duration-300 text-center ${
+                selectedEducationLevel === card.level 
+                  ? `${isDark ? 'bg-white/10' : 'bg-white'} ring-2 ring-offset-2 ${isDark ? 'ring-emerald-500 ring-offset-gray-900' : 'ring-emerald-500 ring-offset-white'}` 
+                  : isDark ? `bg-gradient-to-br ${card.bgGradient} hover:bg-white/5` : `bg-gradient-to-br ${card.bgGradient} hover:shadow-lg`
+              } ${card.borderColor}`}
+            >
+              <div className="flex flex-col items-center justify-center">
+                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${card.iconBg} text-white shadow-lg mb-3`}>
+                  <card.icon className="w-6 h-6" />
+                </div>
+                <h3 className={`text-xs sm:text-sm md:text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {card.title}
+                </h3>
+                {selectedEducationLevel === card.level && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="mt-2 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </motion.div>
+                )}
+              </div>
+            </motion.button>
+          ))}
+        </div>
       </motion.div>
 
       {/* Stats Bar */}
@@ -370,14 +514,6 @@ const Quizzes = () => {
           freeCount={stats.free}
           paidCount={stats.paid}
           purchasedCount={stats.purchased}
-        />
-      </div>
-
-      {/* Filter Bar */}
-      <div className="relative z-10">
-        <FilterBar
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
         />
       </div>
 
@@ -411,14 +547,14 @@ const Quizzes = () => {
         <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
           Showing <span className={`font-semibold ${isDark ? 'text-gray-200' : 'text-gray-900'}`}>{filteredQuizzes.length}</span> quiz{filteredQuizzes.length !== 1 ? 'zes' : ''}
         </p>
-        {(searchTerm || selectedSubject || selectedYear || selectedEducationLevel || activeFilter !== 'all') && (
+        {(searchTerm || selectedSubject || selectedYear || selectedEducationLevel || selectedUniversity !== 'all') && (
           <button
             onClick={() => {
-              setActiveFilter('all');
               setSearchTerm('');
               setSelectedSubject('');
               setSelectedYear('');
               setSelectedEducationLevel('');
+              setSelectedUniversity('all');
             }}
             className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
@@ -469,6 +605,37 @@ const Quizzes = () => {
           purchasedQuizIds={myQuizzes.map(q => q.id)}
         />
       </div>
+
+      {/* Empty State for University Filter */}
+      {!loading && filteredQuizzes.length === 0 && selectedUniversity !== 'all' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 backdrop-blur-xl border rounded-3xl p-8 shadow-xl text-center"
+          style={{
+            background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.98)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(203, 213, 225, 0.4)',
+          }}
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+            <BookOpen className="w-8 h-8 text-white" />
+          </div>
+          <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            No {selectedUniversity} Quizzes Found
+          </h3>
+          <p className={`mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            We couldn't find any quizzes tagged with {selectedUniversity}. Try browsing all quizzes or switch to a different filter.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => setSelectedUniversity('all')}
+              className="px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-emerald-500 to-cyan-500 hover:scale-105 transition-transform shadow-lg"
+            >
+              Show All Quizzes
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Load More Button */}
       {!loading && hasMore && filteredQuizzes.length > 0 && (

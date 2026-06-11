@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Quizzes from './pages/Quizzes';
@@ -16,7 +16,6 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Terms from './pages/Terms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-// JMI/AMU PYQ pages removed — quizzes are available under /quizzes
 import ProtectedRoute from './components/ProtectedRoute';
 
 const JmiResult = lazy(() => import('./pages/JmiResult'));
@@ -37,6 +36,8 @@ export default function App() {
             <Route path="terms" element={<Terms />} />
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="quizzes" element={<Quizzes />} />
+            <Route path="amu-pyq" element={<Navigate to="/quizzes?university=AMU" replace />} />
+            <Route path="jmi-pyq" element={<Navigate to="/quizzes?university=JMI" replace />} />
             <Route path="jmi-result" element={<JmiResult />} />
             <Route path="quiz/:quizId" element={
               <ProtectedRoute>
