@@ -34,6 +34,8 @@ model User {
   quizAttempts  QuizAttempt[]
   purchases     Purchase[]
   suggestions   Suggestion[]
+  userQuestions UserQuestion[]
+  adminAnswers  UserQuestion[] @relation("AdminAnswers")
 }
 
 
@@ -157,4 +159,27 @@ model Suggestion {
   @@index([status])
   @@index([createdAt])
   @@map("suggestions")
+}
+
+model UserQuestion {
+  id          Int      @id @default(autoincrement()) @map("question_id")
+  userId      Int?     @map("user_id")
+  guestEmail  String?  @map("guest_email")
+  question    String   @db.Text
+  category    String   @db.VarChar(20) // JMI, AMU, or general
+  answer      String?  @db.Text
+  answeredBy  Int?     @map("answered_by")
+  answeredAt  DateTime? @map("answered_at")
+  status      String   @default("pending") @db.VarChar(20) // pending, answered
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin       User?    @relation("AdminAnswers", fields: [answeredBy], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([guestEmail])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@map("user_questions")
 }

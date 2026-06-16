@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -20,11 +20,12 @@ const SignUp = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { isDark } = useTheme();
   const canvasRef = useRef(null);
   
   const [formData, setFormData] = useState({
-    email: '',
+    email: location.state?.email || '',
     password: '',
     confirmPassword: '',
     agreeToTerms: false,
@@ -35,6 +36,14 @@ const SignUp = () => {
   const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isExistingUnverified, setIsExistingUnverified] = useState(false);
+  const [infoMessage, setInfoMessage] = useState(location.state?.message || '');
+
+  // Clear location state after reading it
+  useEffect(() => {
+    if (location.state) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Particle Animation Effect
   useEffect(() => {
@@ -282,6 +291,28 @@ const SignUp = () => {
                 Join us and start your quiz journey
               </p>
             </div>
+
+            {/* Info message from redirect (e.g., guest question) */}
+            {infoMessage && (
+              <div className="rounded-2xl p-4 border backdrop-blur-sm"
+                style={{
+                  background: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(239, 246, 255, 0.95)',
+                  borderColor: isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.4)',
+                  boxShadow: isDark ? 'none' : '0 4px 15px rgba(59, 130, 246, 0.15)',
+                }}
+              >
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className={`text-sm ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{infoMessage}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Server error message */}
             {serverError && (

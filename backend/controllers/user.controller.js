@@ -78,6 +78,15 @@ export const createUser = async (req, res, next) => {
       },
     });
 
+    // Link any guest questions to this new user
+    await prisma.userQuestion.updateMany({
+      where: { guestEmail: email.toLowerCase() },
+      data: { 
+        userId: newUser.id,
+        guestEmail: null
+      }
+    });
+
     // Send response first (don't wait for email)
     res.status(201).json(new ApiResponse(201, { 
       user: { 
@@ -224,6 +233,15 @@ export const verifyEmail = async (req, res, next) => {
         isEmailVerified: true,
         emailVerificationToken: null,
         emailVerificationExpires: null
+      }
+    });
+
+    // Link any guest questions to this verified user
+    await prisma.userQuestion.updateMany({
+      where: { guestEmail: userWithToken.email.toLowerCase() },
+      data: { 
+        userId: userWithToken.id,
+        guestEmail: null
       }
     });
 

@@ -50,4 +50,12 @@ export const resendVerification = (email) => api.post('/api/users/resend-verific
 export const updateProfile = (data) => api.put('/api/users/update-profile', data);
 export const changePassword = (data) => api.put('/api/users/change-password', data);
 
+// Q&A API functions
+export const askQuestion = (data) => api.post('/api/qa/ask', data);
+export const getMyQuestions = (params) => api.get('/api/qa/my-questions', { params });
+export const getAllQuestions = (params) => api.get('/api/qa/admin/questions', { params });
+export const answerQuestion = (id, data) => api.post(`/api/qa/admin/answer/${id}`, data);
+export const deleteQuestion = (id) => api.delete(`/api/qa/admin/questions/${id}`);
+export const getQAStats = () => api.get('/api/qa/admin/stats');
+
 export default api;

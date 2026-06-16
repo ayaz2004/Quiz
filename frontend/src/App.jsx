@@ -16,6 +16,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Terms from './pages/Terms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import AskQuestion from './pages/AskQuestion';
+import MyQuestions from './pages/MyQuestions';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const JmiResult = lazy(() => import('./pages/JmiResult'));
@@ -57,6 +59,12 @@ export default function App() {
             <Route path="profile" element={
               <ProtectedRoute>
                 <UserProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="ask-question" element={<AskQuestion />} />
+            <Route path="my-questions" element={
+              <ProtectedRoute>
+                <MyQuestions />
               </ProtectedRoute>
             } />
             <Route path="about" element={<About />} />

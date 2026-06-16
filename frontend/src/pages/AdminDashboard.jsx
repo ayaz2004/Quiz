@@ -11,6 +11,7 @@ import UserList from '../components/admin/UserList';
 import SuggestionList from '../components/admin/SuggestionList';
 import AttemptList from '../components/admin/AttemptList';
 import GrantAccess from '../components/admin/GrantAccess';
+import QuestionList from '../components/admin/QuestionList';
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -511,6 +512,26 @@ const AdminDashboard = () => {
           <div className="flex-1 p-4 md:p-6 overflow-y-auto">
             <div className="max-w-4xl mx-auto">
               <GrantAccess 
+                onSuccess={(msg) => showMessage('success', msg)}
+                onError={(msg) => showMessage('error', msg)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Q&A Tab */}
+        {tab === 'questions' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-5xl mx-auto">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  Questions & Answers
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Manage user questions and provide answers
+                </p>
+              </div>
+              <QuestionList 
                 onSuccess={(msg) => showMessage('success', msg)}
                 onError={(msg) => showMessage('error', msg)}
               />
