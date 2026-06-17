@@ -398,9 +398,9 @@ const sendVerificationEmail = async (email, token) => {
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
   
   const sendSmtpEmail = new brevo.SendSmtpEmail();
-  sendSmtpEmail.sender = { name: "Quiz App", email: process.env.EMAIL_USER };
+  sendSmtpEmail.sender = { name: "JMIQuiz", email: process.env.EMAIL_USER };
   sendSmtpEmail.to = [{ email }];
-  sendSmtpEmail.subject = "Verify Your Email - Quiz App";
+  sendSmtpEmail.subject = "Verify Your Email - JMIQuiz";
   sendSmtpEmail.htmlContent = `
     <h2>Email Verification</h2>
     <p>Please click the link below to verify your email address:</p>
@@ -417,9 +417,9 @@ const sendPasswordResetEmail = async (email, token) => {
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
   
   const sendSmtpEmail = new brevo.SendSmtpEmail();
-  sendSmtpEmail.sender = { name: "Quiz App", email: process.env.EMAIL_USER };
+  sendSmtpEmail.sender = { name: "JMIQuiz", email: process.env.EMAIL_USER };
   sendSmtpEmail.to = [{ email }];
-  sendSmtpEmail.subject = "Password Reset - Quiz App";
+  sendSmtpEmail.subject = "Password Reset - JMIQuiz";
   sendSmtpEmail.htmlContent = `
     <h2>Password Reset</h2>
     <p>You requested a password reset. Click the link below to reset your password:</p>
