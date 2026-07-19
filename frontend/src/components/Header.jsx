@@ -15,6 +15,7 @@ const Header = () => {
     { name: 'Home', path: '/' },
     { name: 'Quizzes', path: '/quizzes' },
     { name: 'Results & Syllabus', path: '/jmi-result' },
+    { name: 'Student Housing', path: '/student-housing' },
     { name: 'Ask a Question', path: '/ask-question' },
     { name: 'About', path: '/about' },
   ];

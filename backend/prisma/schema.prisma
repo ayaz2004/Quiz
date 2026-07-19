@@ -36,6 +36,10 @@ model User {
   suggestions   Suggestion[]
   userQuestions UserQuestion[]
   adminAnswers  UserQuestion[] @relation("AdminAnswers")
+  housingListings HousingListing[]
+  createdHousingGroups HousingGroup[] @relation("HousingGroupsCreated")
+  housingGroupMembers HousingGroupMember[]
+  housingGroupJoinRequests HousingGroupJoinRequest[]
 }
 
 
@@ -182,4 +186,102 @@ model UserQuestion {
   @@index([category])
   @@index([createdAt])
   @@map("user_questions")
+}
+
+model HousingListing {
+  id                 Int      @id @default(autoincrement()) @map("listing_id")
+  userId             Int      @map("user_id")
+  listingType        String   @map("listing_type") @db.VarChar(20)
+  university         String   @default("JMI") @db.VarChar(20)
+  genderPreference   String   @default("female") @map("gender_preference") @db.VarChar(20)
+  title              String   @db.VarChar(150)
+  description        String?  @db.Text
+  address            String   @db.Text
+  area               String?  @db.VarChar(100)
+  mapsUrl            String?  @map("maps_url") @db.VarChar(500)
+  rentMonthly        Float?   @map("rent_monthly")
+  feeNotes           String?  @map("fee_notes") @db.Text
+  entryTiming        String?  @map("entry_timing") @db.VarChar(200)
+  meals              String?  @db.Text
+  visitors           String?  @db.Text
+  amenities          Json     @default("[]")
+  images             Json     @default("[]")
+  contactPhone       String   @map("contact_phone") @db.VarChar(20)
+  whatsappNumber     String?  @map("whatsapp_number") @db.VarChar(20)
+  availability       String?  @db.VarChar(100)
+  status             String   @default("pending_review") @db.VarChar(20)
+  viewCount          Int      @default(0) @map("view_count")
+  contactRevealCount Int      @default(0) @map("contact_reveal_count")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+  @@index([university])
+  @@index([listingType])
+  @@index([createdAt])
+  @@map("housing_listings")
+}
+
+model HousingGroup {
+  id                Int       @id @default(autoincrement()) @map("group_id")
+  creatorId         Int       @map("creator_id")
+  name              String    @db.VarChar(100)
+  description       String?   @db.Text
+  university        String    @default("JMI") @db.VarChar(20)
+  preferredArea     String?   @map("preferred_area") @db.VarChar(100)
+  targetSize        Int       @map("target_size")
+  budgetPerPerson   Float?    @map("budget_per_person")
+  moveInDate        DateTime? @map("move_in_date")
+  genderPreference  String    @map("gender_preference") @db.VarChar(20)
+  contactPhone      String?   @map("contact_phone") @db.VarChar(20)
+  whatsappNumber    String?   @map("whatsapp_number") @db.VarChar(20)
+  whatsappGroupLink String?   @map("whatsapp_group_link") @db.VarChar(500)
+  status            String    @default("recruiting") @db.VarChar(20)
+  inviteCode        String    @unique @map("invite_code") @db.VarChar(32)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  creator           User      @relation("HousingGroupsCreated", fields: [creatorId], references: [id], onDelete: Cascade)
+  members           HousingGroupMember[]
+  joinRequests      HousingGroupJoinRequest[]
+
+  @@index([status])
+  @@index([university])
+  @@index([createdAt])
+  @@map("housing_groups")
+}
+
+model HousingGroupMember {
+  id        Int      @id @default(autoincrement()) @map("member_id")
+  groupId   Int      @map("group_id")
+  userId    Int      @map("user_id")
+  role      String   @default("member") @db.VarChar(20)
+  joinedAt  DateTime @default(now()) @map("joined_at")
+
+  group     HousingGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("housing_group_members")
+}
+
+model HousingGroupJoinRequest {
+  id        Int      @id @default(autoincrement()) @map("request_id")
+  groupId   Int      @map("group_id")
+  userId    Int      @map("user_id")
+  message   String?  @db.VarChar(500)
+  status    String   @default("pending") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  group     HousingGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([status])
+  @@map("housing_group_join_requests")
 }

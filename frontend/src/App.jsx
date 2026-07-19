@@ -21,6 +21,13 @@ import MyQuestions from './pages/MyQuestions';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const JmiResult = lazy(() => import('./pages/JmiResult'));
+const StudentHousing = lazy(() => import('./pages/StudentHousing'));
+const PostListing = lazy(() => import('./pages/PostListing'));
+const MyListings = lazy(() => import('./pages/MyListings'));
+const CreateGroup = lazy(() => import('./pages/CreateGroup'));
+const HousingGroupDetail = lazy(() => import('./pages/HousingGroupDetail'));
+const JoinGroup = lazy(() => import('./pages/JoinGroup'));
+const MyHousingGroups = lazy(() => import('./pages/MyHousingGroups'));
 
 export default function App() {
   return (
@@ -41,6 +48,37 @@ export default function App() {
             <Route path="amu-pyq" element={<Navigate to="/quizzes?university=AMU" replace />} />
             <Route path="jmi-pyq" element={<Navigate to="/quizzes?university=JMI" replace />} />
             <Route path="jmi-result" element={<JmiResult />} />
+            <Route path="student-housing" element={<StudentHousing />} />
+            <Route path="student-housing/post" element={
+              <ProtectedRoute>
+                <PostListing />
+              </ProtectedRoute>
+            } />
+            <Route path="student-housing/my-listings" element={
+              <ProtectedRoute>
+                <MyListings />
+              </ProtectedRoute>
+            } />
+            <Route path="student-housing/groups/create" element={
+              <ProtectedRoute>
+                <CreateGroup />
+              </ProtectedRoute>
+            } />
+            <Route path="student-housing/groups/join/:inviteCode" element={
+              <ProtectedRoute>
+                <JoinGroup />
+              </ProtectedRoute>
+            } />
+            <Route path="student-housing/groups/:id" element={
+              <ProtectedRoute>
+                <HousingGroupDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="student-housing/my-groups" element={
+              <ProtectedRoute>
+                <MyHousingGroups />
+              </ProtectedRoute>
+            } />
             <Route path="quiz/:quizId" element={
               <ProtectedRoute>
                 <TakeQuiz />

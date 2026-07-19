@@ -38,3 +38,16 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Housing post limiter - 10 actions per hour (create + contact reveal)
+export const housingPostLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: {
+    success: false,
+    statusCode: 429,
+    message: 'Too many housing requests, please try again later'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

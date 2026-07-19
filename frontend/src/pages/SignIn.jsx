@@ -36,6 +36,7 @@ const SignIn = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
   const [unverifiedEmail, setUnverifiedEmail] = useState(''); // Track unverified user email
+  const [returnTo] = useState(() => location.state?.from || null);
   const [infoMessage, setInfoMessage] = useState(location.state?.message || ''); // Info from signup
 
   // Clear location state after reading it
@@ -201,7 +202,7 @@ const SignIn = () => {
     const result = await login(formData.email, formData.password);
     
     if (result.success) {
-      navigate('/');
+      navigate(returnTo || '/');
     } else {
       // Check if error is due to unverified email
       if (result.requiresVerification) {
@@ -494,7 +495,7 @@ const SignIn = () => {
           </div>
 
           {/* Sign up link */}
-          <Link to="/signup">
+          <Link to="/signup" state={returnTo ? { from: returnTo } : undefined}>
             <Button
               type="button"
               variant="outline"

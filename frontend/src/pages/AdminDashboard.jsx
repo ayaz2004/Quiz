@@ -12,6 +12,7 @@ import SuggestionList from '../components/admin/SuggestionList';
 import AttemptList from '../components/admin/AttemptList';
 import GrantAccess from '../components/admin/GrantAccess';
 import QuestionList from '../components/admin/QuestionList';
+import HousingAdminList from '../components/admin/HousingAdminList';
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -515,6 +516,15 @@ const AdminDashboard = () => {
                 onSuccess={(msg) => showMessage('success', msg)}
                 onError={(msg) => showMessage('error', msg)}
               />
+            </div>
+          </div>
+        )}
+
+        {/* Housing Tab */}
+        {tab === 'housing' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-5xl mx-auto">
+              <HousingAdminList />
             </div>
           </div>
         )}

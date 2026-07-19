@@ -23,6 +23,7 @@ const SignUp = () => {
   const location = useLocation();
   const { isDark } = useTheme();
   const canvasRef = useRef(null);
+  const [returnTo] = useState(() => location.state?.from || null);
   
   const [formData, setFormData] = useState({
     email: location.state?.email || '',
@@ -222,11 +223,12 @@ const SignUp = () => {
       
       // Redirect to sign in after 3 seconds
       setTimeout(() => {
-        navigate('/signin', { 
-          state: { 
+        navigate('/signin', {
+          state: {
             message: 'Please verify your email to sign in.',
-            email: formData.email 
-          } 
+            email: formData.email,
+            from: returnTo,
+          },
         });
       }, 3000);
       
@@ -446,7 +448,7 @@ const SignUp = () => {
           </div>
 
           {/* Sign in link */}
-          <Link to="/signin">
+          <Link to="/signin" state={returnTo ? { from: returnTo } : undefined}>
             <Button
               type="button"
               variant="outline"
@@ -492,6 +494,7 @@ const SignUp = () => {
             <div className="mt-8">
               <Link
                 to="/signin"
+                state={returnTo ? { from: returnTo } : undefined}
                 className={`inline-flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white transition-all duration-200 shadow-lg ${
                   isDark
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
