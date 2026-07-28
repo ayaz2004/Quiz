@@ -6,6 +6,7 @@ import adminRoutes from './admin.route.js';
 import suggestionRoutes from './suggestion.route.js';
 import jmiResultRoutes from './jmiResult.route.js';
 import qaRoutes from './qa.route.js';
+import resultTrackRoutes from './resultTrack.route.js';
 const router = express.Router();
 
 // Mount all route modules
@@ -16,5 +17,6 @@ router.use('/admin', adminRoutes);
 router.use('/suggestions', suggestionRoutes);
 router.use('/jmi-result', jmiResultRoutes);
 router.use('/qa', qaRoutes);
+router.use('/result-track', resultTrackRoutes);
 
 export default router;

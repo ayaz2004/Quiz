@@ -88,4 +88,10 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Visit http://localhost:${PORT} to test`);
+
+  import('./jobs/resultPoller.js')
+    .then(({ startResultPoller }) => startResultPoller())
+    .catch((error) => {
+      console.error('Failed to start result poller:', error?.message || error);
+    });
 });
