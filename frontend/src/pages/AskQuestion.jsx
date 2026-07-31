@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 const AskQuestion = () => {
   const navigate = useNavigate();
   const { isDark } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     question: '',
     category: 'general',
@@ -107,6 +107,21 @@ const AskQuestion = () => {
       setLoading(false);
     }
   };
+
+  // Wait for the session check, otherwise a signed-in user briefly sees the guest
+  // email field and could submit the question as a guest
+  if (authLoading) {
+    return (
+      <div className="min-h-screen py-8 px-4 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            Loading...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
@@ -209,8 +224,35 @@ const AskQuestion = () => {
               </div>
             </div>
 
-            {/* Guest Email Input - Only show for non-authenticated users */}
-            {!isAuthenticated && (
+            {/* Account email - shown read-only, taken from the signed-in session */}
+            {isAuthenticated ? (
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Your Email
+                </label>
+                <div className="relative">
+                  <Mail className={`absolute top-1/2 left-3 -translate-y-1/2 w-5 h-5 ${
+                    isDark ? 'text-gray-500' : 'text-gray-400'
+                  }`} />
+                  <input
+                    type="email"
+                    value={user?.email || ''}
+                    readOnly
+                    disabled
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border cursor-not-allowed ${
+                      isDark
+                        ? 'bg-gray-700/50 border-gray-600 text-gray-300'
+                        : 'bg-gray-100 border-gray-300 text-gray-600'
+                    }`}
+                  />
+                </div>
+                <p className={`text-xs mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Taken from your account. The answer will appear in My Questions.
+                </p>
+              </div>
+            ) : (
               <div>
                 <label 
                   htmlFor="guestEmail"
@@ -236,7 +278,7 @@ const AskQuestion = () => {
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
                     }`}
-                    required={!isAuthenticated}
+                    required
                   />
                 </div>
                 <p className={`text-xs mt-2 ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>
