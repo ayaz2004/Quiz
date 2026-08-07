@@ -36,6 +36,9 @@ model User {
   suggestions   Suggestion[]
   userQuestions UserQuestion[]
   adminAnswers  UserQuestion[] @relation("AdminAnswers")
+  trackedCourses     TrackedCourse[]
+  pushSubscriptions  PushSubscription[]
+  resultNotifications ResultNotification[]
 }
 
 
@@ -182,4 +185,76 @@ model UserQuestion {
   @@index([category])
   @@index([createdAt])
   @@map("user_questions")
+}
+
+model TrackedCourse {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  courseTypeId     String   @map("course_type_id") @db.VarChar(100)
+  courseTypeName   String   @map("course_type_name") @db.VarChar(255)
+  courseNameId     String   @map("course_name_id") @db.VarChar(100)
+  courseName       String   @map("course_name") @db.VarChar(500)
+  phdDisciplineId  String   @default("") @map("phd_discipline_id") @db.VarChar(100)
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseTypeId, courseNameId, phdDisciplineId], map: "tracked_course_user_key")
+  @@index([courseTypeId, courseNameId, phdDisciplineId], map: "tracked_course_lookup_idx")
+  @@index([userId], map: "tracked_course_user_idx")
+  @@map("tracked_courses")
+}
+
+model CourseResultSnapshot {
+  id              Int       @id @default(autoincrement())
+  courseTypeId    String    @map("course_type_id") @db.VarChar(100)
+  courseNameId    String    @map("course_name_id") @db.VarChar(100)
+  phdDisciplineId String    @default("") @map("phd_discipline_id") @db.VarChar(100)
+  courseTypeName  String?   @map("course_type_name") @db.VarChar(255)
+  courseName      String?   @map("course_name") @db.VarChar(500)
+  fingerprint     String    @db.VarChar(64)
+  resultsJson     Json      @map("results_json")
+  lastCheckedAt   DateTime  @default(now()) @map("last_checked_at")
+  lastChangedAt   DateTime? @map("last_changed_at")
+
+  @@unique([courseTypeId, courseNameId, phdDisciplineId], map: "crs_snapshot_course_key")
+  @@index([courseTypeId, courseNameId, phdDisciplineId], map: "crs_snapshot_course_idx")
+  @@map("course_result_snapshots")
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  endpoint  String   @unique @db.Text
+  p256dh    String   @db.Text
+  auth      String   @db.Text
+  userAgent String?  @map("user_agent") @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+model ResultNotification {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @map("user_id")
+  courseTypeId    String    @map("course_type_id") @db.VarChar(100)
+  courseNameId    String    @map("course_name_id") @db.VarChar(100)
+  phdDisciplineId String    @default("") @map("phd_discipline_id") @db.VarChar(100)
+  courseTypeName  String    @map("course_type_name") @db.VarChar(255)
+  courseName      String    @map("course_name") @db.VarChar(500)
+  title           String    @db.VarChar(255)
+  body            String    @db.Text
+  resultLink      String?   @map("result_link") @db.Text
+  fingerprint     String    @db.VarChar(64)
+  readAt          DateTime? @map("read_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("result_notifications")
 }

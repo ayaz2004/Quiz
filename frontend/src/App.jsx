@@ -21,6 +21,7 @@ import MyQuestions from './pages/MyQuestions';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const JmiResult = lazy(() => import('./pages/JmiResult'));
+const TrackedResults = lazy(() => import('./pages/TrackedResults'));
 
 export default function App() {
   return (
@@ -41,6 +42,11 @@ export default function App() {
             <Route path="amu-pyq" element={<Navigate to="/quizzes?university=AMU" replace />} />
             <Route path="jmi-pyq" element={<Navigate to="/quizzes?university=JMI" replace />} />
             <Route path="jmi-result" element={<JmiResult />} />
+            <Route path="tracked-results" element={
+              <ProtectedRoute>
+                <TrackedResults />
+              </ProtectedRoute>
+            } />
             <Route path="quiz/:quizId" element={
               <ProtectedRoute>
                 <TakeQuiz />

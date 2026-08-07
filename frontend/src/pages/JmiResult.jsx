@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Clock, FileText, Search, ShieldCheck, Sparkles, Target } from 'lucide-react';
+import { ArrowRight, Bell, BellOff, BookOpen, FileText, Search, ShieldCheck, Sparkles, Target } from 'lucide-react';
 import usePageSeo from '../hooks/usePageSeo';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { getJmiProgramNames, getJmiProgramTypes, searchJmiResults } from '../utils/jmiResultApi';
+import {
+  addTrackedCourse,
+  getTrackedCourses,
+  removeTrackedCourse,
+} from '../utils/resultTrackApi';
+import { enablePushNotifications } from '../utils/pushNotifications';
 
 const emptySelection = { id: '', name: '' };
 
@@ -19,6 +27,7 @@ const JmiResult = () => {
   });
 
   const { isDark } = useTheme();
+  const { isAuthenticated } = useAuth();
   const [programTypes, setProgramTypes] = useState([]);
   const [programNames, setProgramNames] = useState([]);
   const [selectedType, setSelectedType] = useState(emptySelection);
@@ -31,6 +40,9 @@ const JmiResult = () => {
   const [searching, setSearching] = useState(false);
   const [results, setResults] = useState([]);
   const [error, setError] = useState('');
+  const [trackedId, setTrackedId] = useState(null);
+  const [trackBusy, setTrackBusy] = useState(false);
+  const [trackMessage, setTrackMessage] = useState('');
   const programDropdownRef = useRef(null);
 
   const isPhdFlow = useMemo(() => {
@@ -43,6 +55,8 @@ const JmiResult = () => {
     if (!q) return programNames;
     return programNames.filter((p) => p.name.toLowerCase().includes(q));
   }, [programNames, programNameQuery]);
+
+  const currentPhd = isPhdFlow ? phdDisciplineId.trim() : '';
 
   useEffect(() => {
     const handlePointerDown = (event) => {
@@ -100,8 +114,39 @@ const JmiResult = () => {
 
     setSelectedProgram(emptySelection);
     setResults([]);
+    setTrackedId(null);
+    setTrackMessage('');
     loadProgramNames();
   }, [selectedType]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !selectedType.id || !selectedProgram.id) {
+      setTrackedId(null);
+      return;
+    }
+
+    let cancelled = false;
+    const checkTracked = async () => {
+      try {
+        const response = await getTrackedCourses();
+        if (!response.success || cancelled) return;
+        const match = (response.data.courses || []).find(
+          (c) =>
+            c.courseTypeId === selectedType.id &&
+            c.courseNameId === selectedProgram.id &&
+            (c.phdDisciplineId || '') === currentPhd
+        );
+        setTrackedId(match?.id || null);
+      } catch {
+        if (!cancelled) setTrackedId(null);
+      }
+    };
+
+    checkTracked();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, selectedType.id, selectedProgram.id, currentPhd]);
 
   const handleSearch = async (event) => {
     event.preventDefault();
@@ -117,7 +162,7 @@ const JmiResult = () => {
       const response = await searchJmiResults({
         courseTypeId: selectedType.id,
         courseNameId: selectedProgram.id,
-        phdDisciplineId: isPhdFlow ? phdDisciplineId.trim() : '',
+        phdDisciplineId: currentPhd,
       });
 
       if (!response.success) {
@@ -131,6 +176,48 @@ const JmiResult = () => {
       setResults([]);
     } finally {
       setSearching(false);
+    }
+  };
+
+  const handleToggleTrack = async () => {
+    if (!selectedType.id || !selectedProgram.id) return;
+
+    try {
+      setTrackBusy(true);
+      setTrackMessage('');
+
+      if (trackedId) {
+        await removeTrackedCourse(trackedId);
+        setTrackedId(null);
+        setTrackMessage('Removed from tracked courses.');
+        return;
+      }
+
+      const response = await addTrackedCourse({
+        courseTypeId: selectedType.id,
+        courseTypeName: selectedType.name,
+        courseNameId: selectedProgram.id,
+        courseName: selectedProgram.name,
+        phdDisciplineId: currentPhd,
+      });
+
+      if (!response.success) {
+        throw new Error(response.message || 'Unable to track course');
+      }
+
+      setTrackedId(response.data.course.id);
+      setTrackMessage('Tracking enabled. We will alert you when results change.');
+
+      try {
+        await enablePushNotifications();
+        setTrackMessage('Tracking enabled with browser notifications.');
+      } catch {
+        // Email alerts still work if push is declined
+      }
+    } catch (err) {
+      setTrackMessage(err.message || 'Unable to update tracking.');
+    } finally {
+      setTrackBusy(false);
     }
   };
 
@@ -296,6 +383,56 @@ const JmiResult = () => {
                 {searching ? 'Searching...' : 'Search'}
                 <Search className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
+
+              {selectedType.id && selectedProgram.id && (
+                <div className="space-y-2">
+                  {isAuthenticated ? (
+                    <button
+                      type="button"
+                      onClick={handleToggleTrack}
+                      disabled={trackBusy}
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition disabled:opacity-70 ${
+                        trackedId
+                          ? isDark
+                            ? 'border-red-400/30 bg-red-500/10 text-red-200'
+                            : 'border-red-200 bg-red-50 text-red-700'
+                          : isDark
+                            ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-200'
+                            : 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                      }`}
+                    >
+                      {trackedId ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+                      {trackBusy
+                        ? 'Updating…'
+                        : trackedId
+                          ? 'Stop tracking'
+                          : 'Track this course'}
+                    </button>
+                  ) : (
+                    <Link
+                      to="/signin"
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                        isDark
+                          ? 'border-white/10 bg-white/5 text-gray-200'
+                          : 'border-gray-200 bg-gray-50 text-gray-800'
+                      }`}
+                    >
+                      <Bell className="h-4 w-4" />
+                      Sign in to track results
+                    </Link>
+                  )}
+                  {trackMessage && (
+                    <p className={`text-center text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {trackMessage}{' '}
+                      {trackedId && (
+                        <Link to="/tracked-results" className="font-semibold text-emerald-600 dark:text-emerald-300">
+                          View tracked
+                        </Link>
+                      )}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
           </motion.form>
