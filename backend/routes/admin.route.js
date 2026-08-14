@@ -26,6 +26,15 @@ import {
 import { validateQuiz, validateQuizUpdate } from "../utils/validateQuiz.js";
 import uploadMiddleware from "../middlewares/multer.js";
 import { verifyToken } from "../middlewares/verifyUser.js";
+import { validateScholarship } from '../utils/validateScholarship.js';
+import {
+  createScholarship,
+  adminListScholarships,
+  adminGetScholarship,
+  updateScholarship,
+  deleteScholarship,
+  togglePublish,
+} from '../controllers/scholarship.controller.js';
 const router = Router();
 
 /////////////////////////////// Admin post Apis //////////////////////////////
@@ -35,6 +44,44 @@ router.post(
   uploadMiddleware.any(),
   validateQuiz,
   addQuiz
+);
+
+router.post(
+  "/add-scholarship",
+  verifyToken,
+  validateScholarship,
+  createScholarship
+);
+
+router.get(
+  "/scholarships",
+  verifyToken,
+  adminListScholarships
+);
+
+router.get(
+  "/scholarship/:id",
+  verifyToken,
+  adminGetScholarship
+);
+
+router.put(
+  "/update-scholarship/:id",
+  verifyToken,
+  validateScholarship,
+  updateScholarship
+);
+
+router.delete(
+  "/delete-scholarship/:scholarshipId",
+  verifyToken,
+  deleteScholarship
+);
+
+router.put(
+  "/scholarship/:id/toggle-publish",
+  verifyToken,
+  togglePublish
 );
 
 router.post(

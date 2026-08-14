@@ -257,4 +257,46 @@ model ResultNotification {
   @@index([userId, createdAt])
   @@index([userId, readAt])
   @@map("result_notifications")
+} 
+
+enum ScholarshipStatus {
+  PUBLISHED
+  UNPUBLISHED
+}
+
+model ScholarshipCategory {
+  id        Int      @id @default(autoincrement())
+  label     String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  scholarships Scholarship[]
+
+  @@map("scholarship_categories")
+}
+
+model Scholarship {
+  id           Int       @id @default(autoincrement()) @map("scholarship_id")
+  slug         String    @unique @db.VarChar(150)
+  title        String    @db.VarChar(255)
+  provider     String    @db.VarChar(255)
+  description  String?   @db.Text
+  about        String?   @db.Text
+  categoryId   Int?     @map("category_id")
+  category     ScholarshipCategory? @relation(fields: [categoryId], references: [id])
+  amount       String?   @db.VarChar(255)
+  deadline     DateTime? @map("deadline")
+  applyUrl     String?   @map("apply_url") @db.Text
+  eligibility  Json?     @map("eligibility")
+  documents    Json?     @map("documents")
+  steps        Json?     @map("steps")
+  importantInfo String?  @map("important_info") @db.Text
+  featured     Boolean   @default(false)
+  status       ScholarshipStatus @default(UNPUBLISHED)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([categoryId])
+  @@map("scholarships")
 }

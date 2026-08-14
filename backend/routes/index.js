@@ -1,6 +1,7 @@
 import express from 'express';
 import userRoutes from './user.route.js';
 import quizRoutes from './quiz.route.js';
+import scholarshipRoutes from './scholarship.route.js';
 import purchaseRoutes from './purchase.route.js';
 import adminRoutes from './admin.route.js';
 import suggestionRoutes from './suggestion.route.js';
@@ -18,5 +19,6 @@ router.use('/suggestions', suggestionRoutes);
 router.use('/jmi-result', jmiResultRoutes);
 router.use('/qa', qaRoutes);
 router.use('/result-track', resultTrackRoutes);
+router.use('/scholarships', scholarshipRoutes);
 
 export default router;

@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Quizzes from './pages/Quizzes';
+import Scholarships from './pages/Scholarships';
+import ScholarshipDetails from './pages/ScholarshipDetails';
 import TakeQuiz from './pages/TakeQuiz';
 import QuizResult from './pages/QuizResult';
 import Attempts from './pages/Attempts';
@@ -39,6 +41,8 @@ export default function App() {
             <Route path="terms" element={<Terms />} />
             <Route path="privacy" element={<PrivacyPolicy />} />
             <Route path="quizzes" element={<Quizzes />} />
+            <Route path="scholarships" element={<Scholarships />} />
+            <Route path="scholarships/:scholarshipId" element={<ScholarshipDetails />} />
             <Route path="amu-pyq" element={<Navigate to="/quizzes?university=AMU" replace />} />
             <Route path="jmi-pyq" element={<Navigate to="/quizzes?university=JMI" replace />} />
             <Route path="jmi-result" element={<JmiResult />} />
