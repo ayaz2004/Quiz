@@ -34,6 +34,7 @@ import {
   updateScholarship,
   deleteScholarship,
   togglePublish,
+  listScholarshipCategories,
 } from '../controllers/scholarship.controller.js';
 const router = Router();
 
@@ -51,6 +52,12 @@ router.post(
   verifyToken,
   validateScholarship,
   createScholarship
+);
+
+router.get(
+  "/scholarship-categories",
+  verifyToken,
+  listScholarshipCategories
 );
 
 router.get(

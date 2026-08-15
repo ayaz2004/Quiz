@@ -196,6 +196,21 @@ export const adminListScholarships = async (req, res, next) => {
   }
 };
 
+export const listScholarshipCategories = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (!user || user.isAdmin !== 1) return next(new ApiError(403, 'Only admins can view scholarship categories'));
+
+    const categories = await prisma.scholarshipCategory.findMany({
+      orderBy: { id: 'asc' },
+    });
+
+    res.status(200).json(new ApiResponse(200, { categories }, 'Scholarship categories fetched successfully'));
+  } catch (error) {
+    next(new ApiError(500, error.message || 'Error listing scholarship categories'));
+  }
+};
+
 // Admin: get scholarship by id (int)
 export const adminGetScholarship = async (req, res, next) => {
   try {

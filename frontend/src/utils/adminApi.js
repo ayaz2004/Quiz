@@ -128,6 +128,103 @@ export const getAllQuizzes = async (page = 1, limit = 10, subject = '', year = '
   }
 };
 
+export const getScholarshipCategories = async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/admin/scholarship-categories`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get Scholarship Categories Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getAllScholarshipsAdmin = async (page = 1, limit = 20, search = '') => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/admin/scholarships`,
+      {
+        params: { page, limit, search },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get All Scholarships Admin Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const getScholarshipByIdAdmin = async (scholarshipId) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/admin/scholarship/${scholarshipId}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Get Scholarship By ID Admin Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const addScholarship = async (scholarshipData) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/admin/add-scholarship`,
+      { scholarshipData: JSON.stringify(scholarshipData) },
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Add Scholarship Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const updateScholarship = async (scholarshipId, scholarshipData) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/admin/update-scholarship/${scholarshipId}`,
+      { scholarshipData: JSON.stringify(scholarshipData) },
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Update Scholarship Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const deleteScholarship = async (scholarshipId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/admin/delete-scholarship/${scholarshipId}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Delete Scholarship Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const toggleScholarshipPublish = async (scholarshipId) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/admin/scholarship/${scholarshipId}/toggle-publish`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Toggle Scholarship Publish Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 /**
  * Delete a quiz by ID
  * @param {number} quizId - ID of the quiz to delete
