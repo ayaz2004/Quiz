@@ -94,4 +94,10 @@ app.listen(PORT, () => {
     .catch((error) => {
       console.error('Failed to start result poller:', error?.message || error);
     });
+
+  import('./jobs/scholarshipExpiry.js')
+    .then(({ startScholarshipExpiryJob }) => startScholarshipExpiryJob())
+    .catch((error) => {
+      console.error('Failed to start scholarship expiry job:', error?.message || error);
+    });
 });
