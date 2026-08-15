@@ -89,6 +89,13 @@ const ScholarshipDetails = () => {
     );
   }
 
+  const now = new Date();
+  const startDate = scholarship.startDate ? new Date(scholarship.startDate) : null;
+  const deadline = scholarship.deadline ? new Date(scholarship.deadline) : null;
+  const isNotStarted = startDate && startDate > now;
+  const isExpired = deadline && deadline < now;
+  const applyDisabled = isNotStarted || isExpired || !scholarship.applyUrl;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -234,13 +241,19 @@ const ScholarshipDetails = () => {
             <p className={`mt-1 text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>This button uses a placeholder URL for the UI-only version.</p>
           </div>
           <a
-            href={scholarship.applyUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition-transform hover:-translate-y-0.5"
+            href={applyDisabled ? undefined : scholarship.applyUrl}
+            target={applyDisabled ? undefined : '_blank'}
+            rel={applyDisabled ? undefined : 'noreferrer'}
+            onClick={(event) => {
+              if (applyDisabled) event.preventDefault();
+            }}
+            aria-disabled={applyDisabled}
+            className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-bold shadow-lg transition-all ${applyDisabled
+              ? 'cursor-not-allowed bg-gray-300 text-gray-600 shadow-none dark:bg-gray-700 dark:text-gray-300'
+              : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-emerald-500/25 hover:-translate-y-0.5'}`}
           >
-            Apply Now
-            <ExternalLink className="h-4 w-4" />
+            {isNotStarted ? 'Applications opening soon' : isExpired ? 'Applications closed' : 'Apply Now'}
+            {!applyDisabled && <ExternalLink className="h-4 w-4" />}
           </a>
         </div>
       </section>

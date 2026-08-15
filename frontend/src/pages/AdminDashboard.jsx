@@ -49,6 +49,7 @@ const AdminDashboard = () => {
     slug: '',
     categoryId: '',
     amount: '',
+    startDate: '',
     deadline: '',
     description: '',
     about: '',
@@ -139,7 +140,14 @@ const AdminDashboard = () => {
   const fetchScholarshipCategories = async () => {
     try {
       const response = await getScholarshipCategories();
-      setCategories(response.data?.categories || []);
+      const ordered = [...(response.data?.categories || [])].sort((a, b) => {
+        const order = { '9th/10th': 1, '11th/12th': 2, UG: 3, PG: 4, Others: 5, Other: 5 };
+        const rankA = order[a?.label] ?? 999;
+        const rankB = order[b?.label] ?? 999;
+        if (rankA !== rankB) return rankA - rankB;
+        return (a?.label || '').localeCompare(b?.label || '');
+      });
+      setCategories(ordered);
     } catch (error) {
       showMessage('error', error.message || 'Failed to load scholarship categories');
     }
@@ -382,6 +390,7 @@ const AdminDashboard = () => {
         slug: '',
         categoryId: '',
         amount: '',
+        startDate: '',
         deadline: '',
         description: '',
         about: '',
@@ -413,6 +422,7 @@ const AdminDashboard = () => {
         slug: scholarship.slug || '',
         categoryId: scholarship.categoryId ? String(scholarship.categoryId) : '',
         amount: scholarship.amount || '',
+        startDate: scholarship.startDate ? new Date(scholarship.startDate).toISOString().split('T')[0] : '',
         deadline: scholarship.deadline ? new Date(scholarship.deadline).toISOString().split('T')[0] : '',
         description: scholarship.description || '',
         about: scholarship.about || '',

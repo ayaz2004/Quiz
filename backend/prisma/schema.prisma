@@ -285,6 +285,7 @@ model Scholarship {
   categoryId   Int?     @map("category_id")
   category     ScholarshipCategory? @relation(fields: [categoryId], references: [id])
   amount       String?   @db.VarChar(255)
+  startDate    DateTime? @map("start_date")
   deadline     DateTime? @map("deadline")
   applyUrl     String?   @map("apply_url") @db.Text
   eligibility  Json?     @map("eligibility")

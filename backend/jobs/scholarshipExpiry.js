@@ -4,7 +4,7 @@ import cron from "node-cron";
 export async function syncExpiredScholarships() {
   const now = new Date();
 
-  const result = await prisma.scholarship.updateMany({
+  const expiredResult = await prisma.scholarship.updateMany({
     where: {
       status: "PUBLISHED",
       deadline: {
@@ -17,7 +17,27 @@ export async function syncExpiredScholarships() {
     },
   });
 
-  return result.count || 0;
+  const republishResult = await prisma.scholarship.updateMany({
+    where: {
+      status: "UNPUBLISHED",
+      deadline: {
+        not: null,
+        gt: now,
+      },
+      startDate: {
+        not: null,
+        gt: now,
+      },
+    },
+    data: {
+      status: "PUBLISHED",
+    },
+  });
+
+  return {
+    expired: expiredResult.count || 0,
+    republished: republishResult.count || 0,
+  };
 }
 
 export function startScholarshipExpiryJob() {
@@ -30,9 +50,9 @@ export function startScholarshipExpiryJob() {
 
   cron.schedule(cronExpr, async () => {
     try {
-      const count = await syncExpiredScholarships();
-      if (count > 0) {
-        console.log(`Auto-unpublished ${count} expired scholarship(s)`);
+      const result = await syncExpiredScholarships();
+      if (result.expired > 0 || result.republished > 0) {
+        console.log(`Scholarship visibility sync: unpublished ${result.expired}, republished ${result.republished}`);
       }
     } catch (error) {
       console.error("Scholarship expiry job failed:", error?.message || error);
@@ -43,9 +63,9 @@ export function startScholarshipExpiryJob() {
 
   setTimeout(() => {
     syncExpiredScholarships()
-      .then((count) => {
-        if (count > 0) {
-          console.log(`Initial expiry sync unpublished ${count} scholarship(s)`);
+      .then((result) => {
+        if (result.expired > 0 || result.republished > 0) {
+          console.log(`Initial scholarship visibility sync: unpublished ${result.expired}, republished ${result.republished}`);
         }
       })
       .catch((error) => {

@@ -15,6 +15,25 @@ import usePageSeo from '../hooks/usePageSeo';
 import { useTheme } from '../context/ThemeContext';
 import api from '../utils/api';
 
+const categoryOrder = {
+  '9th/10th': 1,
+  '11th/12th': 2,
+  'UG': 3,
+  'PG': 4,
+  'Others': 5,
+  'Other': 5,
+};
+
+const sortCategories = (items = []) => [...items].sort((a, b) => {
+  const labelA = (a?.label || '').toString().trim();
+  const labelB = (b?.label || '').toString().trim();
+  const rankA = categoryOrder[labelA] ?? 999;
+  const rankB = categoryOrder[labelB] ?? 999;
+
+  if (rankA !== rankB) return rankA - rankB;
+  return labelA.localeCompare(labelB);
+});
+
 const Scholarships = () => {
   const { isDark } = useTheme();
   const [query, setQuery] = useState('');
@@ -35,6 +54,60 @@ const Scholarships = () => {
 
   useEffect(() => {
     let cancelled = false;
+
+    const loadCategories = async () => {
+      try {
+        const response = await api.get('/api/scholarships/categories');
+        const apiCategories = response.data?.data?.categories || [];
+        if (cancelled) return;
+
+        const normalized = apiCategories.map((category) => ({
+          id: category.id,
+          label: category.label,
+        }));
+
+        setCategories((prev) => {
+          const prevNonAll = prev.filter((c) => String(c.id) !== 'all');
+          const merged = [...normalized];
+          const seen = new Set(merged.map((c) => String(c.id)));
+
+          prevNonAll.forEach((c) => {
+            if (!seen.has(String(c.id))) {
+              merged.push(c);
+              seen.add(String(c.id));
+            }
+          });
+
+          return [{ id: 'all', label: 'All Categories' }, ...sortCategories(merged)];
+        });
+      } catch (error) {
+        // fallback to the known category list if the public endpoint is unavailable
+        setCategories((prev) => {
+          const fallback = [
+            { id: '9th/10th', label: '9th/10th' },
+            { id: '11th/12th', label: '11th/12th' },
+            { id: 'UG', label: 'UG' },
+            { id: 'PG', label: 'PG' },
+            { id: 'Others', label: 'Others' },
+          ];
+
+          const prevNonAll = prev.filter((c) => String(c.id) !== 'all');
+          const merged = [...fallback];
+          const seen = new Set(merged.map((c) => String(c.id)));
+          prevNonAll.forEach((c) => {
+            if (!seen.has(String(c.id))) {
+              merged.push(c);
+              seen.add(String(c.id));
+            }
+          });
+
+          return [{ id: 'all', label: 'All Categories' }, ...sortCategories(merged)];
+        });
+      }
+    };
+
+    loadCategories();
+
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
@@ -51,26 +124,6 @@ const Scholarships = () => {
         const list = data.scholarships || [];
         if (cancelled) return;
         setScholarshipsList(list);
-
-        // derive categories from returned data
-        const seen = new Map();
-        list.forEach((s) => {
-          if (s.categoryId && s.categoryLabel && !seen.has(s.categoryId)) seen.set(s.categoryId, { id: s.categoryId, label: s.categoryLabel });
-        });
-        // Merge derived categories with existing ones so dropdown doesn't shrink
-        setCategories((prev) => {
-          const prevNonAll = prev.filter((c) => String(c.id) !== 'all');
-          const derivedList = Array.from(seen.values());
-          const merged = [];
-          const added = new Set();
-
-          // keep previous order first
-          prevNonAll.forEach((c) => { added.add(String(c.id)); merged.push(c); });
-          // append any new categories found in derived
-          derivedList.forEach((c) => { if (!added.has(String(c.id))) { added.add(String(c.id)); merged.push(c); } });
-
-          return [{ id: 'all', label: 'All Categories' }, ...merged];
-        });
       } catch (err) {
         setScholarshipsList([]);
       } finally {
@@ -228,11 +281,21 @@ const Scholarships = () => {
                     <p className={`mt-1 text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.amount}</p>
                   </div>
                   <div className={`rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-black/20' : 'border-gray-100 bg-gray-50'}`}>
-                    <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Application deadline</p>
-                    <p className={`mt-1 flex items-center gap-2 text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                      <CalendarDays className="h-4 w-4 text-emerald-500" />
-                      {item.deadline}
-                    </p>
+                    <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Application window</p>
+                    <div className="mt-1 space-y-1 text-sm font-bold">
+                      {item.startDate && (
+                        <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <CalendarDays className="h-4 w-4 text-emerald-500" />
+                          Starts: {item.startDate}
+                        </p>
+                      )}
+                      {item.deadline && (
+                        <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <CalendarDays className="h-4 w-4 text-amber-500" />
+                          Deadline: {item.deadline}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
 

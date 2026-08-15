@@ -96,6 +96,16 @@ const ScholarshipForm = ({
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Start Date</label>
+            <input
+              type="date"
+              value={form.startDate}
+              onChange={(e) => onChange('startDate', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Deadline</label>
             <input
               type="date"

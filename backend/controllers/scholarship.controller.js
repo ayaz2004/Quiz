@@ -5,6 +5,25 @@ import { ApiError } from "../utils/error.js";
 // Utility to normalize category label to slug-like form (class-10)
 const normalize = (s = '') => s.toString().trim().toLowerCase().replace(/\s+/g, '-');
 
+const categoryOrder = {
+  '9th/10th': 1,
+  '11th/12th': 2,
+  'UG': 3,
+  'PG': 4,
+  'Others': 5,
+  'Other': 5,
+};
+
+const sortCategories = (categories = []) => [...categories].sort((a, b) => {
+  const labelA = a?.label || '';
+  const labelB = b?.label || '';
+  const rankA = categoryOrder[labelA] ?? 999;
+  const rankB = categoryOrder[labelB] ?? 999;
+
+  if (rankA !== rankB) return rankA - rankB;
+  return labelA.localeCompare(labelB);
+});
+
 // Public: list scholarships (only PUBLISHED)
 export const listScholarships = async (req, res, next) => {
   try {
@@ -54,6 +73,7 @@ export const listScholarships = async (req, res, next) => {
       provider: s.provider,
       categoryId: s.categoryId,
       amount: s.amount,
+      startDate: s.startDate ? s.startDate.toISOString().split('T')[0] : null,
       deadline: s.deadline ? s.deadline.toDateString() : null,
       description: s.description,
       about: s.about,
@@ -106,6 +126,7 @@ export const getScholarshipBySlug = async (req, res, next) => {
       categoryId: s.categoryId,
       categoryLabel: category ? category.label : null,
       amount: s.amount,
+      startDate: s.startDate ? s.startDate.toISOString().split('T')[0] : null,
       deadline: s.deadline ? s.deadline.toDateString() : null,
       description: s.description,
       about: s.about,
@@ -151,6 +172,7 @@ export const createScholarship = async (req, res, next) => {
         about: data.about || null,
         categoryId: data.categoryId ? parseInt(data.categoryId) : null,
         amount: data.amount || null,
+        startDate: data.startDate ? new Date(data.startDate) : null,
         deadline: data.deadline ? new Date(data.deadline) : null,
         applyUrl: data.applyUrl || null,
         eligibility: data.eligibility || [],
@@ -214,14 +236,21 @@ export const adminListScholarships = async (req, res, next) => {
   }
 };
 
+export const listPublicScholarshipCategories = async (req, res, next) => {
+  try {
+    const categories = sortCategories(await prisma.scholarshipCategory.findMany());
+    res.status(200).json(new ApiResponse(200, { categories }, 'Scholarship categories fetched successfully'));
+  } catch (error) {
+    next(new ApiError(500, error.message || 'Error listing scholarship categories'));
+  }
+};
+
 export const listScholarshipCategories = async (req, res, next) => {
   try {
     const user = req.user;
     if (!user || user.isAdmin !== 1) return next(new ApiError(403, 'Only admins can view scholarship categories'));
 
-    const categories = await prisma.scholarshipCategory.findMany({
-      orderBy: { id: 'asc' },
-    });
+    const categories = sortCategories(await prisma.scholarshipCategory.findMany());
 
     res.status(200).json(new ApiResponse(200, { categories }, 'Scholarship categories fetched successfully'));
   } catch (error) {
@@ -272,7 +301,8 @@ export const updateScholarship = async (req, res, next) => {
       about: data.about !== undefined ? data.about : undefined,
       categoryId: data.categoryId !== undefined ? (data.categoryId ? parseInt(data.categoryId) : null) : undefined,
       amount: data.amount !== undefined ? data.amount : undefined,
-      deadline: data.deadline ? new Date(data.deadline) : undefined,
+      startDate: data.startDate !== undefined ? (data.startDate ? new Date(data.startDate) : null) : undefined,
+      deadline: data.deadline !== undefined ? (data.deadline ? new Date(data.deadline) : null) : undefined,
       applyUrl: data.applyUrl !== undefined ? data.applyUrl : undefined,
       eligibility: data.eligibility !== undefined ? data.eligibility : undefined,
       documents: data.documents !== undefined ? data.documents : undefined,
