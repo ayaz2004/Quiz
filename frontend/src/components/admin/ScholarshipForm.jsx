@@ -68,20 +68,38 @@ const ScholarshipForm = ({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
-            <select
-              value={form.categoryId}
-              onChange={(e) => onChange('categoryId', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            >
-              <option value="">Select category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Education levels</label>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => {
+                const selected = (form.categoryIds || []).map(Number).includes(Number(category.id));
+                return (
+                  <label
+                    key={category.id}
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
+                      selected
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-300'
+                        : 'border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => {
+                        const current = (form.categoryIds || []).map(Number);
+                        const id = Number(category.id);
+                        const next = current.includes(id)
+                          ? current.filter((value) => value !== id)
+                          : [...current, id];
+                        onChange('categoryIds', next);
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                    />
+                    {category.label}
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
           <div>

@@ -47,7 +47,7 @@ const AdminDashboard = () => {
     title: '',
     provider: '',
     slug: '',
-    categoryId: '',
+    categoryIds: [],
     amount: '',
     startDate: '',
     deadline: '',
@@ -141,7 +141,7 @@ const AdminDashboard = () => {
     try {
       const response = await getScholarshipCategories();
       const ordered = [...(response.data?.categories || [])].sort((a, b) => {
-        const order = { '9th/10th': 1, '11th/12th': 2, UG: 3, PG: 4, Others: 5, Other: 5 };
+        const order = { '9th/10th': 1, '11th/12th': 2, UG: 3, PG: 4, PhD: 5, Others: 6, Other: 6 };
         const rankA = order[a?.label] ?? 999;
         const rankB = order[b?.label] ?? 999;
         if (rankA !== rankB) return rankA - rankB;
@@ -373,7 +373,7 @@ const AdminDashboard = () => {
         eligibility: normalizeScholarshipTextList(scholarshipForm.eligibility),
         documents: normalizeScholarshipTextList(scholarshipForm.documents),
         steps: normalizeScholarshipTextList(scholarshipForm.steps),
-        categoryId: scholarshipForm.categoryId ? Number(scholarshipForm.categoryId) : null,
+        categoryIds: scholarshipForm.categoryIds || [],
       };
 
       if (editingScholarshipId) {
@@ -388,7 +388,7 @@ const AdminDashboard = () => {
         title: '',
         provider: '',
         slug: '',
-        categoryId: '',
+        categoryIds: [],
         amount: '',
         startDate: '',
         deadline: '',
@@ -420,7 +420,9 @@ const AdminDashboard = () => {
         title: scholarship.title || '',
         provider: scholarship.provider || '',
         slug: scholarship.slug || '',
-        categoryId: scholarship.categoryId ? String(scholarship.categoryId) : '',
+        categoryIds: Array.isArray(scholarship.categoryIds)
+          ? scholarship.categoryIds.map(Number)
+          : (scholarship.categoryId ? [Number(scholarship.categoryId)] : []),
         amount: scholarship.amount || '',
         startDate: scholarship.startDate ? new Date(scholarship.startDate).toISOString().split('T')[0] : '',
         deadline: scholarship.deadline ? new Date(scholarship.deadline).toISOString().split('T')[0] : '',
@@ -678,7 +680,7 @@ const AdminDashboard = () => {
                     title: '',
                     provider: '',
                     slug: '',
-                    categoryId: '',
+                    categoryIds: [],
                     amount: '',
                     deadline: '',
                     description: '',

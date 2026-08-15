@@ -7,21 +7,22 @@ import {
   Search,
   Filter,
   CalendarDays,
-  IndianRupee,
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
 import usePageSeo from '../hooks/usePageSeo';
 import { useTheme } from '../context/ThemeContext';
 import api from '../utils/api';
+import { formatScholarshipDate } from '../utils/formatScholarshipDate';
 
 const categoryOrder = {
   '9th/10th': 1,
   '11th/12th': 2,
   'UG': 3,
   'PG': 4,
-  'Others': 5,
-  'Other': 5,
+  'PhD': 5,
+  'Others': 6,
+  'Other': 6,
 };
 
 const sortCategories = (items = []) => [...items].sort((a, b) => {
@@ -88,6 +89,7 @@ const Scholarships = () => {
             { id: '11th/12th', label: '11th/12th' },
             { id: 'UG', label: 'UG' },
             { id: 'PG', label: 'PG' },
+            { id: 'PhD', label: 'PhD' },
             { id: 'Others', label: 'Others' },
           ];
 
@@ -237,7 +239,12 @@ const Scholarships = () => {
           </div>
         ) : (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {scholarshipsList.map((item, index) => (
+            {scholarshipsList.map((item, index) => {
+              const levels = item.categoryLabels?.length
+                ? item.categoryLabels
+                : (item.categoryLabel ? [item.categoryLabel] : []);
+
+              return (
               <motion.article
                 key={item.id}
                 initial={{ opacity: 0, y: 16 }}
@@ -245,32 +252,32 @@ const Scholarships = () => {
                 transition={{ delay: index * 0.04 }}
                 className={`group flex h-full flex-col rounded-[1.75rem] border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}
               >
-                <div className="mb-4 flex items-start justify-between gap-3">
-                  <div>
-                    <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
-                      {item.categoryLabel}
+                <div className="mb-4 flex flex-wrap items-center gap-2">
+                  {levels.map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300"
+                    >
+                      {label}
                     </span>
-                    {item.featured && (
-                      <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-3 py-1 text-xs font-bold text-amber-600 dark:text-amber-300">
-                        <Award className="h-3.5 w-3.5" />
-                        Featured
-                      </span>
-                    )}
-                  </div>
-                  <div className={`rounded-xl p-2 ${isDark ? 'bg-white/10 text-gray-200' : 'bg-gray-100 text-gray-700'}`}>
-                    <IndianRupee className="h-4 w-4" />
-                  </div>
+                  ))}
+                  {item.featured && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-3 py-1 text-xs font-bold text-amber-600 dark:text-amber-300">
+                      <Award className="h-3.5 w-3.5" />
+                      Featured
+                    </span>
+                  )}
                 </div>
 
-                <div className="space-y-3">
-                  <h2 className={`text-xl font-black leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <div className="flex-1 space-y-3">
+                  <h2 className={`line-clamp-2 text-xl font-black leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {item.title}
                   </h2>
                   <p className={`flex items-center gap-2 text-sm font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
-                    <Building2 className="h-4 w-4" />
-                    {item.provider}
+                    <Building2 className="h-4 w-4 shrink-0" />
+                    <span className="line-clamp-1">{item.provider}</span>
                   </p>
-                  <p className={`text-sm leading-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <p className={`line-clamp-2 text-sm leading-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                     {item.description}
                   </p>
                 </div>
@@ -278,41 +285,33 @@ const Scholarships = () => {
                 <div className="mt-5 grid gap-3">
                   <div className={`rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-black/20' : 'border-gray-100 bg-gray-50'}`}>
                     <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Amount / Benefit</p>
-                    <p className={`mt-1 text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.amount}</p>
+                    <p className={`mt-1 line-clamp-2 text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.amount || 'Not announced'}</p>
                   </div>
                   <div className={`rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-black/20' : 'border-gray-100 bg-gray-50'}`}>
                     <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Application window</p>
                     <div className="mt-1 space-y-1 text-sm font-bold">
-                      {item.startDate && (
-                        <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          <CalendarDays className="h-4 w-4 text-emerald-500" />
-                          Starts: {item.startDate}
-                        </p>
-                      )}
-                      {item.deadline && (
-                        <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          <CalendarDays className="h-4 w-4 text-amber-500" />
-                          Deadline: {item.deadline}
-                        </p>
-                      )}
+                      <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <CalendarDays className="h-4 w-4 shrink-0 text-emerald-500" />
+                        <span>Opens: {formatScholarshipDate(item.startDate)}</span>
+                      </p>
+                      <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <CalendarDays className="h-4 w-4 shrink-0 text-amber-500" />
+                        <span>Deadline: {formatScholarshipDate(item.deadline)}</span>
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between gap-3 pt-1">
-                  <Link
-                    to={`/scholarships/${item.id}`}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition-transform hover:-translate-y-0.5"
-                  >
-                    View Details
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <span className={`text-xs font-semibold ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {item.categoryLabel}
-                  </span>
-                </div>
+                <Link
+                  to={`/scholarships/${item.id}`}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition-transform hover:-translate-y-0.5"
+                >
+                  View Details
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </motion.article>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

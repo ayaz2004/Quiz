@@ -1,5 +1,6 @@
 import LoadingSpinner from './LoadingSpinner';
 import Pagination from './Pagination';
+import { formatScholarshipDate } from '../../utils/formatScholarshipDate';
 
 const ScholarshipList = ({ scholarships, loading, currentPage, totalPages, setCurrentPage, onEdit, onDelete, onTogglePublish }) => {
   if (loading) {
@@ -27,8 +28,9 @@ const ScholarshipList = ({ scholarships, loading, currentPage, totalPages, setCu
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">#</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Provider</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Levels</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Opens</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Deadline</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
@@ -55,14 +57,17 @@ const ScholarshipList = ({ scholarships, loading, currentPage, totalPages, setCu
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                   {item.provider}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  {item.categoryLabel || item.categoryId || '—'}
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                  {(item.categoryLabels || []).join(', ') || item.categoryLabel || '—'}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-white max-w-[14rem]" title={item.amount || ''}>
+                  <span className="line-clamp-2">{item.amount || '—'}</span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  {item.amount || '—'}
+                  {formatScholarshipDate(item.startDate)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                  {item.deadline ? new Date(item.deadline).toLocaleDateString() : '—'}
+                  {formatScholarshipDate(item.deadline)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button

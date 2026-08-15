@@ -43,10 +43,23 @@ export const validateScholarship = (req, res, next) => {
       return next(new ApiError(400, 'Invalid status'));
     }
 
-    // categoryId if provided should be integer
-    if (data.categoryId !== undefined && data.categoryId !== null) {
-      const cid = parseInt(data.categoryId);
-      if (isNaN(cid)) return next(new ApiError(400, 'categoryId must be an integer'));
+    // One or more education levels, as categoryIds or categoryLabels
+    const hasCategoryPayload = data.categoryIds !== undefined
+      || data.categoryId !== undefined
+      || data.categoryLabels !== undefined;
+
+    if (hasCategoryPayload) {
+      const labels = Array.isArray(data.categoryLabels) ? data.categoryLabels.filter(Boolean) : [];
+      const ids = Array.isArray(data.categoryIds)
+        ? data.categoryIds
+        : (data.categoryId !== undefined ? [data.categoryId] : []);
+
+      if (!labels.length && !ids.length) {
+        return next(new ApiError(400, 'Select at least one education level'));
+      }
+      if (ids.length && ids.some((id) => Number.isNaN(parseInt(id, 10)))) {
+        return next(new ApiError(400, 'categoryIds must be integers'));
+      }
     }
 
     // attach parsed data back

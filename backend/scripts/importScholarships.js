@@ -6,7 +6,7 @@ import { PrismaClient } from '@prisma/client';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const JSON_PATH = path.join(__dirname, 'scholarships.json');
-const preferredCategoryOrder = ['9th/10th', '11th/12th', 'UG', 'PG', 'Others'];
+const preferredCategoryOrder = ['9th/10th', '11th/12th', 'UG', 'PG', 'PhD', 'Others'];
 
 const prisma = new PrismaClient();
 
@@ -41,6 +41,14 @@ const asStringArray = (value) => {
   return value.map((item) => normalize(item)).filter(Boolean);
 };
 
+const labelsFromItem = (item) => {
+  if (Array.isArray(item.category)) {
+    return item.category.map((label) => normalize(label)).filter(Boolean);
+  }
+  const label = normalize(item.category);
+  return label ? [label] : ['Others'];
+};
+
 const loadSeed = () => {
   if (!fs.existsSync(JSON_PATH)) {
     throw new Error(`Scholarship JSON was not found at ${JSON_PATH}`);
@@ -58,11 +66,7 @@ const loadSeed = () => {
 };
 
 const resolveCategories = (seedCategories, scholarships) => {
-  const usedLabels = new Set(
-    scholarships
-      .map((item) => normalize(item.category))
-      .filter(Boolean)
-  );
+  const usedLabels = new Set(scholarships.flatMap(labelsFromItem));
 
   return [...new Set([
     ...preferredCategoryOrder,
@@ -78,12 +82,10 @@ async function importScholarships() {
   await prisma.scholarship.deleteMany();
   await prisma.scholarshipCategory.deleteMany();
 
-  const createdCategories = [];
   for (const label of categoryLabels) {
-    createdCategories.push(await prisma.scholarshipCategory.create({ data: { label } }));
+    await prisma.scholarshipCategory.create({ data: { label } });
   }
 
-  const categoryIdMap = new Map(createdCategories.map((category) => [category.label, category.id]));
   let inserted = 0;
 
   for (const item of scholarships) {
@@ -96,8 +98,7 @@ async function importScholarships() {
       throw new Error(`Scholarship "${title}" is missing a slug.`);
     }
 
-    const categoryLabel = normalize(item.category) || 'Others';
-    const categoryId = categoryIdMap.get(categoryLabel) ?? null;
+    const categories = [...new Set(labelsFromItem(item))];
     const status = item.status === 'PUBLISHED' ? 'PUBLISHED' : 'UNPUBLISHED';
     const startDate = parseDate(item.startDate);
 
@@ -108,8 +109,9 @@ async function importScholarships() {
         provider,
         description: normalize(item.description) || null,
         about: normalize(item.about) || null,
-        ...(categoryId ? { category: { connect: { id: categoryId } } } : {}),
+        categories,
         amount: normalize(item.amount) || null,
+        startDate,
         deadline: parseDate(item.deadline),
         applyUrl: normalize(item.applyUrl) || null,
         eligibility: asStringArray(item.eligibility),
@@ -121,10 +123,6 @@ async function importScholarships() {
       },
     });
 
-    if (startDate) {
-      await prisma.$executeRaw`UPDATE "scholarships" SET "start_date" = ${startDate} WHERE slug = ${slug}`;
-    }
-
     inserted += 1;
   }
 
@@ -133,41 +131,37 @@ async function importScholarships() {
 }
 
 async function exportScholarships() {
-  const categories = await prisma.scholarshipCategory.findMany({
-    orderBy: { id: 'asc' },
-  });
   const scholarships = await prisma.scholarship.findMany({
     orderBy: { id: 'asc' },
   });
 
-  const categoryMap = new Map(categories.map((category) => [category.id, category.label]));
-  const usedLabels = [...new Set(scholarships.map((item) => categoryMap.get(item.categoryId)).filter(Boolean))];
+  const usedLabels = [...new Set(scholarships.flatMap((item) => item.categories || []))];
   const orderedCategories = [...new Set([...preferredCategoryOrder, ...usedLabels])]
     .filter((label) => preferredCategoryOrder.includes(label) || usedLabels.includes(label));
 
-  const startRows = await prisma.$queryRaw`SELECT slug, start_date FROM scholarships`;
-  const startDateBySlug = new Map(startRows.map((row) => [row.slug, row.start_date]));
-
   const payload = {
     categories: orderedCategories,
-    scholarships: scholarships.map((item) => ({
-      slug: item.slug,
-      title: item.title,
-      provider: item.provider,
-      description: item.description,
-      about: item.about,
-      category: categoryMap.get(item.categoryId) || 'Others',
-      amount: item.amount,
-      startDate: toDateOnly(item.startDate ?? startDateBySlug.get(item.slug)),
-      deadline: toDateOnly(item.deadline),
-      applyUrl: item.applyUrl,
-      eligibility: asStringArray(item.eligibility),
-      documents: asStringArray(item.documents),
-      steps: asStringArray(item.steps),
-      importantInfo: item.importantInfo,
-      featured: Boolean(item.featured),
-      status: item.status === 'PUBLISHED' ? 'PUBLISHED' : 'UNPUBLISHED',
-    })),
+    scholarships: scholarships.map((item) => {
+      const labels = item.categories || [];
+      return {
+        slug: item.slug,
+        title: item.title,
+        provider: item.provider,
+        description: item.description,
+        about: item.about,
+        category: labels.length <= 1 ? (labels[0] || 'Others') : labels,
+        amount: item.amount,
+        startDate: toDateOnly(item.startDate),
+        deadline: toDateOnly(item.deadline),
+        applyUrl: item.applyUrl,
+        eligibility: asStringArray(item.eligibility),
+        documents: asStringArray(item.documents),
+        steps: asStringArray(item.steps),
+        importantInfo: item.importantInfo,
+        featured: Boolean(item.featured),
+        status: item.status === 'PUBLISHED' ? 'PUBLISHED' : 'UNPUBLISHED',
+      };
+    }),
   };
 
   fs.writeFileSync(JSON_PATH, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
