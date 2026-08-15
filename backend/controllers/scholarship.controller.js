@@ -190,7 +190,25 @@ export const adminListScholarships = async (req, res, next) => {
     const total = await prisma.scholarship.count({ where });
     const rows = await prisma.scholarship.findMany({ where, skip, take: limitNum, orderBy: { createdAt: 'desc' } });
 
-    res.status(200).json(new ApiResponse(200, { scholarships: rows, pagination: { currentPage: pageNum, totalPages: Math.ceil(total / limitNum), total, limit: limitNum } }, 'Admin scholarships'));
+    const categoryIds = Array.from(new Set(rows.map(s => s.categoryId).filter(Boolean)));
+    const categoryMap = new Map();
+
+    if (categoryIds.length) {
+      const categories = await prisma.scholarshipCategory.findMany({
+        where: { id: { in: categoryIds } },
+      });
+
+      categories.forEach((category) => {
+        categoryMap.set(category.id, category.label);
+      });
+    }
+
+    const scholarships = rows.map((scholarship) => ({
+      ...scholarship,
+      categoryLabel: scholarship.categoryId ? categoryMap.get(scholarship.categoryId) || null : null,
+    }));
+
+    res.status(200).json(new ApiResponse(200, { scholarships, pagination: { currentPage: pageNum, totalPages: Math.ceil(total / limitNum), total, limit: limitNum } }, 'Admin scholarships'));
   } catch (error) {
     next(new ApiError(500, error.message || 'Error listing scholarships'));
   }
