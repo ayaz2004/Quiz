@@ -8,7 +8,8 @@
     "dev": "nodemon index.js",
     "start": "prisma generate && prisma migrate deploy && node index.js",
     "migrate:data": "node scripts/copy-production-data.js",
-    "import:scholarships": "node scripts/importRealScholarships.js"
+    "import:scholarships": "node scripts/importScholarships.js",
+    "export:scholarships": "node scripts/importScholarships.js --export"
   },
   "author": "\"Ayaz Nazir\" \"Mohd Hammad Qadir\"",
   "license": "ISC",
