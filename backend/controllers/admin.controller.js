@@ -18,6 +18,16 @@ const CUTOFF_FIELDS = [
   "jamiaInternal",
 ];
 
+const syncQuestionIdSequence = async (client) => {
+  await client.$executeRawUnsafe(`
+    SELECT setval(
+      pg_get_serial_sequence('"Question"', 'question_id'),
+      COALESCE((SELECT MAX(question_id) FROM "Question"), 1),
+      true
+    )
+  `);
+};
+
 const parseCutoffValue = (value) => {
   if (value === null || value === undefined) return null;
   if (value === "" || value === "-") return null;
@@ -123,6 +133,8 @@ export const addQuiz = async (req, res, next) => {
     const cutoffRows = Array.isArray(cutoffs)
       ? cutoffs.map(normalizeCutoffRow).filter(Boolean)
       : [];
+
+    await syncQuestionIdSequence(prisma);
 
     // 3. Save to Database
     const newQuiz = await prisma.quiz.create({
@@ -256,6 +268,8 @@ export const updateQuiz = async (req, res, next) => {
       await tx.quizCutoff.deleteMany({
         where: { quizId },
       });
+
+      await syncQuestionIdSequence(tx);
 
       // Update Quiz and recreate all questions
       return await tx.quiz.update({

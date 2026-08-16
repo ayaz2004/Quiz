@@ -1,6 +1,7 @@
 import prisma from "../config/db.config.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/error.js";
+import { parseScholarshipPayload } from "../utils/validateScholarship.js";
 
 const normalize = (s = '') => s.toString().trim().toLowerCase().replace(/\s+/g, '-');
 
@@ -163,7 +164,8 @@ export const createScholarship = async (req, res, next) => {
     const user = req.user;
     if (!user || user.isAdmin !== 1) return next(new ApiError(403, 'Only admins can create scholarships'));
 
-    const data = req.body.scholarshipData ? JSON.parse(req.body.scholarshipData) : req.body;
+    const data = parseScholarshipPayload(req.body);
+    if (!data) return next(new ApiError(400, 'scholarshipData is required'));
     const catalog = await prisma.scholarshipCategory.findMany();
     const categories = await resolveCategoryLabels(data);
     if (!categories.length) return next(new ApiError(400, 'Select at least one education level'));
@@ -188,7 +190,7 @@ export const createScholarship = async (req, res, next) => {
         amount: data.amount || null,
         startDate: data.startDate ? new Date(data.startDate) : null,
         deadline: data.deadline ? new Date(data.deadline) : null,
-        applyUrl: data.applyUrl || null,
+        applyUrl: data.applyUrl ? data.applyUrl.trim() : null,
         eligibility: data.eligibility || [],
         documents: data.documents || [],
         steps: data.steps || [],
@@ -287,7 +289,8 @@ export const updateScholarship = async (req, res, next) => {
     const id = parseInt(req.params.id);
     if (!Number.isInteger(id)) return next(new ApiError(400, 'Invalid scholarship id'));
 
-    const data = req.body.scholarshipData ? JSON.parse(req.body.scholarshipData) : req.body;
+    const data = parseScholarshipPayload(req.body);
+    if (!data) return next(new ApiError(400, 'scholarshipData is required'));
 
     if (data.slug) {
       const existing = await prisma.scholarship.findUnique({ where: { slug: data.slug } });
@@ -315,7 +318,7 @@ export const updateScholarship = async (req, res, next) => {
         amount: data.amount !== undefined ? data.amount : undefined,
         startDate: data.startDate !== undefined ? (data.startDate ? new Date(data.startDate) : null) : undefined,
         deadline: data.deadline !== undefined ? (data.deadline ? new Date(data.deadline) : null) : undefined,
-        applyUrl: data.applyUrl !== undefined ? data.applyUrl : undefined,
+        applyUrl: data.applyUrl !== undefined ? (data.applyUrl ? data.applyUrl.trim() : null) : undefined,
         eligibility: data.eligibility !== undefined ? data.eligibility : undefined,
         documents: data.documents !== undefined ? data.documents : undefined,
         steps: data.steps !== undefined ? data.steps : undefined,

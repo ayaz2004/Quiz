@@ -174,7 +174,7 @@ export const addScholarship = async (scholarshipData) => {
   try {
     const response = await axios.post(
       `${API_URL}/api/admin/add-scholarship`,
-      { scholarshipData: JSON.stringify(scholarshipData) },
+      scholarshipData,
       { withCredentials: true }
     );
     return response.data;
@@ -188,7 +188,7 @@ export const updateScholarship = async (scholarshipId, scholarshipData) => {
   try {
     const response = await axios.put(
       `${API_URL}/api/admin/update-scholarship/${scholarshipId}`,
-      { scholarshipData: JSON.stringify(scholarshipData) },
+      scholarshipData,
       { withCredentials: true }
     );
     return response.data;

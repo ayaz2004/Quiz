@@ -119,8 +119,8 @@ async function main() {
     );
 
     await resetIdentity('"User"', 'id');
-    await resetIdentity('"Quiz"', 'id');
-    await resetIdentity('"Question"', 'id');
+    await resetIdentity('"Quiz"', 'quiz_id');
+    await resetIdentity('"Question"', 'question_id');
     await resetIdentity('"quiz_attempts"', 'attempt_id');
     await resetIdentity('"purchases"', 'purchase_id');
     await resetIdentity('"suggestions"', 'suggestion_id');

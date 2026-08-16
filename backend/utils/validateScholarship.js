@@ -1,9 +1,22 @@
 import { ApiError } from './error.js';
 
-// Validate scholarship creation/update payload
+export const parseScholarshipPayload = (body) => {
+  if (!body || typeof body !== 'object') return null;
+
+  const raw = body.scholarshipData !== undefined ? body.scholarshipData : body;
+  if (raw == null) return null;
+  if (typeof raw === 'string') {
+    const text = raw.trim();
+    if (!text) return null;
+    return JSON.parse(text);
+  }
+  if (typeof raw === 'object') return raw;
+  return null;
+};
+
 export const validateScholarship = (req, res, next) => {
   try {
-    const data = req.body.scholarshipData ? JSON.parse(req.body.scholarshipData) : req.body;
+    const data = parseScholarshipPayload(req.body);
 
     if (!data) return next(new ApiError(400, 'scholarshipData is required'));
 
@@ -15,19 +28,22 @@ export const validateScholarship = (req, res, next) => {
       return next(new ApiError(400, 'Provider is required'));
     }
 
-    if (data.applyUrl && typeof data.applyUrl === 'string') {
+    if (data.applyUrl && typeof data.applyUrl === 'string' && data.applyUrl.trim()) {
       try {
-        const u = new URL(data.applyUrl);
+        new URL(data.applyUrl.trim());
       } catch (e) {
         return next(new ApiError(400, 'applyUrl must be a valid URL'));
       }
+    }
+
+    if (data.startDate && isNaN(Date.parse(data.startDate))) {
+      return next(new ApiError(400, 'startDate must be a valid date'));
     }
 
     if (data.deadline && isNaN(Date.parse(data.deadline))) {
       return next(new ApiError(400, 'deadline must be a valid date'));
     }
 
-    // Arrays
     if (data.eligibility && !Array.isArray(data.eligibility)) {
       return next(new ApiError(400, 'eligibility must be an array'));
     }
@@ -38,12 +54,10 @@ export const validateScholarship = (req, res, next) => {
       return next(new ApiError(400, 'steps must be an array'));
     }
 
-    // status if provided
     if (data.status && !['PUBLISHED', 'UNPUBLISHED'].includes(data.status)) {
       return next(new ApiError(400, 'Invalid status'));
     }
 
-    // One or more education levels, as categoryIds or categoryLabels
     const hasCategoryPayload = data.categoryIds !== undefined
       || data.categoryId !== undefined
       || data.categoryLabels !== undefined;
@@ -62,8 +76,7 @@ export const validateScholarship = (req, res, next) => {
       }
     }
 
-    // attach parsed data back
-    req.body = req.body.scholarshipData ? { ...req.body, scholarshipData: data } : { ...data };
+    req.body = data;
     next();
   } catch (error) {
     return next(new ApiError(400, 'Invalid scholarshipData'));

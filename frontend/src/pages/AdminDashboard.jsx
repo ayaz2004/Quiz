@@ -405,7 +405,7 @@ const AdminDashboard = () => {
       setEditingScholarshipId(null);
       fetchScholarships();
     } catch (error) {
-      showMessage('error', error.message || 'Failed to save scholarship');
+      showMessage('error', error.response?.data?.message || error.message || 'Failed to save scholarship');
     } finally {
       setLoading(false);
     }

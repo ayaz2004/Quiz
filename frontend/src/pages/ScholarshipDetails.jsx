@@ -186,7 +186,7 @@ const ScholarshipDetails = () => {
             Eligibility
           </h2>
           <ul className="space-y-3">
-            {scholarship.eligibility.map((item) => (
+            {(scholarship.eligibility || []).map((item) => (
               <li key={item} className={`flex items-start gap-3 text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 <span className="mt-2 h-2 w-2 flex-none rounded-full bg-emerald-500" />
                 <span>{item}</span>
@@ -201,7 +201,7 @@ const ScholarshipDetails = () => {
             Required Documents
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {scholarship.documents.map((item) => (
+            {(scholarship.documents || []).map((item) => (
               <div key={item} className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm ${isDark ? 'border-white/10 bg-black/20 text-gray-200' : 'border-gray-100 bg-gray-50 text-gray-700'}`}>
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                 {item}
@@ -218,7 +218,7 @@ const ScholarshipDetails = () => {
             How to Apply
           </h2>
           <ol className="space-y-3">
-            {scholarship.steps.map((step, index) => (
+            {(scholarship.steps || []).map((step, index) => (
               <li key={step} className={`flex items-start gap-3 text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                 <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-white">{index + 1}</span>
                 <span className="pt-1 leading-6">{step}</span>
