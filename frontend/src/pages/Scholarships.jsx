@@ -1,0 +1,322 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  Award,
+  Building2,
+  Search,
+  Filter,
+  CalendarDays,
+  ArrowRight,
+  Sparkles,
+} from 'lucide-react';
+import usePageSeo from '../hooks/usePageSeo';
+import { useTheme } from '../context/ThemeContext';
+import api from '../utils/api';
+import { formatScholarshipDate } from '../utils/formatScholarshipDate';
+
+const categoryOrder = {
+  '9th/10th': 1,
+  '11th/12th': 2,
+  'UG': 3,
+  'PG': 4,
+  'PhD': 5,
+  'Others': 6,
+  'Other': 6,
+};
+
+const sortCategories = (items = []) => [...items].sort((a, b) => {
+  const labelA = (a?.label || '').toString().trim();
+  const labelB = (b?.label || '').toString().trim();
+  const rankA = categoryOrder[labelA] ?? 999;
+  const rankB = categoryOrder[labelB] ?? 999;
+
+  if (rankA !== rankB) return rankA - rankB;
+  return labelA.localeCompare(labelB);
+});
+
+const Scholarships = () => {
+  const { isDark } = useTheme();
+  const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [scholarshipsList, setScholarshipsList] = useState([]);
+  const [categories, setCategories] = useState([{ id: 'all', label: 'All Categories' }]);
+  const [loading, setLoading] = useState(false);
+
+  usePageSeo({
+    title: 'Scholarships | JMI Quiz',
+    description: 'Discover scholarships for school and college students with quick search, class filters, and clear application details.',
+    path: '/scholarships',
+    breadcrumbs: [
+      { name: 'Home', path: '/' },
+      { name: 'Scholarships', path: '/scholarships' },
+    ],
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCategories = async () => {
+      try {
+        const response = await api.get('/api/scholarships/categories');
+        const apiCategories = response.data?.data?.categories || [];
+        if (cancelled) return;
+
+        const normalized = apiCategories.map((category) => ({
+          id: category.id,
+          label: category.label,
+        }));
+
+        setCategories((prev) => {
+          const prevNonAll = prev.filter((c) => String(c.id) !== 'all');
+          const merged = [...normalized];
+          const seen = new Set(merged.map((c) => String(c.id)));
+
+          prevNonAll.forEach((c) => {
+            if (!seen.has(String(c.id))) {
+              merged.push(c);
+              seen.add(String(c.id));
+            }
+          });
+
+          return [{ id: 'all', label: 'All Categories' }, ...sortCategories(merged)];
+        });
+      } catch (error) {
+        // fallback to the known category list if the public endpoint is unavailable
+        setCategories((prev) => {
+          const fallback = [
+            { id: '9th/10th', label: '9th/10th' },
+            { id: '11th/12th', label: '11th/12th' },
+            { id: 'UG', label: 'UG' },
+            { id: 'PG', label: 'PG' },
+            { id: 'PhD', label: 'PhD' },
+            { id: 'Others', label: 'Others' },
+          ];
+
+          const prevNonAll = prev.filter((c) => String(c.id) !== 'all');
+          const merged = [...fallback];
+          const seen = new Set(merged.map((c) => String(c.id)));
+          prevNonAll.forEach((c) => {
+            if (!seen.has(String(c.id))) {
+              merged.push(c);
+              seen.add(String(c.id));
+            }
+          });
+
+          return [{ id: 'all', label: 'All Categories' }, ...sortCategories(merged)];
+        });
+      }
+    };
+
+    loadCategories();
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const params = { limit: 100 };
+        if (query && query.trim()) params.search = query.trim();
+        if (selectedCategory && selectedCategory !== 'all') {
+          const catObj = categories.find((c) => String(c.id) === String(selectedCategory));
+          if (catObj) params.category = catObj.label;
+          else params.category = selectedCategory;
+        }
+
+        const res = await api.get('/api/scholarships', { params });
+        const data = res.data?.data || {};
+        const list = data.scholarships || [];
+        if (cancelled) return;
+        setScholarshipsList(list);
+      } catch (err) {
+        setScholarshipsList([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query, selectedCategory]);
+
+  const clearFilters = () => {
+    setQuery('');
+    setSelectedCategory('all');
+  };
+
+  return (
+    <div className="space-y-8">
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-white/80 p-6 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-white/5 md:p-10"
+      >
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50 via-white to-cyan-50 dark:from-emerald-950/20 dark:via-gray-900 dark:to-cyan-950/20" />
+        <div className="max-w-3xl space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+            <Sparkles className="h-4 w-4" />
+            Scholarships that move with your ambition
+          </div>
+          <h1 className={`text-3xl font-black tracking-tight md:text-5xl ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Unlock the right scholarship for your next step
+          </h1>
+          <p className={`max-w-2xl text-base md:text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+            Find opportunities that match your education level and get all the details you need to apply.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 lg:grid-cols-[1.6fr_1fr_auto]">
+          <label className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-white/5 text-gray-200' : 'border-gray-200 bg-white text-gray-700'}`}>
+            <Search className="h-5 w-5 text-emerald-500" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search a scholarship or provider name"
+              className="w-full bg-transparent outline-none placeholder:text-gray-400"
+            />
+          </label>
+
+          <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}>
+            <Filter className="h-5 w-5 text-emerald-500" />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className={`w-full bg-transparent outline-none ${isDark ? 'text-gray-200' : 'text-gray-700'}`}
+            >
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition-transform hover:-translate-y-0.5"
+          >
+            Clear filters
+          </button>
+        </div>
+      </motion.section>
+
+      <section>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            {scholarshipsList.length} scholarship{scholarshipsList.length === 1 ? '' : 's'} found
+          </p>
+          {(query || selectedCategory !== 'all') && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className={`text-sm font-semibold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}
+            >
+              Reset filters
+            </button>
+          )}
+        </div>
+
+        {loading ? (
+          <div className="rounded-3xl border p-10 text-center">
+            Loading scholarships...
+          </div>
+        ) : scholarshipsList.length === 0 ? (
+          <div className={`rounded-3xl border p-10 text-center ${isDark ? 'border-white/10 bg-white/5 text-gray-300' : 'border-gray-200 bg-white text-gray-600'}`}>
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+              <Building2 className="h-7 w-7" />
+            </div>
+            <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>No scholarships found</h2>
+            <p className="mt-2 text-sm">Try a different keyword or switch to another class category.</p>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-emerald-300 px-5 py-3 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-300 dark:hover:bg-emerald-500/10"
+            >
+              Reset and explore again
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {scholarshipsList.map((item, index) => {
+              const levels = item.categoryLabels?.length
+                ? item.categoryLabels
+                : (item.categoryLabel ? [item.categoryLabel] : []);
+
+              return (
+              <motion.article
+                key={item.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.04 }}
+                className={`group flex h-full flex-col rounded-[1.75rem] border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isDark ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-white'}`}
+              >
+                <div className="mb-4 flex flex-wrap items-center gap-2">
+                  {levels.map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300"
+                    >
+                      {label}
+                    </span>
+                  ))}
+                  {item.featured && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/15 px-3 py-1 text-xs font-bold text-amber-600 dark:text-amber-300">
+                      <Award className="h-3.5 w-3.5" />
+                      Featured
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex-1 space-y-3">
+                  <h2 className={`line-clamp-2 text-xl font-black leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {item.title}
+                  </h2>
+                  <p className={`flex items-center gap-2 text-sm font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
+                    <Building2 className="h-4 w-4 shrink-0" />
+                    <span className="line-clamp-1">{item.provider}</span>
+                  </p>
+                  <p className={`line-clamp-2 text-sm leading-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {item.description}
+                  </p>
+                </div>
+
+                <div className="mt-5 grid gap-3">
+                  <div className={`rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-black/20' : 'border-gray-100 bg-gray-50'}`}>
+                    <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Amount / Benefit</p>
+                    <p className={`mt-1 line-clamp-2 text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.amount || 'Not announced'}</p>
+                  </div>
+                  <div className={`rounded-2xl border px-4 py-3 ${isDark ? 'border-white/10 bg-black/20' : 'border-gray-100 bg-gray-50'}`}>
+                    <p className={`text-xs font-semibold uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Application window</p>
+                    <div className="mt-1 space-y-1 text-sm font-bold">
+                      <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <CalendarDays className="h-4 w-4 shrink-0 text-emerald-500" />
+                        <span>Opens: {formatScholarshipDate(item.startDate)}</span>
+                      </p>
+                      <p className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <CalendarDays className="h-4 w-4 shrink-0 text-amber-500" />
+                        <span>Deadline: {formatScholarshipDate(item.deadline)}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Link
+                  to={`/scholarships/${item.id}`}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition-transform hover:-translate-y-0.5"
+                >
+                  View Details
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </motion.article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+};
+
+export default Scholarships;

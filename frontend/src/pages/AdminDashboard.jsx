@@ -1,6 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { addQuiz, updateQuiz, getAllUsers, deleteUser, getAllQuizzes, deleteQuiz, getQuizById, toggleQuizVisibility } from '../utils/adminApi';
+import {
+  addQuiz,
+  updateQuiz,
+  getAllUsers,
+  deleteUser,
+  getAllQuizzes,
+  deleteQuiz,
+  getQuizById,
+  toggleQuizVisibility,
+  getScholarshipCategories,
+  getAllScholarshipsAdmin,
+  getScholarshipByIdAdmin,
+  addScholarship,
+  updateScholarship,
+  deleteScholarship,
+  toggleScholarshipPublish,
+} from '../utils/adminApi';
 import MessageAlert from '../components/admin/MessageAlert';
 import DashSidebar from '../components/admin/DashSidebar';
 import DashProfile from '../components/admin/DashProfile';
@@ -12,6 +28,8 @@ import SuggestionList from '../components/admin/SuggestionList';
 import AttemptList from '../components/admin/AttemptList';
 import GrantAccess from '../components/admin/GrantAccess';
 import QuestionList from '../components/admin/QuestionList';
+import ScholarshipForm from '../components/admin/ScholarshipForm';
+import ScholarshipList from '../components/admin/ScholarshipList';
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -19,10 +37,32 @@ const AdminDashboard = () => {
   const [tab, setTab] = useState('');
   const [users, setUsers] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
+  const [scholarships, setScholarships] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [scholarshipForm, setScholarshipForm] = useState({
+    title: '',
+    provider: '',
+    slug: '',
+    categoryIds: [],
+    amount: '',
+    startDate: '',
+    deadline: '',
+    description: '',
+    about: '',
+    applyUrl: '',
+    eligibility: [],
+    documents: [],
+    steps: [],
+    importantInfo: '',
+    featured: false,
+    status: 'UNPUBLISHED',
+  });
+  const [editingScholarshipId, setEditingScholarshipId] = useState(null);
+  const [scholarshipSearch, setScholarshipSearch] = useState('');
 
   // Update tab based on URL params
   useEffect(() => {
@@ -58,8 +98,13 @@ const AdminDashboard = () => {
       fetchUsers();
     } else if (tab === 'viewQuizzes') {
       fetchQuizzes(activeSearch);
+    } else if (tab === 'scholarships') {
+      fetchScholarshipCategories();
+    } else if (tab === 'viewScholarships') {
+      fetchScholarshipCategories();
+      fetchScholarships(scholarshipSearch);
     }
-  }, [tab, currentPage, activeSearch]);
+  }, [tab, currentPage, activeSearch, scholarshipSearch]);
 
   const fetchUsers = async () => {
     try {
@@ -87,6 +132,36 @@ const AdminDashboard = () => {
       setTotalPages(payload.pagination?.totalPages || 1);
     } catch (error) {
       showMessage('error', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchScholarshipCategories = async () => {
+    try {
+      const response = await getScholarshipCategories();
+      const ordered = [...(response.data?.categories || [])].sort((a, b) => {
+        const order = { '9th/10th': 1, '11th/12th': 2, UG: 3, PG: 4, PhD: 5, Others: 6, Other: 6 };
+        const rankA = order[a?.label] ?? 999;
+        const rankB = order[b?.label] ?? 999;
+        if (rankA !== rankB) return rankA - rankB;
+        return (a?.label || '').localeCompare(b?.label || '');
+      });
+      setCategories(ordered);
+    } catch (error) {
+      showMessage('error', error.message || 'Failed to load scholarship categories');
+    }
+  };
+
+  const fetchScholarships = async (search = '') => {
+    try {
+      setLoading(true);
+      const response = await getAllScholarshipsAdmin(currentPage, 10, search);
+      const payload = response.data || {};
+      setScholarships(payload.scholarships || []);
+      setTotalPages(payload.pagination?.totalPages || 1);
+    } catch (error) {
+      showMessage('error', error.message || 'Failed to load scholarships');
     } finally {
       setLoading(false);
     }
@@ -271,6 +346,136 @@ const AdminDashboard = () => {
     }
   };
 
+  const normalizeScholarshipTextList = (value) => {
+    if (typeof value === 'string') {
+      return value.split(/\n|,/) .map((item) => item.trim()).filter(Boolean);
+    }
+    if (Array.isArray(value)) return value.filter(Boolean);
+    return [];
+  };
+
+  const handleScholarshipInput = (field, value) => {
+    setScholarshipForm((prev) => {
+      if (field === 'eligibility' || field === 'documents' || field === 'steps') {
+        return { ...prev, [field]: normalizeScholarshipTextList(value) };
+      }
+      return { ...prev, [field]: value };
+    });
+  };
+
+  const handleSubmitScholarship = async (event) => {
+    event.preventDefault();
+
+    try {
+      setLoading(true);
+      const payload = {
+        ...scholarshipForm,
+        eligibility: normalizeScholarshipTextList(scholarshipForm.eligibility),
+        documents: normalizeScholarshipTextList(scholarshipForm.documents),
+        steps: normalizeScholarshipTextList(scholarshipForm.steps),
+        categoryIds: scholarshipForm.categoryIds || [],
+      };
+
+      if (editingScholarshipId) {
+        await updateScholarship(editingScholarshipId, payload);
+        showMessage('success', 'Scholarship updated successfully!');
+      } else {
+        await addScholarship(payload);
+        showMessage('success', 'Scholarship created successfully!');
+      }
+
+      setScholarshipForm({
+        title: '',
+        provider: '',
+        slug: '',
+        categoryIds: [],
+        amount: '',
+        startDate: '',
+        deadline: '',
+        description: '',
+        about: '',
+        applyUrl: '',
+        eligibility: [],
+        documents: [],
+        steps: [],
+        importantInfo: '',
+        featured: false,
+        status: 'UNPUBLISHED',
+      });
+      setEditingScholarshipId(null);
+      fetchScholarships();
+    } catch (error) {
+      showMessage('error', error.response?.data?.message || error.message || 'Failed to save scholarship');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditScholarship = async (scholarshipId) => {
+    try {
+      setLoading(true);
+      const response = await getScholarshipByIdAdmin(scholarshipId);
+      const scholarship = response.data || {};
+      setScholarshipForm({
+        title: scholarship.title || '',
+        provider: scholarship.provider || '',
+        slug: scholarship.slug || '',
+        categoryIds: Array.isArray(scholarship.categoryIds)
+          ? scholarship.categoryIds.map(Number)
+          : (scholarship.categoryId ? [Number(scholarship.categoryId)] : []),
+        amount: scholarship.amount || '',
+        startDate: scholarship.startDate ? new Date(scholarship.startDate).toISOString().split('T')[0] : '',
+        deadline: scholarship.deadline ? new Date(scholarship.deadline).toISOString().split('T')[0] : '',
+        description: scholarship.description || '',
+        about: scholarship.about || '',
+        applyUrl: scholarship.applyUrl || '',
+        eligibility: Array.isArray(scholarship.eligibility) ? scholarship.eligibility : [],
+        documents: Array.isArray(scholarship.documents) ? scholarship.documents : [],
+        steps: Array.isArray(scholarship.steps) ? scholarship.steps : [],
+        importantInfo: scholarship.importantInfo || '',
+        featured: Boolean(scholarship.featured),
+        status: scholarship.status || 'UNPUBLISHED',
+      });
+      setEditingScholarshipId(scholarshipId);
+      navigate('/admin?tab=scholarships');
+      showMessage('success', 'Scholarship loaded for editing');
+    } catch (error) {
+      showMessage('error', error.message || 'Unable to load scholarship');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteScholarship = async (scholarshipId) => {
+    if (!window.confirm('Are you sure you want to delete this scholarship?')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await deleteScholarship(scholarshipId);
+      showMessage('success', 'Scholarship deleted successfully');
+      fetchScholarships();
+    } catch (error) {
+      showMessage('error', error.message || 'Failed to delete scholarship');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleScholarshipPublish = async (scholarshipId) => {
+    try {
+      setLoading(true);
+      await toggleScholarshipPublish(scholarshipId);
+      showMessage('success', 'Scholarship status updated');
+      fetchScholarships();
+    } catch (error) {
+      showMessage('error', error.message || 'Failed to update scholarship status');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditQuiz = async (quizId) => {
     try {
       setLoading(true);
@@ -444,6 +649,111 @@ const AdminDashboard = () => {
                 onEdit={handleEditQuiz}
                 onDelete={handleDeleteQuiz}
                 onToggleVisibility={handleToggleVisibility}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit Scholarship Tab */}
+        {tab === 'scholarships' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-6xl mx-auto">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  Add/Edit Scholarship
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Create new scholarship opportunities or edit existing ones.
+                </p>
+              </div>
+
+              <ScholarshipForm
+                form={scholarshipForm}
+                categories={categories}
+                editingId={editingScholarshipId}
+                loading={loading}
+                onChange={handleScholarshipInput}
+                onSubmit={handleSubmitScholarship}
+                onCancel={() => {
+                  setEditingScholarshipId(null);
+                  setScholarshipForm({
+                    title: '',
+                    provider: '',
+                    slug: '',
+                    categoryIds: [],
+                    amount: '',
+                    deadline: '',
+                    description: '',
+                    about: '',
+                    applyUrl: '',
+                    eligibility: [],
+                    documents: [],
+                    steps: [],
+                    importantInfo: '',
+                    featured: false,
+                    status: 'UNPUBLISHED',
+                  });
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* View All Scholarships Tab */}
+        {tab === 'viewScholarships' && (
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="max-w-6xl mx-auto space-y-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                  All Scholarships
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  View and manage all scholarship listings.
+                </p>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                  <input
+                    type="text"
+                    value={scholarshipSearch}
+                    onChange={(e) => setScholarshipSearch(e.target.value)}
+                    placeholder="Search scholarships"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentPage(1);
+                      fetchScholarships(scholarshipSearch);
+                    }}
+                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm font-semibold rounded-lg"
+                  >
+                    Search
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScholarshipSearch('');
+                      setCurrentPage(1);
+                      fetchScholarships('');
+                    }}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm rounded-lg text-gray-700 dark:text-gray-200"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+
+              <ScholarshipList
+                scholarships={scholarships}
+                loading={loading}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+                onEdit={handleEditScholarship}
+                onDelete={handleDeleteScholarship}
+                onTogglePublish={handleToggleScholarshipPublish}
               />
             </div>
           </div>

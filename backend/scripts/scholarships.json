@@ -1,0 +1,1143 @@
+{
+  "categories": [
+    "9th/10th",
+    "11th/12th",
+    "UG",
+    "PG",
+    "PhD",
+    "Others"
+  ],
+  "scholarships": [
+    {
+      "slug": "national-means-cum-merit-scholarship-scheme-nmmss-1",
+      "title": "National Means-cum-Merit Scholarship Scheme (NMMSS)",
+      "provider": "Ministry of Education, Government of India",
+      "description": "Merit-based scholarship for economically weaker Class 9 students entering secondary education.",
+      "about": "The NMMSS is a centrally sponsored scheme by the Ministry of Education, GoI. It awards Rs. 1,000 per month (Rs. 12,000 per year) to meritorious students from economically weaker sections to prevent dropout at the secondary level. Students must qualify a state-level selection test. Implemented through NSP.",
+      "category": "9th/10th",
+      "amount": "Rs. 12,000 per annum (Rs. 1,000/month)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-08-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Class 9 (entering)",
+        "Varies by state (selection test)",
+        "Not more than Rs. 3,50,000/- per annum",
+        "Must study in Class 8 in Govt./Govt.-aided/local body school; must qualify NMMSS selection test"
+      ],
+      "documents": [
+        "Income certificate, marksheet of Class 7, bank passbook, Aadhaar card, institute verification form, residential certificate"
+      ],
+      "steps": [
+        "State-level selection test; merit list prepared by State/UT",
+        "Apply through NSP after qualifying state-level NMMSS exam. Exam typically held in November-December.",
+        "https://www.myscheme.gov.in/schemes/nmmss"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "pre-matric-scholarship-for-scheduled-caste-students-2",
+      "title": "Pre-Matric Scholarship for Scheduled Caste Students",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Financial support for SC students in Classes 9-10 to reduce dropout rate at the secondary stage.",
+      "about": "Centrally sponsored scheme by Ministry of Social Justice & Empowerment for SC students in Classes 9 and 10. Provides maintenance allowance and ad-hoc grant to minimize dropout during the transition from elementary to secondary education. Implemented through NSP.",
+      "category": "9th/10th",
+      "amount": "Rs. 3500 per year for day scholars; 7000 per year for hostelers; Rs. 8000/year(  for class 3 to 10) hosteller",
+      "startDate": "2027-03-31",
+      "deadline": null,
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Classes 9 and 10",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to Scheduled Caste; studying in a recognized school; regular attendance"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute and state/district authorities",
+        "Income ceiling Rs. 2.50 lakh per annum. Both fresh and renewal applications accepted through NSP.",
+        "https://socialjustice.gov.in/schemes/23"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "central-sector-scheme-of-scholarships-for-college-and-university-students-4",
+      "title": "Central Sector Scheme of Scholarships for College and University Students",
+      "provider": "Ministry of Education, Government of India",
+      "description": "Merit-based scholarship for Class 12 toppers (top 20%) pursuing higher education in recognized institutions.",
+      "about": "Merit-based scheme by Ministry of Education providing financial assistance to meritorious students from economically weaker sections pursuing higher studies. 82,000 scholarships awarded annually (50% reserved for girls). Awarded on the basis of Class 12 board results.",
+      "category": "UG",
+      "amount": "Rs. 10,000/year for first 3 years; Rs. 20,000/year for 4th and 5th year (professional courses)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Undergraduate (after Class 12)",
+        "Minimum 80% marks in Class 12; top 20% of respective board",
+        "Not more than Rs. 4,50,000/- per annum (gross)",
+        "Indian citizen; passed Class 12 from recognized board; pursuing regular full-time course in recognized institution; not availing any other scholarship (except same scheme)"
+      ],
+      "documents": [
+        "Class 12 marksheet, income certificate, Aadhaar card, bank passbook, institute verification form, fee receipt, bonafide certificate"
+      ],
+      "steps": [
+        "Based on Class 12 board merit list; verified through NSP",
+        "Covers graduate/postgraduate/professional courses. Students can apply for one merit + one or more welfare schemes through NSP.",
+        "https://scholarships.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "post-matric-scholarship-for-scheduled-caste-students-5",
+      "title": "Post Matric Scholarship for Scheduled Caste Students",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Comprehensive financial support for SC students pursuing post-matric studies to improve gross enrollment ratio.",
+      "about": "Centrally sponsored scheme by MoSJE providing maintenance allowance and full reimbursement of compulsory non-refundable fees to SC students pursuing post-matric courses (Class 11 onwards through PhD). One of the largest welfare schemes of GoI, implemented through NSP.",
+      "category": "UG",
+      "amount": "Full maintenance allowance (Rs. 550-1,200/month hostellers, Rs. 230-550/month day scholars); reimbursement of compulsory non-refundable fees; additional allowances for disabled students",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Post-Matric (Class 11 onwards, UG, PG, PhD)",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to SC; enrolled in recognized post-matric course; regular attendance; not availing any other scholarship for same purpose"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form, disability certificate (if applicable)"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute nodal officer and state/district authorities",
+        "Income ceiling Rs. 2.50 lakh/annum. Covers Class 11 to PhD level. One of the largest centrally sponsored scholarship schemes.",
+        "https://www.myscheme.gov.in/schemes/pmsfss"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "post-matric-scholarship-for-obc-students-6",
+      "title": "Post Matric Scholarship for OBC Students",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Financial assistance for OBC students pursuing post-matriculation studies to enhance access to higher education.",
+      "about": "Centrally sponsored scheme by MoSJE for OBC students pursuing post-matric studies in India. Covers maintenance allowance and compulsory non-refundable fees. Income ceiling recently increased from Rs. 1.50 lakh to Rs. 2.50 lakh per annum. Implemented through NSP.",
+      "category": "UG",
+      "amount": "Maintenance allowance (Rs. 550-1,200/month for hostellers, Rs. 230-550/month for day scholars); reimbursement of compulsory non-refundable fees",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Post-Matric (Class 11 onwards, UG, PG)",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 2,50,000/- per annum (recently increased from Rs. 1.50 lakh)",
+        "Must belong to OBC; enrolled in recognized post-matric course; regular attendance; not availing any other scholarship for same purpose"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute nodal officer and state/district authorities",
+        "Income ceiling increased to Rs. 2.50 lakh per annum. Both fresh and renewal applications accepted.",
+        "https://socialjustice.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "post-matric-scholarship-for-minority-communities-7",
+      "title": "Post-Matric Scholarship for Minority Communities",
+      "provider": "Ministry of Minority Affairs, Government of India",
+      "description": "Financial support for minority community students pursuing post-matric studies to improve access and retention.",
+      "about": "Implemented by Ministry of Minority Affairs for students from Muslim, Christian, Sikh, Buddhist, Jain, and Parsi communities pursuing post-matric courses. Provides maintenance allowance and course fee reimbursement. Up to Rs. 25,000 per annum for professional courses. Implemented through NSP.",
+      "category": "UG",
+      "amount": "Up to Rs. 25,000 per annum (maintenance + course fee) depending on course level",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Post-Matric (Class 11 onwards, UG, PG)",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to a notified minority community; enrolled in recognized post-matric course; not availing any other scholarship for same purpose"
+      ],
+      "documents": [
+        "Community certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute and state/district authorities",
+        "Income ceiling Rs. 2.50 lakh/annum. Covers six notified minority communities.",
+        "https://www.minorityaffairs.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "merit-cum-means-based-scholarship-for-minorities-8",
+      "title": "Merit-cum-Means Based Scholarship for Minorities",
+      "provider": "Ministry of Minority Affairs, Government of India",
+      "description": "Merit-cum-means scholarship for minority students pursuing technical/professional courses at UG/PG level.",
+      "about": "Implemented by Ministry of Minority Affairs for meritorious students from minority communities pursuing professional/technical courses at undergraduate or postgraduate level. Provides financial support to meet course fees and maintenance. Implemented through NSP.",
+      "category": "UG",
+      "amount": "Up to Rs. 20,000 per annum (course fee + maintenance)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "UG and PG (professional/technical courses)",
+        "Minimum 50% marks in previous exam or equivalent CGPA",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to notified minority community; admitted to a recognized institution; not availing any other scholarship for same purpose"
+      ],
+      "documents": [
+        "Community certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form, admission letter"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute and state/district authorities",
+        "For professional/technical courses only. Income ceiling Rs. 2.50 lakh/annum.",
+        "https://www.minorityaffairs.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "top-class-education-scheme-for-sc-students-9",
+      "title": "Top Class Education Scheme for SC Students",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Premium scholarship for SC students admitted to top-ranked institutions for full course coverage.",
+      "about": "Central sector scheme by MoSJE providing full financial support to SC students admitted to empanelled top institutions including IITs, IIMs, AIIMS, NITs, and other centrally funded institutions. Covers academic allowance and living expenses.",
+      "category": "UG",
+      "amount": "Rs. 86,000 in 1st year (Rs. 60,000 academic + Rs. 26,000 living); Rs. 41,000 in each subsequent year",
+      "startDate": "2026-05-31",
+      "deadline": null,
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "SC students admitted to notified institutions; family income ceiling currently ₹8 lakh per annum, subject to scheme rules.",
+        "Admission to an empanelled institution on merit",
+        "Not more than Rs. 6,00,000/- per annum (gross family income)",
+        "Must belong to SC; admitted to an empanelled institution (list available on socialjustice.gov.in); not availing any other scholarship"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, admission letter from empanelled institution, marksheet, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Based on admission to empanelled institution; verified through NSP",
+        "Only for students admitted to empanelled top institutions. Full list of empanelled institutions available on the MoSJE website.",
+        "https://socialjustice.gov.in/schemes/27"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "aicte-pg-scholarship-gate-ceed-qualified-10",
+      "title": "AICTE PG Scholarship (GATE/CEED qualified)",
+      "provider": "All India Council for Technical Education (AICTE)",
+      "description": "Monthly fellowship for GATE/CEED qualified students admitted to AICTE-approved PG programs in technical education.",
+      "about": "AICTE provides a graduate scholarship of Rs. 12,400 per month to full-time GATE/CEED qualified students admitted to AICTE-approved postgraduate programs (M.E./M.Tech./M.Arch./M.Pharma). Portal opens annually in September. One of the largest PG scholarship schemes in India for technical education.",
+      "category": "PG",
+      "amount": "Rs. 12,400 per month",
+      "startDate": "2026-08-31",
+      "deadline": null,
+      "applyUrl": "https://fellowship.aicte.gov.in",
+      "eligibility": [
+        "Students admitted to eligible AICTE-approved postgraduate programmes and holding a valid GATE/GPAT qualification, subject to AICTE scheme rules.",
+        "Must qualify GATE/CEED",
+        "Not specified (merit-based; GATE/CEED qualification required)",
+        "Must be GATE/CEED qualified; admitted to AICTE-approved institution in full-time PG program; not receiving any other fellowship"
+      ],
+      "documents": [
+        "GATE/CEED scorecard, admission letter, institute verification, bank passbook, Aadhaar card, marksheet"
+      ],
+      "steps": [
+        "Based on GATE/CEED score; verified by institute through AICTE portal",
+        "Portal typically opens in September. Institutes must create student IDs before the deadline. Exact 2026-27 dates to be announced on fellowship.aicte.gov.in.",
+        "https://fellowship.aicte.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "aicte-swanath-scholarship-scheme-technical-degree-11",
+      "title": "AICTE Swanath Scholarship Scheme (Technical Degree)",
+      "provider": "All India Council for Technical Education (AICTE)",
+      "description": "Support for wards of parents who died due to COVID-19, pursuing technical degree/diploma programs.",
+      "about": "AICTE Swanath Scholarship provides financial support to students (wards of parents who died due to COVID-19) pursuing technical degree/diploma programs in AICTE-approved institutions. Covers tuition fee and provides maintenance allowance.",
+      "category": "UG",
+      "amount": "Up to Rs. 50,000 per year tuition fee + Rs. 2,000/month maintenance (degree); Up to Rs. 30,000/year tuition + Rs. 1,000/month maintenance (diploma)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Technical Degree/Diploma (UG level)",
+        "Not specified",
+        "Not more than Rs. 8,00,000/- per annum (gross family income)",
+        "Ward of a parent who died due to COVID-19; admitted to AICTE-approved institution for technical degree/diploma; Indian citizen"
+      ],
+      "documents": [
+        "Death certificate of parent (COVID-19), income certificate, admission letter, marksheet, bank passbook, Aadhaar card, self-declaration"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute and AICTE",
+        "Launched specifically for COVID-19 affected families. Available through NSP under AICTE schemes.",
+        "https://www.aicte-india.org"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "national-overseas-scholarship-nos-for-sc-st-etc-12",
+      "title": "National Overseas Scholarship (NOS) for SC/ST etc.",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Government-funded overseas study scholarship for SC, ST, OBC, DNT, and semi-nomadic tribe candidates at PG/PhD level.",
+      "about": "The NOS scheme by MoSJE provides financial assistance for higher studies abroad (Master's/PhD) to candidates from SC, ST, Denotified Nomadic Tribes, and Semi-Nomadic Tribes. Provides USD 15,600 per annum plus other allowances. Applications invited through dedicated NOS portal (nosmsje.gov.in). Round 1 of 2026-27 closed on 02 June 2026.",
+      "category": "PG",
+      "amount": "USD 15,600 per annum (approx. Rs. 14.70 lakh) + pre-departure stipend, visa fee, medical insurance, journey allowance",
+      "startDate": "2026-04-23",
+      "deadline": "2026-06-01",
+      "applyUrl": "https://nosmsje.gov.in",
+      "eligibility": [
+        "Master's / PhD abroad",
+        "Varies (must have admission offer)",
+        "Not specified (merit + category-based selection)",
+        "Must belong to SC/ST/DNT/Semi-Nomadic Tribe; below 35 years of age; have confirmed admission or offer letter from a ranked foreign university; not more than 2 dependents"
+      ],
+      "documents": [
+        "Category certificate, income certificate, admission/offer letter from foreign university, passport, marksheet, research proposal (for PhD), bank details, Aadhaar card"
+      ],
+      "steps": [
+        "Multi-stage: online application, shortlisting, interview, final selection by MoSJE",
+        "Round 1 for 2026-27 closed on 02 June 2026. NOS-ST closed on 30 June 2026. Second round dates (if any) to be announced. Check nosmsje.gov.in for updates.",
+        "https://nosmsje.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "prime-minister-s-research-fellowship-pmrf-13",
+      "title": "Prime Minister's Research Fellowship (PMRF)",
+      "provider": "Ministry of Education, Government of India",
+      "description": "Prestigious doctoral research fellowship for PhD scholars in premier institutions with generous monthly stipend and research grant.",
+      "about": "PMRF is a flagship scheme of MoE for doctoral research in cutting-edge science and technology. Fellows receive Rs. 70,000/month (Year 1-2), Rs. 75,000/month (Year 3), Rs. 80,000/month (Year 4-5), plus Rs. 2 lakh/year research grant. Available in IITs, IISc, IISERs, and other premier institutes. Applications called twice a year (July and January cycles).",
+      "category": "PG",
+      "amount": "Rs. 70,000/month (Yr 1-2), Rs. 75,000/month (Yr 3), Rs. 80,000/month (Yr 4-5) + Rs. 2,00,000/year research grant",
+      "startDate": "2026-06-30",
+      "deadline": null,
+      "applyUrl": "https://www.primeministerfellowshipscheme.in",
+      "eligibility": [
+        "PhD scholars meeting PMRF academic and institutional eligibility requirements.",
+        "Minimum 8.0 CGPA (or equivalent) in UG/PG from recognized institute; or qualified GATE/NET with valid score",
+        "Not specified (merit-based; institutional nomination required)",
+        "Must be Indian citizen; admitted/enrolled in PhD at a PMRF-granting institute; within 5 years of qualifying degree; institute must nominate the candidate"
+      ],
+      "documents": [
+        "CGPA/academic transcripts, GATE/NET scorecard, research proposal, institute nomination letter, NOC, Aadhaar card, bank details"
+      ],
+      "steps": [
+        "Two routes: (1) Direct entry via institute nomination with qualifying exam (GATE/NET) + interview, (2) Lateral entry for existing PhD scholars. Selection by PMRF committee.",
+        "May 2026 cycle closed on 15 July 2026. Next cycle expected January/February 2027. Guidelines available on primeministerfellowshipscheme.in.",
+        "https://www.indiascienceandtechnology.gov.in/nurturing-minds/scholarships/phd/prime-minister-research-fellowship-pmrf"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "hdfc-bank-parivartan-s-ecss-programme-14",
+      "title": "HDFC Bank Parivartan's ECSS Programme",
+      "provider": "HDFC Bank CSR",
+      "description": "Educational Crisis Scholarship Support for students facing personal/family crises impacting their education.",
+      "about": "HDFC Bank's Educational Crisis Scholarship Support (ECSS) provides financial assistance of up to Rs. 18,000 to students facing personal or family crises that jeopardize their ability to continue education. Open to students from Class 1 to postgraduate level.",
+      "category": "9th/10th",
+      "amount": "Up to Rs. 18,000",
+      "startDate": "2026-05-31",
+      "deadline": "2026-08-30",
+      "applyUrl": "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme",
+      "eligibility": [
+        "Class 1 to 12, Diploma, ITI, Polytechnic, UG, PG",
+        "Minimum 70% marks (60% for students with disabilities)",
+        "Based on crisis situation (income criteria flexible)",
+        "Must be an Indian student facing an educational crisis due to personal/family circumstances; enrolled in a recognized institution; minimum marks required"
+      ],
+      "documents": [
+        "Application form, income proof, marksheet, crisis documentation (medical/legal/personal), admission proof, bank passbook, Aadhaar card"
+      ],
+      "steps": [
+        "Screening by HDFC Bank and Buddy4Study; assessment of crisis situation and academic merit",
+        "Special consideration for girl students and students with disabilities. Applications through Buddy4Study platform.",
+        "https://www.buddy4study.com/page/hdfc-bank-parivartans-ecss-programme"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "gyandhan-scholarship-15",
+      "title": "GyanDhan Scholarship",
+      "provider": "GyanDhan",
+      "description": "Merit-based scholarship for students seeking education loans, supporting higher education aspirations.",
+      "about": "GyanDhan Scholarship is a merit-cum-means based scholarship offered by GyanDhan (India's leading education loan marketplace). It provides financial assistance of up to Rs. 50,000 to deserving students pursuing higher education in India or abroad. Selection includes a test and interview round.",
+      "category": "UG",
+      "amount": "Up to Rs. 50,000 (lump sum)",
+      "startDate": "2026-06-30",
+      "deadline": "2026-08-26",
+      "applyUrl": "https://www.gyandhan.com/scholarships/gd-scholarship",
+      "eligibility": [
+        "Indian students meeting the current programme conditions; current 2026 programme information states 8 winners and ₹2.5 lakh per winner. No GPA/previous-score requirement is stated on the detailed programme page.",
+        "Minimum 60% marks in previous qualifying exam",
+        "Not more than Rs. 10,00,000/- per annum (gross family income)",
+        "Indian citizen; enrolled or admitted to a recognized course; applied or planning to apply for education loan through GyanDhan"
+      ],
+      "documents": [
+        "Application form, income proof, marksheet, admission letter, education loan documents (if applicable), bank passbook, Aadhaar card, photograph"
+      ],
+      "steps": [
+        "Application review, followed by a test and interview; final selection by GyanDhan committee",
+        "Two test dates in 2026: 26 July and 02 August. Document submission by July 2026. Results announced after interview.",
+        "https://www.gyandhan.com/scholarships/gd-scholarship"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "siemens-scholarship-program-16",
+      "title": "Siemens Scholarship Program",
+      "provider": "Siemens Ltd.",
+      "description": "Comprehensive 4-year engineering scholarship including full tuition, stipend, laptop, internship, and mentorship.",
+      "about": "Siemens Scholarship Program supports first-year engineering students from Government Engineering colleges with full 4-year sponsorship including tuition fee reimbursement, monthly stipend, laptop, internship opportunities at Siemens, and dedicated mentorship by Siemens professionals. Annual family income must not exceed Rs. 2 lakhs. Applications accepted on dedicated portal.",
+      "category": "UG",
+      "amount": "Full tuition fee reimbursement, monthly stipend, laptop, internship at Siemens, mentorship",
+      "startDate": null,
+      "deadline": null,
+      "applyUrl": "https://www.ssp-india.co.in",
+      "eligibility": [
+        "B.E./B.Tech (1st year)",
+        "Minimum 60% aggregate in Class 12",
+        "Not more than Rs. 2,00,000/- per annum",
+        "Must be a first-year student in a Government Engineering college; age up to 20 years; family income not exceeding Rs. 2 lakhs"
+      ],
+      "documents": [
+        "Class 12 marksheet, income certificate, admission letter from Government Engineering college, Aadhaar card, bank passbook, passport-size photograph"
+      ],
+      "steps": [
+        "Application screening, aptitude test, and personal interview by Siemens panel",
+        "Only for first-year students of Government Engineering colleges. Age limit: up to 20 years. Applications through dedicated Siemens Scholarship portal (ssp-india.co.in).",
+        "https://www.ssp-india.co.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "l-oreal-india-for-young-women-in-science-scholarship-17",
+      "title": "L'Oreal India For Young Women in Science Scholarship",
+      "provider": "L'Oreal India",
+      "description": "Scholarship for meritorious female students from Class 12 pursuing science degrees at top institutions.",
+      "about": "L'Oreal India's flagship scholarship program for young women in science, instituted in 2003. Supports female students who have excelled in Class 12 (Science stream) and wish to pursue B.Sc. programs in any branch of Pure Science (Physics, Chemistry, Mathematics, Biology, etc.) from recognized colleges/universities. Provides up to Rs. 2.5 lakh.",
+      "category": "UG",
+      "amount": "Up to Rs. 2,50,000",
+      "startDate": "2026-10-31",
+      "deadline": null,
+      "applyUrl": "https://www.foryoungwomeninscience.co.in",
+      "eligibility": [
+        "B.Sc. (Pure Science)",
+        "Minimum 85% marks in Class 12 (Science stream)",
+        "Family income not more than Rs. 6,00,000/- per annum",
+        "Female Indian citizen; passed Class 12 with min 85% in Science stream; admitted to B.Sc. in Pure Science at a recognized university; age not more than 19 years (relaxation for reserved categories)"
+      ],
+      "documents": [
+        "Class 12 marksheet, income certificate, admission letter for B.Sc., photograph, identity proof, bank passbook"
+      ],
+      "steps": [
+        "Application review, academic merit assessment, and personal interview by L'Oreal India panel",
+        "2025-26 cycle deadline was 21 November 2025 (now closed). 2026-27 cycle expected to open around October-November 2026. Check official website for announcements.",
+        "https://www.foryoungwomeninscience.co.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "reliance-foundation-undergraduate-scholarships-18",
+      "title": "Reliance Foundation Undergraduate Scholarships",
+      "provider": "Reliance Foundation",
+      "description": "Merit-based undergraduate scholarship of up to Rs. 2 lakhs with mentorship and alumni support network.",
+      "about": "Reliance Foundation Undergraduate Scholarships support meritorious students from across India with up to Rs. 2 lakhs towards their undergraduate degree. Includes mentorship, career guidance, and alumni network support. For Indian citizens who have passed Class 12 with minimum 60% and enrolled in first year of a regular full-time undergraduate program.",
+      "category": "UG",
+      "amount": "Up to Rs. 2,00,000",
+      "startDate": "2026-09-30",
+      "deadline": null,
+      "applyUrl": "https://www.scholarships.reliancefoundation.org",
+      "eligibility": [
+        "Any full-time UG degree (1st year)",
+        "Minimum 60% marks in Class 12",
+        "Household income under Rs. 15,00,000/- per annum",
+        "Indian citizen; passed Class 12 with min 60%; enrolled in 1st year of regular full-time UG degree at a recognized institution"
+      ],
+      "documents": [
+        "Class 12 marksheet, income certificate, admission letter, photograph, identity proof, bank passbook, bonafide certificate"
+      ],
+      "steps": [
+        "Application review, academic merit assessment, and personal interview",
+        "2025-26 cycle deadline was 07 October 2025 (closed). 2026-27 cycle expected around August-October 2026. Check official website for announcements.",
+        "https://www.scholarships.reliancefoundation.org/UG_Scholarship.aspx"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "post-matric-scholarship-for-scheduled-tribe-students-19",
+      "title": "Post Matric Scholarship for Scheduled Tribe Students",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Financial support for ST students pursuing post-matric studies to improve enrollment and retention.",
+      "about": "Centrally sponsored scheme by MoSJE providing maintenance allowance and reimbursement of compulsory non-refundable fees to ST students pursuing post-matric courses. Covers students from Class 11 through PhD level. Implemented through NSP.",
+      "category": "UG",
+      "amount": "Full maintenance allowance (Rs. 550-1,200/month for hostellers, Rs. 230-550/month for day scholars); reimbursement of compulsory non-refundable fees",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Post-Matric (Class 11 onwards, UG, PG, PhD)",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to Scheduled Tribe; enrolled in recognized post-matric course; regular attendance; not availing any other scholarship for same purpose"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute nodal officer and state/district authorities",
+        "Income ceiling Rs. 2.50 lakh per annum. Covers Class 11 to PhD. Implemented through NSP.",
+        "https://socialjustice.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "pre-matric-scholarship-for-students-with-disabilities-20",
+      "title": "Pre-Matric Scholarship for Students with Disabilities",
+      "provider": "Department of Empowerment of Persons with Disabilities (DEPwD), MoSJE, Government of India",
+      "description": "Financial support for students with disabilities in Classes 9-10 to encourage continued education.",
+      "about": "Centrally sponsored scheme by the Department of Empowerment of Persons with Disabilities (DEPwD), Ministry of Social Justice & Empowerment. Provides maintenance allowance and ad-hoc grant to students with disabilities (benchmark disabilities as per RPwD Act 2016) studying in Classes 9 and 10.",
+      "category": "9th/10th",
+      "amount": "Rs. 800/month for hostellers; Rs. 500/month for day scholars (Classes 9-10)",
+      "startDate": "2026-07-24",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Classes 9 and 10",
+        "Not specified (enrolled & regular attendance)",
+        "Not specified",
+        "Must have a benchmark disability as per RPwD Act 2016; studying in a recognized school; regular attendance; must have valid disability certificate"
+      ],
+      "documents": [
+        "Disability certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Apply through NSP; verified by institute and state/district authorities",
+        "Opened on 25 July 2026 on NSP. Covers benchmark disabilities as per RPwD Act 2016.",
+        "https://depwd.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "kotak-kanya-scholarship-21",
+      "title": "Kotak Kanya Scholarship",
+      "provider": "Kotak Education Foundation (KEF)",
+      "description": "Corporate scholarship for meritorious girl students pursuing professional graduation courses with up to Rs. 1.5 lakh per year.",
+      "about": "Kotak Kanya Scholarship by Kotak Education Foundation supports meritorious girl students from economically weaker sections pursuing professional graduation courses. Provides up to Rs. 1.5 lakh per year until completion of the degree. Applicants must have scored minimum 75% in Class 12. Annual family income ceiling applies.",
+      "category": "UG",
+      "amount": "Up to Rs. 1,50,000 per year",
+      "startDate": "2026-08-13",
+      "deadline": "2026-08-30",
+      "applyUrl": "https://www.kotakeducationfoundation.org/kotak-kanya-scholarship",
+      "eligibility": [
+        "Professional UG courses (Engineering, Medical, Law, Architecture, etc.)",
+        "Minimum 75% in Class 12 or equivalent CGPA",
+        "Family income not more than Rs. 6,00,000/- per annum",
+        "Female Indian citizen; scored minimum 75% in Class 12; enrolled in 1st year of professional UG course at a recognized institution; not availing any other scholarship of Rs. 50,000 or more"
+      ],
+      "documents": [
+        "Application form, Class 12 marksheet, income certificate, admission letter, photograph, identity proof, bank passbook, bonafide certificate"
+      ],
+      "steps": [
+        "Application screening, academic merit assessment by KEF",
+        "Only for girl students. Must be in 1st year of professional graduation course. Deadline confirmed as 31 August 2026 by buddy4study.",
+        "https://www.kotakeducationfoundation.org/kotak-kanya-scholarship"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "sitaram-jindal-foundation-scholarship-scheme-22",
+      "title": "Sitaram Jindal Foundation Scholarship Scheme",
+      "provider": "Sitaram Jindal Foundation",
+      "description": "Need-cum-merit scholarship providing Rs. 6,000 to Rs. 75,000 per year for students across all education levels.",
+      "about": "Sitaram Jindal Foundation (SJF) provides need-cum-merit based scholarships to students from economically weaker sections across India. Covers students from Class 11 to postgraduate level. Amount ranges from Rs. 500 to Rs. 3,200 per month depending on course level and gender. Income ceiling: Rs. 4 lakh (salaried) / Rs. 2.5 lakh (others) per annum.",
+      "category": "UG",
+      "amount": "Rs. 6,000 to Rs. 75,000 per year (Rs. 500-3,200/month depending on course level)",
+      "startDate": "2026-04-30",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://www.sitaramjindalfoundation.org",
+      "eligibility": [
+        "UG and PG (also Class 11, 12, Diploma, ITI)",
+        "65% for male; 60% for female in previous qualifying exam",
+        "Rs. 4,00,000/- per annum (salaried); Rs. 2,50,000/- per annum (others)",
+        "Indian citizen; enrolled in a recognized institution; meets income and marks criteria; final year students also eligible"
+      ],
+      "documents": [
+        "Application form, income certificate, marksheet, fee receipt, photograph, identity proof, bank passbook, bonafide certificate, caste certificate (if applicable)"
+      ],
+      "steps": [
+        "Application review by SJF committee based on financial need and academic merit",
+        "Apply online through SJF portal. Income ceiling and marks criteria vary by course level. Final year students are also eligible.",
+        "https://www.sitaramjindalfoundation.org"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "ugc-net-junior-research-fellowship-jrf-23",
+      "title": "UGC NET Junior Research Fellowship (JRF)",
+      "provider": "University Grants Commission (UGC) / NTA",
+      "description": "Fellowship for NET/JRF qualified candidates pursuing M.Phil/PhD, providing Rs. 37,000/month for 2 years.",
+      "about": "UGC NET JRF is a national-level fellowship awarded through the UGC NET examination conducted by NTA. JRF qualified candidates receive Rs. 37,000/month for the first 2 years (JRF) and Rs. 42,000/month thereafter (SRF) for up to 5 years or till PhD completion. Includes Rs. 10,000/year contingency grant. For Humanities, Social Sciences, and selected Science subjects.",
+      "category": "PG",
+      "amount": "Rs. 37,000/month (JRF, 2 years); Rs. 42,000/month (SRF, remaining period) + Rs. 10,000/year contingency",
+      "startDate": null,
+      "deadline": null,
+      "applyUrl": "https://ugcnet.nta.nic.in",
+      "eligibility": [
+        "M.Phil / PhD",
+        "Qualify UGC NET with JRF rank",
+        "Not specified (merit-based; JRF qualification required)",
+        "Must qualify UGC NET exam with JRF rank; enrolled or enrolling in M.Phil/PhD at a UGC-recognized university; age not more than 30 years (relaxation for SC/ST/OBC/PwD/Women)"
+      ],
+      "documents": [
+        "UGC NET scorecard, JRF award letter, university admission/enrollment proof, Aadhaar card, bank details, NOC from employer (if applicable)"
+      ],
+      "steps": [
+        "Qualify UGC NET with JRF rank; get fellowship activated through university",
+        "Fellowship is activated through the university after NET-JRF qualification. Two exam cycles per year (June and December). HRA as per norms. SRF promotion after 2 years.",
+        "https://www.ugc.gov.in/Fellowship/stu_Fellowship1"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "csir-net-junior-research-fellowship-jrf-24",
+      "title": "CSIR NET Junior Research Fellowship (JRF)",
+      "provider": "Council of Scientific and Industrial Research (CSIR) / NTA",
+      "description": "Fellowship for CSIR-UGC NET qualified candidates pursuing PhD in Science/Engineering, Rs. 37,000/month.",
+      "about": "CSIR NET JRF is awarded through the Joint CSIR-UGC NET examination for science subjects. Provides Rs. 37,000/month for 2 years (JRF) and Rs. 42,000/month thereafter (SRF) for up to 5 years. For research in Science, Engineering, and related fields at CSIR labs or universities.",
+      "category": "PG",
+      "amount": "Rs. 37,000/month (JRF, 2 years); Rs. 42,000/month (SRF, remaining period) + HRA as per norms",
+      "startDate": null,
+      "deadline": null,
+      "applyUrl": "https://csirnet.nta.nic.in",
+      "eligibility": [
+        "PhD in Science/Engineering",
+        "Qualify CSIR-UGC NET with JRF rank",
+        "Not specified (merit-based; JRF qualification required)",
+        "Must qualify CSIR-UGC NET with JRF rank; enrolled in full-time PhD at a recognized university or CSIR lab; age not more than 28 years (relaxation for SC/ST/OBC/PwD/Women)"
+      ],
+      "documents": [
+        "CSIR-UGC NET scorecard, JRF award letter, PhD enrollment proof, Aadhaar card, bank details, NOC from employer (if applicable)"
+      ],
+      "steps": [
+        "Qualify CSIR-UGC NET with JRF rank; fellowship activated through university/CSIR lab",
+        "Fellowship activated through host institution after CSIR NET-JRF qualification. HRA as per norms. SRF promotion after 2 years of satisfactory work.",
+        "https://csirhrdg.res.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "national-fellowship-for-scheduled-caste-students-nfsc-25",
+      "title": "National Fellowship for Scheduled Caste Students (NFSC)",
+      "provider": "Ministry of Social Justice & Empowerment / UGC",
+      "description": "Fellowship for SC students pursuing full-time M.Phil/PhD with Rs. 25,000-28,000/month plus research grant.",
+      "about": "NFSC is implemented by UGC on behalf of MoSJE. Provides fellowship to SC students for pursuing full-time M.Phil/PhD in Sciences, Humanities, Social Sciences, and Engineering. 75% slots through UGC NET-JRF qualification, 25% through direct selection. JRF: Rs. 25,000/month; SRF: Rs. 28,000/month plus HRA and Rs. 10,000/year contingency.",
+      "category": "PG",
+      "amount": "Rs. 25,000/month (JRF, 2 years); Rs. 28,000/month (SRF) + HRA + Rs. 10,000/year contingency + Rs. 20,000/year for departmental assistance",
+      "startDate": "2026-05-31",
+      "deadline": "2026-08-30",
+      "applyUrl": "https://socialjustice.gov.in/schemes/29",
+      "eligibility": [
+        "M.Phil / PhD (full-time)",
+        "55% marks in PG (50% for SC/ST) or NET-JRF qualified",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to SC; enrolled in full-time M.Phil/PhD at a recognized university; age not more than 35 years for PhD, 30 years for M.Phil"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, PG marksheet, PhD enrollment proof, NET-JRF scorecard (if applicable), Aadhaar card, bank details, research proposal"
+      ],
+      "steps": [
+        "75% through UGC NET-JRF; 25% through direct selection by UGC; interview for direct selection",
+        "Deadline 31 August 2026 as per recent announcements. 2,000 new slots every year. Students may also be eligible for Institute Fellowship of Rs. 20,000/month.",
+        "https://socialjustice.gov.in/schemes/29"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "national-fellowship-for-obc-students-nfobc-26",
+      "title": "National Fellowship for OBC Students (NFOBC)",
+      "provider": "National Backward Classes Finance & Development Corporation (NBCFDC) / MoSJE",
+      "description": "Fellowship for OBC students pursuing full-time M.Phil/PhD with monthly stipend and research grant.",
+      "about": "NFOBC is implemented by NBCFDC under MoSJE. Provides fellowship to OBC students pursuing full-time M.Phil/PhD. Similar structure to NFSC. JRF: Rs. 25,000/month; SRF: Rs. 28,000/month plus HRA and contingency. Selection through NET-JRF or direct selection.",
+      "category": "PG",
+      "amount": "Rs. 25,000/month (JRF); Rs. 28,000/month (SRF) + HRA + Rs. 10,000/year contingency",
+      "startDate": null,
+      "deadline": null,
+      "applyUrl": "https://nbcfdc.gov.in/nfobc",
+      "eligibility": [
+        "M.Phil / PhD (full-time)",
+        "55% marks in PG (50% for OBC) or NET-JRF qualified",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to OBC (non-creamy layer); enrolled in full-time M.Phil/PhD at a recognized university; age limits applicable"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, PG marksheet, PhD enrollment proof, NET-JRF scorecard (if applicable), Aadhaar card, bank details, research proposal"
+      ],
+      "steps": [
+        "Through NET-JRF or direct selection by NBCFDC/UGC",
+        "Apply through NBCFDC portal when applications open. Check nbcfdc.gov.in for current cycle dates. Non-creamy layer OBC certificate required.",
+        "https://nbcfdc.gov.in/nfobc"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "fulbright-nehru-master-s-fellowships-27",
+      "title": "Fulbright-Nehru Master's Fellowships",
+      "provider": "United States-India Educational Foundation (USIEF)",
+      "description": "Fully funded fellowship for Indian students to pursue master's degrees at US universities.",
+      "about": "Fulbright-Nehru Master's Fellowships are administered by USIEF (United States-India Educational Foundation). They provide full funding including tuition, living expenses, airfare, and health insurance for Indian students to pursue master's degrees at select US institutions. Funded by US Department of State and Government of India.",
+      "category": "PG",
+      "amount": "Full funding: tuition, living stipend, airfare, health insurance",
+      "startDate": "2026-06-30",
+      "deadline": null,
+      "applyUrl": "https://www.usief.org.in",
+      "eligibility": [
+        "Indian applicants meeting the Fulbright-Nehru Master's Fellowship academic, professional, work-experience and English-language requirements.",
+        "Strong academic record; 4-year bachelor's degree or master's/PG diploma",
+        "Not specified (merit-based; leadership potential assessed)",
+        "Indian citizen; completed 4-year bachelor's or master's degree by the grant start date; at least 3 years of work experience recommended; leadership qualities and community involvement"
+      ],
+      "documents": [
+        "Application form, academic transcripts, 3 letters of recommendation, statement of purpose, TOEFL/IELTS scores (when available), CV, passport copy"
+      ],
+      "steps": [
+        "Multi-stage: online application, review by USIEF, interview by US or Indian panel, final selection by USIEF/Fulbright Foreign Scholarship Board",
+        "2026-27 cycle deadline was May 2025 (closed). 2027-28 cycle expected to open July 2026 with deadline around May 2027. Check usief.org.in for exact dates. Mandatory orientation in Delhi for selected fellows.",
+        "https://www.usief.org.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "commonwealth-master-s-scholarships-for-india-28",
+      "title": "Commonwealth Master's Scholarships for India",
+      "provider": "Commonwealth Scholarship Commission (CSC) / FCDO, UK",
+      "description": "Fully funded scholarship for Indian students to pursue master's degrees at UK universities.",
+      "about": "Commonwealth Master's Scholarships are funded by the UK Foreign, Commonwealth & Development Office (FCDO) and administered by the Commonwealth Scholarship Commission (CSC). They provide full funding including tuition, living expenses, and travel for Indian students to study at UK universities. Applications are submitted through the Ministry of Education, GoI nomination process.",
+      "category": "PG",
+      "amount": "Full funding: tuition, living stipend, travel, thesis grant",
+      "startDate": "2025-08-31",
+      "deadline": null,
+      "applyUrl": "https://cscuk.fcdo.gov.uk/scholarships/commonwealth-masters-scholarships",
+      "eligibility": [
+        "Applicants from eligible Commonwealth countries who meet the current Commonwealth Master's scholarship criteria.",
+        "Strong academic record; bachelor's degree with minimum 60% marks",
+        "Not specified (merit-based; leadership potential assessed)",
+        "Indian citizen; completed or completing bachelor's degree; age not exceeding 40 years; not have studied or worked in a high-income country for more than 1 year in last 5 years"
+      ],
+      "documents": [
+        "Application form (via CSC portal), academic transcripts, 2 letters of recommendation, statement of purpose, IELTS scores, CV, passport copy, university offer letter (when available)"
+      ],
+      "steps": [
+        "Online application via CSC portal; nomination by Ministry of Education, GoI; selection by CSC",
+        "2026-27 applications closed (deadline was 14 October 2025). 2027-28 cycle expected to open around September 2026. Apply through CSC portal and get nominated by MoE, GoI.",
+        "https://cscuk.fcdo.gov.uk/scholarships/commonwealth-masters-scholarships"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "dst-inspire-fellowship-for-phd-29",
+      "title": "DST INSPIRE Fellowship for PhD",
+      "provider": "Department of Science & Technology (DST), Government of India",
+      "description": "DST fellowship for PhD scholars in basic sciences who have qualified INSPIRE-SHE or are NET/GATE qualified.",
+      "about": "DST INSPIRE Fellowship supports PhD scholars in basic and natural sciences. It provides Rs. 80,000 per annum as fellowship and Rs. 1,00,000 per year as research grant for 5 years. For scholars admitted to PhD through INSPIRE-SHE or with NET/GATE qualification in science subjects. Applications submitted through online-inspire.gov.in.",
+      "category": "PG",
+      "amount": "Rs. 80,000 per annum fellowship + Rs. 1,00,000 per year research grant",
+      "startDate": "2026-04-23",
+      "deadline": null,
+      "applyUrl": "https://online-inspire.gov.in",
+      "eligibility": [
+        "Eligible students pursuing PhD-level research in specified basic/applied science areas under the INSPIRE Fellowship scheme.",
+        "Must be admitted to PhD in basic sciences at a recognized institution; INSPIRE-SHE scholar or NET/GATE qualified",
+        "Not specified (merit-based; admission to PhD required)",
+        "Indian citizen; age 17-27 years; pursuing full-time PhD in basic sciences (Physics, Chemistry, Mathematics, Biology, etc.); must not have availed any other fellowship"
+      ],
+      "documents": [
+        "Application form (online INSPIRE portal), PhD enrollment/admission proof, NET/GATE scorecard (if applicable), INSPIRE-SHE award letter (if applicable), Aadhaar card, bank details, research proposal, NOC"
+      ],
+      "steps": [
+        "Online application through INSPIRE portal; selection by DST based on academic merit and research potential",
+        "INSPIRE Fellowship (not SHE) is active. SHE scheme has reportedly not been renewed by GoI. Apply at online-inspire.gov.in. Deadline 31 December 2026 for current cycle.",
+        "https://online-inspire.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "schneider-electric-india-foundation-schneider-scholar-program-30",
+      "title": "Schneider Electric India Foundation - Schneider Scholar Program",
+      "provider": "Schneider Electric India Foundation",
+      "description": "Scholarship for female engineering students in 2nd year providing financial support and mentorship.",
+      "about": "Schneider Scholar Program by Schneider Electric India Foundation supports meritorious female students currently in their 2nd year of B.E./B.Tech at AICTE-approved institutions. Provides financial assistance to help them complete their engineering education. Includes mentorship and career guidance from Schneider Electric professionals.",
+      "category": "UG",
+      "amount": "Rs. 65,000 to Rs. 1,00,000 per year (varies)",
+      "startDate": null,
+      "deadline": "2026-03-15",
+      "applyUrl": "https://www.buddy4study.com/page/schneider-electric-india-foundation",
+      "eligibility": [
+        "B.E./B.Tech (2nd year)",
+        "Minimum 65% marks in Class 10 and 12",
+        "Not more than Rs. 6,00,000/- per annum (gross family income)",
+        "Female Indian citizen; currently in 2nd year of B.E./B.Tech at an AICTE-approved institution; minimum 65% in Class 10 and 12; not a child of a Schneider Electric employee"
+      ],
+      "documents": [
+        "Application form, Class 10 and 12 marksheet, income certificate, admission letter, college ID, Aadhaar card, bank passbook, passport-size photograph"
+      ],
+      "steps": [
+        "Application screening, academic merit assessment by Schneider Electric India Foundation panel",
+        "2026-27 cycle deadline was 16 March 2026 (now closed). Next cycle expected around January-March 2027. Only for 2nd year female engineering students.",
+        "https://www.buddy4study.com/page/schneider-electric-india-foundation"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "karnataka-post-matric-scholarship-for-backward-classes-31",
+      "title": "Karnataka Post-Matric Scholarship for Backward Classes",
+      "provider": "Karnataka BCWD, Government of Karnataka",
+      "description": "State government scholarship for backward class students in Karnataka pursuing post-matric studies.",
+      "about": "Implemented by the Karnataka Backward Classes Welfare Department (BCWD). Provides fee reimbursement and maintenance allowance to students from Backward Classes (Cat-1, 2A, 2B, 3A, 3B) pursuing post-matric courses in recognized institutions within Karnataka.",
+      "category": "UG",
+      "amount": "Fee reimbursement + maintenance allowance (varies by course and category)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-08-30",
+      "applyUrl": "https://scholarship.karnataka.gov.in",
+      "eligibility": [
+        "Post-Matric (Class 11 onwards, UG, PG)",
+        "Not specified (enrolled & regular attendance)",
+        "Varies by category",
+        "Must belong to a backward class as notified by Karnataka government; studying in a recognized institution within Karnataka; regular attendance"
+      ],
+      "documents": [
+        "Caste/category certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form, study certificate"
+      ],
+      "steps": [
+        "Apply through Karnataka State Scholarship Portal; verified by institute and department",
+        "Apply through scholarship.karnataka.gov.in. Deadline 31 August 2026 as per BCWD official website. Covers Cat-1, 2A, 2B, 3A, 3B categories.",
+        "https://bcwd.karnataka.gov.in/163/2026-27-post-matric-scholarship/en"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "top-class-education-scheme-for-minority-students-32",
+      "title": "Top Class Education Scheme for Minority Students",
+      "provider": "Ministry of Minority Affairs, Government of India",
+      "description": "Premium scholarship for minority students admitted to top-ranked professional institutions with full course coverage.",
+      "about": "Central sector scheme by MoMA providing full financial support to minority community students admitted to empanelled top professional institutions. Covers academic allowance and living expenses for students from Muslim, Christian, Sikh, Buddhist, Jain, and Parsi communities.",
+      "category": "UG",
+      "amount": "Rs. 75,000 for academic expenses + Rs. 15,000 for maintenance in 1st year; Rs. 40,000 + Rs. 15,000 in subsequent years",
+      "startDate": "2026-05-31",
+      "deadline": null,
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "SC students admitted to notified institutions; family income ceiling currently ₹8 lakh per annum, subject to scheme rules.",
+        "Admission to an empanelled institution on merit",
+        "Not more than Rs. 6,00,000/- per annum (gross family income)",
+        "Must belong to a notified minority community; admitted to an empanelled institution (list on minorityaffairs.gov.in); not availing any other scholarship"
+      ],
+      "documents": [
+        "Community certificate, income certificate, admission letter from empanelled institution, marksheet, bank passbook, Aadhaar card, institute verification form"
+      ],
+      "steps": [
+        "Based on admission to empanelled institution; verified through NSP",
+        "Only for students admitted to empanelled top professional institutions. Full list on MoMA website. Implemented through NSP.",
+        "https://www.minorityaffairs.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "free-coaching-scheme-for-sc-obc-students-33",
+      "title": "Free Coaching Scheme for SC/OBC Students",
+      "provider": "Ministry of Social Justice & Empowerment, Government of India",
+      "description": "Government-funded coaching for SC/OBC students preparing for competitive examinations.",
+      "about": "Central sector scheme by MoSJE providing free coaching to SC and OBC students for competitive examinations including civil services, banking, SSC, and professional courses. Coaching is provided through empanelled coaching institutions across India.",
+      "category": "Others",
+      "amount": "Full coaching fee reimbursement + Rs. 2,000/month stipend (hostellers) or Rs. 1,000/month (day scholars) for the coaching period",
+      "startDate": "2026-05-31",
+      "deadline": "2026-10-30",
+      "applyUrl": "https://scholarships.gov.in",
+      "eligibility": [
+        "Coaching for competitive exams (after graduation)",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 6,00,000/- per annum (gross family income)",
+        "Must belong to SC or OBC; preparing for a competitive examination; family income within limit; not availing any similar coaching from government"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, marksheet, coaching admission letter, Aadhaar card, bank passbook, competitive exam registration (if applicable)"
+      ],
+      "steps": [
+        "Apply through NSP; verified by coaching institute and MoSJE",
+        "For SC and OBC students preparing for civil services, banking, SSC, and other competitive exams. Coaching provided through empanelled institutions.",
+        "https://socialjustice.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "maharashtra-rajarshi-shahu-maharaj-merit-scholarship-34",
+      "title": "Maharashtra Rajarshi Shahu Maharaj Merit Scholarship",
+      "provider": "Department of Social Justice, Government of Maharashtra",
+      "description": "Maharashtra state merit scholarship for SC students pursuing professional/technical education.",
+      "about": "Maharashtra government scheme providing merit scholarships to SC students pursuing professional and technical education in recognized institutions within and outside Maharashtra. Covers tuition fees and provides maintenance allowance.",
+      "category": "UG",
+      "amount": "Tuition fee reimbursement (varies by course) + maintenance allowance",
+      "startDate": "2026-09-30",
+      "deadline": null,
+      "applyUrl": "https://mahadbtmaharashtra.gov.in",
+      "eligibility": [
+        "UG and PG (professional/technical courses)",
+        "Not specified (merit-based; enrolled & regular attendance)",
+        "Not more than Rs. 2,50,000/- per annum",
+        "Must belong to SC; domiciled in Maharashtra; admitted to a recognized professional/technical institution; regular attendance"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, domicile certificate, institute verification form, bonafide certificate"
+      ],
+      "steps": [
+        "Apply through MahaDBT portal (mahadbtmaharashtra.gov.in); verified by institution and department",
+        "Apply through MahaDBT portal. Typically opens July-October. For SC students domiciled in Maharashtra pursuing professional/technical education.",
+        "https://mahadbtmaharashtra.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "kc-met-scholarship-for-postgraduate-studies-35",
+      "title": "KC MET Scholarship for Postgraduate Studies",
+      "provider": "KC Mahindra Education Trust (KC MET)",
+      "description": "Scholarship by KC Mahindra Education Trust for postgraduate students with strong academic credentials.",
+      "about": "KC MET provides postgraduate scholarships to Indian students with consistently excellent academic records. The scholarship supports postgraduate studies at premier institutions in India and abroad. The 2026-27 applications are open with a deadline of 31 August 2026.",
+      "category": "PG",
+      "amount": "Up to Rs. 75,000 per year (varies)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-08-30",
+      "applyUrl": "https://www.kcmet.org/what-we-do-scholarship-grants.aspx",
+      "eligibility": [
+        "PG (Master's and above)",
+        "Strong academic record throughout (first class or equivalent)",
+        "Not more than Rs. 6,00,000/- per annum (family income)",
+        "Indian citizen; strong academic record with first class throughout; admitted to or pursuing a PG program at a recognized institution; age limit applicable (generally below 30)"
+      ],
+      "documents": [
+        "Application form, academic transcripts (all degrees), admission letter, income certificate, CV, recommendation letters, Aadhaar card, bank passbook"
+      ],
+      "steps": [
+        "Application review by KC MET committee based on academic excellence and financial need",
+        "Deadline confirmed as 31 August 2026 on kcmet.org. Focus on consistently excellent academic record.",
+        "https://www.kcmet.org/what-we-do-scholarship-grants.aspx"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "national-scholarship-for-post-graduate-studies-ugc-36",
+      "title": "National Scholarship for Post Graduate Studies (UGC)",
+      "provider": "University Grants Commission (UGC)",
+      "description": "UGC merit scholarship for postgraduate students pursuing PG studies in recognized universities.",
+      "about": "UGC provides National Scholarships for Post Graduate Studies to meritorious students pursuing postgraduate programs (MA/M.Sc./M.Com) at recognized universities. Age limit 30 years. Only for students pursuing recognized PG degree programs leading to specified PG degrees. Scholarship amount varies.",
+      "category": "PG",
+      "amount": "Scholarship amount (varies; covers academic expenses)",
+      "startDate": null,
+      "deadline": null,
+      "applyUrl": "https://www.ugc.gov.in/Scholarships/stu_Scholarship6",
+      "eligibility": [
+        "PG (MA, M.Sc, M.Com at recognized universities)",
+        "Not specified (merit-based selection)",
+        "Not specified (merit-based)",
+        "Indian citizen; pursuing full-time PG degree at a UGC-recognized university; age not more than 30 years; not availing any other scholarship"
+      ],
+      "documents": [
+        "Application form, UG marksheet, PG admission/enrollment proof, Aadhaar card, bank details, institute verification form"
+      ],
+      "steps": [
+        "Selection by UGC based on academic merit",
+        "Check ugc.gov.in for current cycle dates and application portal. Age limit: 30 years. Only for specified PG degree programs.",
+        "https://www.ugc.gov.in/Scholarships/stu_Scholarship6"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "karnataka-state-fellowship-for-sc-st-research-scholars-37",
+      "title": "Karnataka State Fellowship for SC/ST Research Scholars",
+      "provider": "Karnataka SC/ST Welfare Department, Government of Karnataka",
+      "description": "State fellowship for SC/ST research scholars pursuing M.Phil/PhD in Karnataka universities.",
+      "about": "Karnataka government provides state fellowships for SC/ST scholars pursuing full-time M.Phil/PhD in state universities. Provides monthly stipend and contingency grant to encourage research among SC/ST communities in Karnataka.",
+      "category": "PG",
+      "amount": "Monthly stipend + contingency grant (amount varies by state norms)",
+      "startDate": null,
+      "deadline": null,
+      "applyUrl": "https://sw.karnataka.gov.in",
+      "eligibility": [
+        "M.Phil / PhD (full-time)",
+        "Not specified (enrolled & regular attendance)",
+        "Not specified",
+        "Must belong to SC or ST; domiciled in Karnataka; enrolled in full-time M.Phil/PhD at a Karnataka state university"
+      ],
+      "documents": [
+        "Caste certificate, income certificate, PG marksheet, PhD enrollment proof, Aadhaar card, bank details, research proposal, NOC from employer (if applicable)"
+      ],
+      "steps": [
+        "Application through Karnataka state scholarship portal; selection by state department",
+        "Apply through Karnataka state scholarship portal when applications open. For SC/ST scholars domiciled in Karnataka.",
+        "https://sw.karnataka.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "tamil-nadu-post-matric-scholarship-for-bc-mbc-students-38",
+      "title": "Tamil Nadu Post-Matric Scholarship for BC/MBC Students",
+      "provider": "Directorate of Collegiate Education, Government of Tamil Nadu",
+      "description": "Tamil Nadu government scholarship for Backward Classes and Most Backward Classes students pursuing higher education.",
+      "about": "Implemented by the Directorate of Collegiate Education, Government of Tamil Nadu. Provides fee concession and maintenance allowance to BC/MBC students pursuing post-matric courses in government/aided institutions in Tamil Nadu. Apply through NSP.",
+      "category": "UG",
+      "amount": "Fee concession + maintenance allowance (varies by course and category)",
+      "startDate": "2026-09-30",
+      "deadline": null,
+      "applyUrl": "https://tndce.tn.gov.in/Home/scholarship",
+      "eligibility": [
+        "Post-Matric (Class 11 onwards, UG, PG)",
+        "Not specified (enrolled & regular attendance)",
+        "Not more than Rs. 2,00,000/- per annum (varies by category)",
+        "Must belong to BC or MBC; domiciled in Tamil Nadu; studying in a recognized institution in Tamil Nadu; regular attendance"
+      ],
+      "documents": [
+        "Community certificate, income certificate, marksheet, fee receipt, bank passbook, Aadhaar card, institute verification form, study certificate, nativity certificate"
+      ],
+      "steps": [
+        "Apply through NSP/TN state scholarship portal; verified by institution and directorate",
+        "Apply through NSP or TN state portal. Most state portals expected to open between July-October 2026. For BC/MBC students of Tamil Nadu.",
+        "https://tndce.tn.gov.in/Home/scholarship"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    },
+    {
+      "slug": "maharashtra-foreign-scholarship-scheme-for-meritorious-students-39",
+      "title": "Maharashtra Foreign Scholarship Scheme for Meritorious Students",
+      "provider": "Government of Maharashtra",
+      "description": "Maharashtra government scholarship for meritorious students from economically weaker sections to pursue higher studies abroad.",
+      "about": "Implemented by the Government of Maharashtra for meritorious students from economically weaker sections and marginalized communities to pursue postgraduate studies abroad. Provides financial assistance for tuition, living expenses, and travel.",
+      "category": "PG",
+      "amount": "Up to Rs. 10,00,000 (varies; covers tuition, living, travel)",
+      "startDate": "2026-05-31",
+      "deadline": "2026-07-26",
+      "applyUrl": "https://fs.maharashtra.gov.in",
+      "eligibility": [
+        "PG abroad (Master's / PhD)",
+        "Strong academic record (minimum 60% in UG)",
+        "Not more than Rs. 8,00,000/- per annum (gross family income)",
+        "Domiciled in Maharashtra; from economically weaker section or marginalized community; strong academic record; confirmed admission to a foreign university for PG program"
+      ],
+      "documents": [
+        "Domicile certificate, income certificate, UG marksheet, admission/offer letter from foreign university, passport, Aadhaar card, bank details, research proposal (for PhD)"
+      ],
+      "steps": [
+        "Application review, academic merit assessment, interview by state committee",
+        "2026-27 cycle deadline extended to 27 July 2026 (closed). For meritorious students from EWS and marginalized communities of Maharashtra for study abroad.",
+        "https://fs.maharashtra.gov.in"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "UNPUBLISHED"
+    },
+    {
+      "slug": "sony-research-award-program-40",
+      "title": "Sony Research Award Program",
+      "provider": "Sony Group Corporation",
+      "description": "Research funding of up to USD 150,000 per year for innovative technology research projects globally.",
+      "about": "Sony Research Award Program by Sony Group Corporation provides research funding of up to USD 150,000 per year for innovative technology research projects. Open to researchers globally, including Indian researchers and institutions. Focus on cutting-edge technology areas. Accepting proposals from July 15 to September 15, 2026.",
+      "category": "PG",
+      "amount": "Up to USD 150,000 (approximately Rs. 1.25 crore) per year",
+      "startDate": "2026-07-14",
+      "deadline": "2026-09-14",
+      "applyUrl": "https://www.sony.com/en/SonyInfo/research-award-program",
+      "eligibility": [
+        "Postdoctoral / Advanced Research",
+        "Strong research track record",
+        "Not specified (research institution-based)",
+        "Researcher at a recognized institution (global); innovative technology research proposal; open to all nationalities including Indian researchers at Indian institutions"
+      ],
+      "documents": [
+        "Research proposal, CV, institutional affiliation proof, previous publications/research record, budget proposal"
+      ],
+      "steps": [
+        "Proposal evaluation by Sony research committee; multi-stage review",
+        "Accepting proposals July 15 to September 15, 2026 (3:00 PM Pacific Time). For innovative technology research at all levels. Open to Indian researchers.",
+        "https://www.sony.com/en/SonyInfo/research-award-program"
+      ],
+      "importantInfo": "Verify current deadline/status on the official provider portal before publication.",
+      "featured": false,
+      "status": "PUBLISHED"
+    }
+  ]
+}

@@ -35,6 +35,6 @@ export const verifyToken = async (req, res, next) => {
         req.decodedToken = decoded;
         next();
     } catch (error) {
-        next(new ApiError(400, "Invalid accessToken."));
+        next(new ApiError(401, "Invalid or expired access token."));
     }
 };
