@@ -278,23 +278,13 @@ const About = () => {
               background: isDark 
                 ? 'rgba(255, 255, 255, 0.03)'
                 : 'rgba(255, 255, 255, 0.97)',
-              borderColor: index === 0
-                ? (isDark ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.4)')
-                : (isDark ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.4)'),
-              boxShadow: isDark ? 'none' : index === 0
-                ? '0 15px 40px rgba(239, 68, 68, 0.15)'
-                : '0 15px 40px rgba(34, 197, 94, 0.15)',
+              borderColor: isDark ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.4)',
+              boxShadow: isDark ? 'none' : '0 15px 40px rgba(34, 197, 94, 0.15)',
             }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-xl ${
-                index === 0 
-                  ? (isDark ? 'bg-red-900/30' : 'bg-red-100') 
-                  : (isDark ? 'bg-green-900/30' : 'bg-green-100')
-              }`}>
-                <GraduationCap className={`w-6 h-6 ${
-                  index === 0 ? 'text-red-500' : 'text-green-600'
-                }`} />
+              <div className={`p-2 rounded-xl ${isDark ? 'bg-green-900/30' : 'bg-green-100'}`}>
+                <GraduationCap className="w-6 h-6 text-green-600 dark:text-green-500" />
               </div>
               <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 {uni.name}
