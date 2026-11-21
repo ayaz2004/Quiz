@@ -100,12 +100,21 @@ const toAdminScholarship = (scholarship, catalog = []) => {
 
 export const listScholarships = async (req, res, next) => {
   try {
-    const { page = 1, limit = 12, search, category } = req.query;
+    const { page = 1, limit = 12, search, category, open, sort } = req.query;
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const skip = (pageNum - 1) * limitNum;
 
     const where = { status: 'PUBLISHED' };
+    const andFilters = [];
+
+    // Optional: ?open=true -> only scholarships whose deadline is today or later (or has no deadline)
+    if (open === 'true' || open === '1') {
+      const startOfToday = new Date();
+      startOfToday.setUTCHours(0, 0, 0, 0);
+      andFilters.push({ OR: [{ deadline: null }, { deadline: { gte: startOfToday } }] });
+    }
+    if (andFilters.length) where.AND = andFilters;
 
     if (search) {
       where.OR = [
@@ -126,12 +135,17 @@ export const listScholarships = async (req, res, next) => {
       where.categories = { has: matched.label };
     }
 
+    // Optional: ?sort=deadline -> nearest deadline first, scholarships without a deadline last
+    const orderBy = sort === 'deadline'
+      ? [{ deadline: { sort: 'asc', nulls: 'last' } }, { createdAt: 'desc' }]
+      : { createdAt: 'desc' };
+
     const total = await prisma.scholarship.count({ where });
     const rows = await prisma.scholarship.findMany({
       where,
       skip,
       take: limitNum,
-      orderBy: { createdAt: 'desc' },
+      orderBy,
     });
 
     res.status(200).json(new ApiResponse(200, {
