@@ -6,6 +6,7 @@ import {
 } from "../utils/jmiPortal.js";
 import { sendResultUpdateEmail } from "../utils/email.js";
 import { sendPushToSubscriptions } from "../utils/webPush.js";
+import { sendToUser } from "../utils/fcm.js";
 
 let isRunning = false;
 
@@ -87,6 +88,7 @@ async function notifyTrackers(changedCourses) {
     });
 
     deliveryJobs.push({
+      trackId: track.id,
       userId: track.userId,
       email: track.user.email,
       subscriptions: track.user.pushSubscriptions,
@@ -144,6 +146,18 @@ async function notifyTrackers(changedCourses) {
       } catch (error) {
         console.error("Push fanout error:", error?.message || error);
       }
+
+      // Mobile app (FCM); sendToUser never throws
+      await sendToUser(job.userId, {
+        title: job.title,
+        body: job.body,
+        data: {
+          type: "result_update",
+          trackId: job.trackId,
+          notificationId,
+          url: job.resultLink,
+        },
+      });
 
       try {
         if (notificationId) {

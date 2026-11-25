@@ -27,7 +27,7 @@ Backend (Express + Prisma + PostgreSQL):
 cd backend
 npm install
 npx prisma generate
-npx prisma db push
+npx prisma migrate deploy   # applies prisma/migrations to the database in DATABASE_URL
 npm run dev  # Starts on port 3000, auto-generates Prisma client
 ```
 
@@ -71,12 +71,13 @@ Hardcoded allowed origins. Don't add new frontend domains without updating `allo
 Using Express 5, note breaking changes vs Express 4 if adding middleware.
 
 ### JWT Authentication
-- Access tokens: stored in `accessToken` field on User model
-- Refresh tokens: stored in `sessionToken` field
-- Auth middlewares verify tokens and attach user to `req.user`
+- One `Session` row per signed-in device (max 5 per user), holding its access and session token
+- `User.accessToken` / `User.sessionToken` still hold the newest sign-in; requests matching only these are accepted and migrated to a `Session`
+- `POST /api/users/refresh` rotates the access token of one session; sign-out ends one session
+- Auth middlewares verify tokens and attach user to `req.user` (and `req.session`)
 
 ### Prisma Client Generation
-Always run `npx prisma generate` after schema changes before `npm run dev`. DB changes use `npx prisma db push` (not migrations).
+Always run `npx prisma generate` after schema changes before `npm run dev`. Schema changes need a migration folder in `backend/prisma/migrations`; production runs `prisma migrate deploy` on `npm start`.
 
 ### Quiz Time Limit
 Time limit stored in `Quiz.timeLimit` (minutes). Quiz player calculates remaining time in frontend (QuizTimer.jsx).
@@ -100,11 +101,16 @@ All backend routes prefixed with `/api` (backend/index.js:65):
 - `/api/qa` - Question bank management
 - `/api/result-track` - Course results tracking
 - `/api/suggestions` - User suggestions
+- `/api/jmi-result` - JMI result portal lookup
+- Mobile app: `/api/courses`, `/api/topics`, `/api/practice` (questions with answers, response sync, review queue), `/api/study-profile`, `/api/bookmarks`, `/api/devices` (FCM tokens), `/api/app/home`
+- Topic tagging: `/api/admin/topics`, `/api/admin/topic-review`; suggestions come from `npm run suggest-topics` (dry run unless `--apply`)
 
 ## Environment Variables
 
 Backend must have: `DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `CLOUDINARY_*`, `FRONTEND_URL`
 Frontend must have: `VITE_API_URL`
+
+Optional for phone push: `FIREBASE_SERVICE_ACCOUNT_JSON` (service-account JSON, raw or base64) or `GOOGLE_APPLICATION_CREDENTIALS`. Without them FCM is skipped.
 
 Backend uses `.env` for secrets. Frontend uses `.env` but values are exposed at build time.
 
@@ -118,7 +124,7 @@ Backend uses `.env` for secrets. Frontend uses `.env` but values are exposed at 
 
 ## Database Interactions
 
-Prisma client imported from `@prisma/client` (backend/config/env.js loads). Schema in `backend/prisma/schema.prisma`. No migrations in repo (uses `db push` in development).
+Prisma client imported from `@prisma/client` (backend/config/env.js loads). Schema in `backend/prisma/schema.prisma`, migrations in `backend/prisma/migrations`.
 
 ## Common Operations
 
@@ -135,6 +141,6 @@ Prisma client imported from `@prisma/client` (backend/config/env.js loads). Sche
 
 ### Update database schema
 1. Edit `backend/prisma/schema.prisma`
-2. Run `npx prisma generate` (reloads Prisma client)
-3. Run `npx prisma db push` (updates DB)
+2. Run `npx prisma migrate dev --name <change>` against a local database (creates the migration folder and regenerates the client)
+3. Commit the migration folder; production applies it with `prisma migrate deploy`
 4. Backend restart required for Prisma client changes

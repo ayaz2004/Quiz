@@ -5,6 +5,12 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 import * as brevo from '@getbrevo/brevo';
 import crypto from 'crypto';
+import {
+  createSession,
+  endOtherSessions,
+  endSession,
+  refreshSession,
+} from "../services/session.js";
 
 // Initialize Brevo API
 const apiInstance = new brevo.TransactionalEmailsApi();
@@ -145,28 +151,8 @@ export const signInUser = async (req, res, next) => {
       );
     }
 
-    // Generate access token (short-lived)
-    const accessToken = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    // Generate session token (long-lived refresh token)
-    const sessionToken = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    // Store tokens in database
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        accessToken,
-        sessionToken
-      }
-    });
+    // New session for this device (24h access token, 7d session token); other devices stay signed in
+    const { accessToken, sessionToken } = await createSession(user, req);
 
     // Set cookies with security options
     const cookieOptions = {
@@ -335,6 +321,9 @@ export const resetPassword = async (req, res, next) => {
       }
     });
 
+    // Sign out every device
+    await endOtherSessions(user.id, null);
+
     res.status(200).json(
       new ApiResponse(200, null, "Password reset successfully")
     );
@@ -436,23 +425,10 @@ const sendPasswordResetEmail = async (email, token) => {
 export const logoutUser = async (req, res, next) => {
   try {
     const accessToken = req.cookies?.access_token || req.header("Authorization")?.replace("Bearer ", "");
-    
-    if (accessToken) {
-      // Find user by access token and clear tokens from database
-      const user = await prisma.user.findFirst({
-        where: { accessToken }
-      });
+    const sessionToken = req.cookies?.session_token || req.header("RefreshToken")?.replace("Bearer ", "");
 
-      if (user) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            accessToken: null,
-            sessionToken: null
-          }
-        });
-      }
-    }
+    // Only this device is signed out
+    await endSession({ accessToken, sessionToken });
 
     // Clear cookies
     res.clearCookie('access_token');
@@ -464,6 +440,77 @@ export const logoutUser = async (req, res, next) => {
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error logging out"));
+  }
+};
+
+export const refreshAccessToken = async (req, res, next) => {
+  try {
+    const sessionToken =
+      req.cookies?.session_token ||
+      req.header("RefreshToken")?.replace("Bearer ", "");
+
+    if (!sessionToken) {
+      return next(new ApiError(401, "Session token is required"));
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(sessionToken, process.env.JWT_SECRET);
+    } catch {
+      return next(new ApiError(403, "Session expired. Please login again."));
+    }
+
+    // Rotates the access token of this session only
+    const refreshed = await refreshSession(decoded, sessionToken, req);
+
+    if (!refreshed) {
+      return next(new ApiError(403, "Session expired or invalid. Please login again."));
+    }
+
+    const { accessToken } = refreshed;
+
+    res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, { accessToken }, "Access token refreshed")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error refreshing token"));
+  }
+};
+
+// Google Play requires in-app account deletion
+export const deleteAccount = async (req, res, next) => {
+  try {
+    const { password } = req.body || {};
+
+    if (!password || typeof password !== "string") {
+      return next(new ApiError(400, "Password is required"));
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, req.user.password);
+    if (!isPasswordValid) {
+      return next(new ApiError(401, "Incorrect password"));
+    }
+
+    // Attempts, responses, bookmarks, devices and the rest cascade with the user
+    await prisma.user.delete({ where: { id: req.user.id } });
+
+    res.clearCookie('access_token');
+    res.clearCookie('session_token');
+
+    return res.status(200).json(
+      new ApiResponse(200, null, "Account deleted")
+    );
+
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error deleting account"));
   }
 };
 
@@ -594,6 +641,9 @@ export const changePassword = async (req, res, next) => {
       where: { id: req.user.id },
       data: { password: hashedPassword }
     });
+
+    // Keep this device signed in, sign out the others
+    await endOtherSessions(req.user.id, req.session ?? null);
 
     return res.status(200).json(
       new ApiResponse(200, null, "Password changed successfully")

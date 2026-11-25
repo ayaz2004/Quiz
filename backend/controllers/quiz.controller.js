@@ -2,6 +2,7 @@ import prisma from "../config/db.config.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/error.js";
 import { checkQuizAccess } from "./purchase.controller.js";
+import { recordResponses } from "../services/responseRecorder.js";
 
 /**
  * API 1: Get all quizzes with pagination and filters
@@ -342,6 +343,9 @@ export const submitQuizAttempt = async (req, res, next) => {
         questions: {
           orderBy: {
             questionOrder: 'asc'
+          },
+          include: {
+            topic: { select: { name: true } }
           }
         }
       }
@@ -396,7 +400,10 @@ export const submitQuizAttempt = async (req, res, next) => {
             option2: question.option2,
             option3: question.option3,
             option4: question.option4
-          }
+          },
+          imageUrl: question.imageUrl,
+          topicId: question.topicId,
+          topicName: question.topic?.name ?? null
         });
       }
     });
@@ -434,6 +441,25 @@ export const submitQuizAttempt = async (req, res, next) => {
         answers: JSON.stringify(answers)
       }
     });
+
+    // Feed the per-question history (mistake review, streaks, weak topics).
+    // The attempt is already saved, so a failure here must not fail the submit.
+    try {
+      const answeredAt = quizAttempt.attemptedAt;
+      await recordResponses(userId, detailedResults
+        .filter(r => Number.isInteger(r.userAnswer) && r.userAnswer >= 1 && r.userAnswer <= 4)
+        .map(r => ({
+          clientId: `attempt-${quizAttempt.id}-${r.questionId}`,
+          questionId: r.questionId,
+          selectedOption: r.userAnswer,
+          isCorrect: r.isCorrect,
+          timeTakenMs: Math.min(Math.max(Math.round(Number(r.timeSpent) * 1000) || 0, 0), 60 * 60 * 1000),
+          answeredAt,
+          source: 'exam'
+        })));
+    } catch (error) {
+      console.error('Failed to record exam responses:', error?.message || error);
+    }
 
     res.status(201).json(
       new ApiResponse(201, {
@@ -662,7 +688,11 @@ export const getAttemptResult = async (req, res, next) => {
       include: {
         quiz: {
           include: {
-            questions: true,
+            questions: {
+              include: {
+                topic: { select: { name: true } }
+              }
+            },
             cutoffs: {
               orderBy: {
                 year: 'desc'
@@ -723,7 +753,9 @@ export const getAttemptResult = async (req, res, next) => {
         correctAnswer: question.isCorrect,
         isCorrect,
         timeSpent, // Include time spent in the response
-        explanation: question.explanation
+        explanation: question.explanation,
+        topicId: question.topicId,
+        topicName: question.topic?.name ?? null
       };
     });
 
@@ -818,11 +850,22 @@ export const getQuizLeaderboard = async (req, res, next) => {
     });
 
     // Convert to array and sort
-    const leaderboard = Array.from(userBestAttempts.values())
+    const ranked = Array.from(userBestAttempts.values())
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return (a.timeTaken || Infinity) - (b.timeTaken || Infinity);
-      })
+      });
+
+    const totalParticipants = ranked.length;
+    const myIndex = req.user ? ranked.findIndex(a => a.userId === req.user.id) : -1;
+    const me = myIndex === -1 ? null : {
+      rank: myIndex + 1,
+      // Share of participants ranked at or below the caller
+      percentile: Math.round(((totalParticipants - myIndex) / totalParticipants) * 1000) / 10,
+      score: ranked[myIndex].score
+    };
+
+    const leaderboard = ranked
       .slice(0, limitNum)
       .map((attempt, index) => ({
         rank: index + 1,
@@ -840,7 +883,9 @@ export const getQuizLeaderboard = async (req, res, next) => {
       new ApiResponse(200, {
         quizId: quiz.id,
         quizTitle: quiz.title,
-        leaderboard
+        leaderboard,
+        totalParticipants,
+        me
       }, "Leaderboard fetched successfully")
     );
 

@@ -20,7 +20,7 @@ const router = express.Router();
 router.get("/list", optionalAuth, generalLimiter, listQuizzes);
 router.get("/subjects", optionalAuth, generalLimiter, getSubjects);
 router.get("/years", optionalAuth, generalLimiter, getYears);
-router.get("/leaderboard/:quizId", generalLimiter, getQuizLeaderboard);
+router.get("/leaderboard/:quizId", optionalAuth, generalLimiter, getQuizLeaderboard);
 
 // Protected routes - require authentication
 router.get("/my-attempts", verifyToken, generalLimiter, getUserAttempts);
