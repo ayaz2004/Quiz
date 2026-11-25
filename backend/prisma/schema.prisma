@@ -39,6 +39,31 @@ model User {
   trackedCourses     TrackedCourse[]
   pushSubscriptions  PushSubscription[]
   resultNotifications ResultNotification[]
+  questionResponses  QuestionResponse[]
+  reviewItems        ReviewItem[]
+  bookmarks          Bookmark[]
+  deviceTokens       DeviceToken[]
+  dailyActivities    DailyActivity[]
+  studyProfile       StudyProfile?
+  sessions           Session[]
+}
+
+// One row per signed-in device. User.accessToken/sessionToken are still
+// written for the most recent sign-in so older server versions keep working.
+model Session {
+  id           Int      @id @default(autoincrement()) @map("session_id")
+  userId       Int      @map("user_id")
+  sessionToken String   @unique @map("session_token") @db.Text
+  accessToken  String   @map("access_token") @db.Text
+  userAgent    String?  @map("user_agent") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  lastUsedAt   DateTime @default(now()) @map("last_used_at")
+  expiresAt    DateTime @map("expires_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
 }
 
 
@@ -102,7 +127,128 @@ model Question {
   isCorrect    Int    @map("is_correct")
   explanation  String?
   imageUrl     String? @map("image_url")
+  topicId              Int?    @map("topic_id") // Approved topic
+  suggestedTopicId     Int?    @map("suggested_topic_id") // Unreviewed suggestion, never exposed to users
+  suggestionConfidence Float?  @map("suggestion_confidence")
+  difficulty           String? @db.VarChar(10) // easy, medium, hard
   quiz         Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  topic          Topic? @relation("QuestionTopic", fields: [topicId], references: [id], onDelete: SetNull)
+  suggestedTopic Topic? @relation("QuestionSuggestedTopic", fields: [suggestedTopicId], references: [id], onDelete: SetNull)
+  responses    QuestionResponse[]
+  reviewItems  ReviewItem[]
+  bookmarks    Bookmark[]
+
+  @@index([topicId])
+}
+
+model Topic {
+  id        Int      @id @default(autoincrement()) @map("topic_id")
+  subject   String   @db.VarChar(100)
+  name      String   @db.VarChar(150)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  questions          Question[] @relation("QuestionTopic")
+  suggestedQuestions Question[] @relation("QuestionSuggestedTopic")
+
+  @@unique([subject, name])
+  @@map("topics")
+}
+
+model QuestionResponse {
+  id             Int      @id @default(autoincrement()) @map("response_id")
+  userId         Int      @map("user_id")
+  questionId     Int      @map("question_id")
+  selectedOption Int      @map("selected_option")
+  isCorrect      Boolean  @map("is_correct")
+  timeTakenMs    Int      @default(0) @map("time_taken_ms")
+  source         String   @db.VarChar(20) // practice, review, today, exam
+  clientId       String   @map("client_id") @db.VarChar(80)
+  answeredAt     DateTime @map("answered_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clientId])
+  @@index([userId, questionId, answeredAt])
+  @@index([userId, answeredAt])
+  @@map("question_responses")
+}
+
+// Derived spaced-repetition state, recomputed from QuestionResponse history
+model ReviewItem {
+  id             Int      @id @default(autoincrement()) @map("review_item_id")
+  userId         Int      @map("user_id")
+  questionId     Int      @map("question_id")
+  box            Int
+  dueAt          DateTime @map("due_at")
+  lastAnsweredAt DateTime @map("last_answered_at")
+  wrongCount     Int      @map("wrong_count")
+  graduated      Boolean  @default(false)
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId, graduated, dueAt])
+  @@map("review_items")
+}
+
+model Bookmark {
+  id         Int      @id @default(autoincrement()) @map("bookmark_id")
+  userId     Int      @map("user_id")
+  questionId Int      @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@map("bookmarks")
+}
+
+model DeviceToken {
+  id        Int      @id @default(autoincrement()) @map("device_token_id")
+  userId    Int      @map("user_id")
+  token     String   @unique @db.Text
+  platform  String   @db.VarChar(10) // android, ios, web
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("device_tokens")
+}
+
+model DailyActivity {
+  id                Int      @id @default(autoincrement()) @map("daily_activity_id")
+  userId            Int      @map("user_id")
+  date              DateTime @db.Date // Calendar day in Asia/Kolkata
+  questionsAnswered Int      @default(0) @map("questions_answered")
+  correctCount      Int      @default(0) @map("correct_count")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("daily_activities")
+}
+
+model StudyProfile {
+  id               Int       @id @default(autoincrement()) @map("study_profile_id")
+  userId           Int       @unique @map("user_id")
+  targetCourseKey  String?   @map("target_course_key") @db.VarChar(120)
+  targetCourseName String?   @map("target_course_name") @db.VarChar(255)
+  category         String?   @db.VarChar(30)
+  dailyGoal        Int       @default(15) @map("daily_goal")
+  examDate         DateTime? @map("exam_date")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("study_profiles")
 }
 
 model QuizAttempt {

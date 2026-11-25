@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "prisma generate && prisma migrate deploy && node index.js",
+    "db:status": "prisma migrate status",
+    "db:deploy": "prisma generate && prisma migrate deploy",
     "migrate:data": "node scripts/copy-production-data.js",
+    "suggest-topics": "node scripts/suggestTopics.js",
     "import:scholarships": "node scripts/importScholarships.js",
     "export:scholarships": "node scripts/importScholarships.js --export"
   },
@@ -25,6 +28,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.2.1",
+    "firebase-admin": "^13.10.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
