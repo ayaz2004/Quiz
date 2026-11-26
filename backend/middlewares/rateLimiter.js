@@ -71,15 +71,42 @@ export const practiceSyncLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Auth rate limiter - 5 requests per 15 minutes (for sensitive operations)
+/**
+ * Auth routes are signed out, so there is no user to key on, and a bare IP
+ * would lock out everyone sharing a carrier address (see above). Key on the
+ * address AND the email being targeted: one person guessing at one account
+ * is stopped, while strangers behind the same IP are not affected.
+ */
+const authKey = (req) => {
+  const email = String(req.body?.email ?? '').trim().toLowerCase().slice(0, 254);
+  return `${ipKeyGenerator(req.ip || '')}|${email}`;
+};
+
+const authMessage = {
+  success: false,
+  statusCode: 429,
+  message: 'Too many attempts, please try again after 15 minutes',
+};
+
+// Sign-in: 10 FAILED attempts per 15 minutes per address+email. Successful
+// sign-ins are not counted, so a normal user is never slowed down.
+export const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  keyGenerator: authKey,
+  skipSuccessfulRequests: true,
+  message: authMessage,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Sign-up, forgot-password and resend-verification each send an email, so
+// every request counts: 5 per 15 minutes per address+email.
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 5,
-  message: {
-    success: false,
-    statusCode: 429,
-    message: 'Too many authentication attempts, please try again after 15 minutes'
-  },
+  keyGenerator: authKey,
+  message: authMessage,
   standardHeaders: true,
   legacyHeaders: false,
 });

@@ -2,6 +2,7 @@ import prisma from "../config/db.config.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/error.js";
 import { loadCourses } from "../services/practiceQuestions.js";
+import { universityFromTitle } from "../utils/course.js";
 
 // Same names as the QuizCutoff category columns
 export const CUTOFF_CATEGORIES = [
@@ -12,6 +13,7 @@ export const CUTOFF_CATEGORIES = [
 export const toStudyProfile = (p) => p && ({
   targetCourseKey: p.targetCourseKey,
   targetCourseName: p.targetCourseName,
+  targetUniversity: p.targetCourseName ? universityFromTitle(p.targetCourseName) : null,
   category: p.category,
   dailyGoal: p.dailyGoal,
   examDate: p.examDate,

@@ -31,3 +31,24 @@ export const uploadImage = async (imagePath) => {
     console.error(error);
   }
 };
+
+const avatarId = (userId) => `avatars/user_${userId}`;
+
+/**
+ * Stores a profile photo as a 400x400 square cropped around the face,
+ * replacing the user's previous one. [source] is a file path or a data URL.
+ * Throws when the upload fails.
+ */
+export const uploadAvatar = async (source, userId) => {
+  const result = await cloudinary.uploader.upload(source, {
+    public_id: avatarId(userId),
+    overwrite: true,
+    invalidate: true,
+    format: "jpg",
+    transformation: [{ width: 400, height: 400, crop: "fill", gravity: "face" }],
+  });
+  return result.secure_url;
+};
+
+export const deleteAvatar = (userId) =>
+  cloudinary.uploader.destroy(avatarId(userId), { invalidate: true });
