@@ -1,5 +1,4 @@
 import { createUser, signInUser, logoutUser, refreshAccessToken, verifyEmail, forgotPassword, resetPassword, resendVerificationEmail, getCurrentUser, updateProfile, uploadProfilePhoto, removeProfilePhoto, getEntitlements, changePassword, deleteAccount } from "../controllers/user.controller.js";
-import { createUser, signInUser, logoutUser, refreshAccessToken, verifyEmail, forgotPassword, resetPassword, resendVerificationEmail, getCurrentUser, updateProfile, changePassword, deleteAccount } from "../controllers/user.controller.js";
 import express from "express";
 import { verifyToken } from "../middlewares/verifyUser.js";
 import upload from "../middlewares/multer.js";

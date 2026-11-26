@@ -71,19 +71,6 @@ export const practiceSyncLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Auth rate limiter - 5 requests per 15 minutes (for sensitive operations)
-export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
-  message: {
-    success: false,
-    statusCode: 429,
-    message: 'Too many sync requests, please try again after 15 minutes'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
 /**
  * Auth routes are signed out, so there is no user to key on, and a bare IP
  * would lock out everyone sharing a carrier address (see above). Key on the
