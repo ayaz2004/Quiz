@@ -5,6 +5,9 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 import * as brevo from '@getbrevo/brevo';
 import crypto from 'crypto';
+import fs from 'fs';
+import { uploadAvatar, deleteAvatar } from "../utils/cloudinary.js";
+import { entitlementsFor } from "../services/entitlements.js";
 import {
   createSession,
   endOtherSessions,
@@ -570,9 +573,17 @@ export const updateProfile = async (req, res, next) => {
       updateData.email = email;
     }
 
-    // Add other fields if provided
+    // Photos are stored on Cloudinary; the column only ever holds its https URL
     if (profilePhoto !== undefined) {
-      updateData.profilePhoto = profilePhoto;
+      if (!profilePhoto) {
+        updateData.profilePhoto = null;
+      } else if (typeof profilePhoto === "string" && profilePhoto.startsWith("data:image/")) {
+        updateData.profilePhoto = await uploadAvatar(profilePhoto, req.user.id);
+      } else if (typeof profilePhoto === "string" && profilePhoto.startsWith("https://")) {
+        updateData.profilePhoto = profilePhoto;
+      } else {
+        return next(new ApiError(400, "Invalid profile photo"));
+      }
     }
     if (phoneNumber !== undefined) {
       updateData.phoneNumber = phoneNumber;
@@ -591,6 +602,9 @@ export const updateProfile = async (req, res, next) => {
       where: { id: req.user.id },
       data: updateData
     });
+    if (updateData.profilePhoto === null && req.user.profilePhoto) {
+      deleteAvatar(req.user.id).catch(() => {});
+    }
 
     // Return updated user without sensitive fields
     const { password, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, accessToken, sessionToken, ...userWithoutPassword } = updatedUser;
@@ -601,6 +615,59 @@ export const updateProfile = async (req, res, next) => {
 
   } catch (error) {
     next(new ApiError(500, error.message || "Error updating profile"));
+  }
+};
+
+const toPublicUser = (user) => {
+  const { password, emailVerificationToken, emailVerificationExpires, resetPasswordToken, resetPasswordExpires, accessToken, sessionToken, ...rest } = user;
+  return rest;
+};
+
+/**
+ * POST /api/users/me/photo
+ * Multipart, field "photo": jpeg, png, gif or webp up to 5 MB.
+ */
+export const uploadProfilePhoto = async (req, res, next) => {
+  const file = req.file;
+  if (!file) return next(new ApiError(400, "Choose an image to upload"));
+  try {
+    const url = await uploadAvatar(file.path, req.user.id);
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { profilePhoto: url },
+    });
+    res.status(200).json(new ApiResponse(200, toPublicUser(user), "Profile photo updated"));
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error uploading profile photo"));
+  } finally {
+    fs.promises.unlink(file.path).catch(() => {});
+  }
+};
+
+/**
+ * DELETE /api/users/me/photo
+ */
+export const removeProfilePhoto = async (req, res, next) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { profilePhoto: null },
+    });
+    deleteAvatar(req.user.id).catch(() => {});
+    res.status(200).json(new ApiResponse(200, toPublicUser(user), "Profile photo removed"));
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error removing profile photo"));
+  }
+};
+
+/**
+ * GET /api/users/me/entitlements
+ */
+export const getEntitlements = async (req, res, next) => {
+  try {
+    res.status(200).json(new ApiResponse(200, await entitlementsFor(req.user), "Entitlements fetched"));
+  } catch (error) {
+    next(new ApiError(500, error.message || "Error fetching entitlements"));
   }
 };
 

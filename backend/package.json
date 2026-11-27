@@ -11,6 +11,7 @@
     "db:deploy": "prisma generate && prisma migrate deploy",
     "migrate:data": "node scripts/copy-production-data.js",
     "suggest-topics": "node scripts/suggestTopics.js",
+    "migrate:photos": "node scripts/migrateProfilePhotos.js",
     "import:scholarships": "node scripts/importScholarships.js",
     "export:scholarships": "node scripts/importScholarships.js --export"
   },

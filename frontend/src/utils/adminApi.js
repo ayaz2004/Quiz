@@ -531,6 +531,45 @@ export const updateCutoff = async (cutoffId, cutoffData) => {
   }
 };
 
+export const getMonetization = async () => {
+  const response = await axios.get(`${API_URL}/api/admin/monetization`, { withCredentials: true });
+  return response.data;
+};
+
+/** freeLimit: whole number or null (unlimited). enforced=false only measures. */
+export const updateFeatureLimit = async (key, freeLimit, enforced) => {
+  const response = await axios.put(
+    `${API_URL}/api/admin/limits/${key}`,
+    { freeLimit, enforced },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+
+export const setUserPlan = async (email, plan, planExpiresAt = null) => {
+  const response = await axios.put(
+    `${API_URL}/api/admin/plans`,
+    { email, plan, planExpiresAt },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+
+/** month: "YYYY-MM"; replaces the amount for that item and month. */
+export const saveMonthlyCost = async (month, item, amount) => {
+  const response = await axios.put(
+    `${API_URL}/api/admin/costs`,
+    { month, item, amount },
+    { withCredentials: true }
+  );
+  return response.data;
+};
+
+export const deleteMonthlyCost = async (costId) => {
+  const response = await axios.delete(`${API_URL}/api/admin/costs/${costId}`, { withCredentials: true });
+  return response.data;
+};
+
 export const deleteCutoff = async (cutoffId) => {
   try {
     const response = await axios.delete(

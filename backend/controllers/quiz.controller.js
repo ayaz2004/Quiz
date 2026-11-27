@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/error.js";
 import { checkQuizAccess } from "./purchase.controller.js";
 import { recordResponses } from "../services/responseRecorder.js";
+import { featureBlockMessage } from "../services/entitlements.js";
 
 /**
  * API 1: Get all quizzes with pagination and filters
@@ -204,6 +205,16 @@ export const getQuizById = async (req, res, next) => {
       accessMessage = accessCheck.reason;
     } else if (!userId && quiz.isPaid) {
       accessMessage = "Please login to purchase and access this quiz";
+    }
+
+    // Starting a test is where the monthly mock-test allowance applies;
+    // submissions are never refused, so a test taken offline still counts.
+    if (hasAccess && req.user) {
+      const blocked = await featureBlockMessage(req.user, "mock_tests_monthly");
+      if (blocked) {
+        hasAccess = false;
+        accessMessage = blocked;
+      }
     }
 
     res.status(200).json(

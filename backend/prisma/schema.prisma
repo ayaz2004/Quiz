@@ -30,6 +30,8 @@ model User {
   location      String?
   qualification String?
   purchasedExams Json    @default("[]")
+  plan          String    @default("free") @db.VarChar(20) // free, pro
+  planExpiresAt DateTime? @map("plan_expires_at") // null with plan "pro" = no end date
   createdAt     DateTime @default(now())
   quizAttempts  QuizAttempt[]
   purchases     Purchase[]
@@ -249,6 +251,30 @@ model StudyProfile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("study_profiles")
+}
+
+// Free-plan allowance per feature (keys in services/entitlements.js), set from
+// the admin panel. No row or a null limit means unlimited. With enforced=false
+// the limit is only used to measure how many users would reach it.
+model FeatureLimit {
+  key       String   @id @db.VarChar(50)
+  freeLimit Int?     @map("free_limit")
+  enforced  Boolean  @default(false)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("feature_limits")
+}
+
+// Running costs (INR) entered by an admin, per calendar month.
+model MonthlyCost {
+  id        Int      @id @default(autoincrement()) @map("monthly_cost_id")
+  month     DateTime @db.Date // First day of the month
+  item      String   @db.VarChar(100)
+  amount    Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([month, item])
+  @@map("monthly_costs")
 }
 
 model QuizAttempt {
